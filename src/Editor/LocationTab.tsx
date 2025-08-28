@@ -83,7 +83,6 @@ function TheMap() {
         anchor="bottom"
       >
         <MdLocationPin color="red" size={36} />
-        {/* <IconMapPinFilled /> */}
       </Marker>
     </MapGL>
   );
@@ -104,18 +103,6 @@ function LocationTab() {
       </Fieldset>
     </div>
   );
-  // return (
-  //   <Stack h="100%">
-  //     <div className={mapContainerStyles}>
-  //       <TheMap />
-  //     </div>
-
-  //     <Fieldset mt="lg" legend="GPS">
-  //       <Group gap="xs">
-  //       </Group>
-  //     </Fieldset>
-  //   </Stack>
-  // );
 }
 
 export default LocationTab;
