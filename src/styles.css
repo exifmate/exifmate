@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  /* biome-ignore lint/correctness/noUnknownProperty: `themes` comes from DaisyUI */
+  themes: dim --default;
+}

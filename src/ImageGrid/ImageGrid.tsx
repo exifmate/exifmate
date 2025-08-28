@@ -1,6 +1,5 @@
-import { Card, Flex, Image, rem, Text, UnstyledButton } from '@mantine/core';
+import classNames from 'classnames';
 import { useImageSelection } from '../ImageContext';
-import { containerStyles, selectedCardStyles } from './ImageGrid.css';
 
 /*
  * I think this'll go slow if the images are large; need to test.
@@ -12,52 +11,52 @@ const ImageGrid = () => {
 
   if (images.length === 0) {
     return (
-      <Flex align="center" justify="center" h="100%">
-        <Text c="dimmed">No Images Loaded</Text>
-      </Flex>
+      <div className="flex items-center justify-center flex-1">
+        <p className="text-lg">No Images Loaded</p>
+      </div>
     );
   }
 
   return (
-    <Flex wrap="wrap" gap="lg" className={containerStyles}>
-      {images?.map((image) => {
-        const isSelected: boolean = !!selectedImages.find(
-          (i) => i.path === image.path,
-        );
+    <div className="flex flex-1 overflow-scroll p-4">
+      <ul className="flex flex-wrap gap-4">
+        {images.map((image) => {
+          const isSelected: boolean = !!selectedImages.find(
+            (i) => i.path === image.path,
+          );
 
-        return (
-          <UnstyledButton
-            key={image.filename}
-            aria-selected={isSelected}
-            onClick={(e) => {
-              handleImageSelection(e, image);
-            }}
-            style={{ flexGrow: 1 }}
-          >
-            <Card
-              shadow="md"
-              className={isSelected ? selectedCardStyles : undefined}
-              h="100%"
-            >
-              <Card.Section>
-                <Image
-                  src={image.assetUrl}
-                  fit="contain"
-                  alt={image.filename}
-                  mx="auto"
-                  w={rem(225)}
-                  h={rem(225)}
-                />
-              </Card.Section>
+          return (
+            <li key={image.path} className="">
+              <button
+                type="button"
+                onClick={(e) => {
+                  handleImageSelection(e, image);
+                }}
+                className={classNames(
+                  'card card-xs w-56 bg-neutral cursor-pointer',
+                  { 'outline-primary outline-2 outline-offset-3': isSelected },
+                )}
+                // aria-selected={isSelected}
+              >
+                <figure>
+                  <img
+                    src={image.assetUrl}
+                    alt={image.filename}
+                    className="h-56 w-56 object-cover"
+                    height={288}
+                    width={288}
+                  />
+                </figure>
 
-              <Card.Section inheritPadding py="xs">
-                <Text>{image.filename}</Text>
-              </Card.Section>
-            </Card>
-          </UnstyledButton>
-        );
-      })}
-    </Flex>
+                <div className="card-body">
+                  <div className="card-title">{image.filename}</div>
+                </div>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 };
 

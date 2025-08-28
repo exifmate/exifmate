@@ -1,35 +1,25 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Alert,
-  Box,
-  Button,
-  Center,
-  Divider,
-  Group,
-  Loader,
-  LoadingOverlay,
-  Stack,
-  Tabs,
-  Text,
-} from '@mantine/core';
-import { IconCancel, IconCheck, IconEdit } from '@tabler/icons-react';
+import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { type ExifData, exifData } from '../core/types';
 import { useImageSelection } from '../ImageContext';
 import ExifTab from './ExifTab';
 import LocationTab from './LocationTab';
-import {
-  formContainerStyles,
-  formStyles,
-  tabContainerStyles,
-  tabContentStyles,
-} from './MetadataEditor.css';
 import useExif from './useExif';
+
+function Center(props: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      {...props}
+      className="h-full flex items-center justify-center flex-col gap-3"
+    />
+  );
+}
 
 function MetadataEditor() {
   const { selectedImages } = useImageSelection();
-  const [tab, setTab] = useState<string | null>('exif');
+  const [activeTab, setActiveTab] = useState<'Exif' | 'Location'>('Exif');
   const { loadingStatus, exif, saveMetadata } = useExif(selectedImages);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -54,113 +44,124 @@ function MetadataEditor() {
 
   if (selectedImages.length === 0) {
     return (
-      <Center h="100%">
-        <Text c="dimmed">No Image Selected</Text>
+      <Center>
+        <p className="text-lg">No Image Selected</p>
       </Center>
     );
   }
 
   if (loadingStatus === 'active') {
     return (
-      <Center h="100%">
-        <Stack align="center">
-          <Loader />
-          <Text c="dimmed">Loading Metadata...</Text>
-        </Stack>
+      <Center>
+        <div className="loading loading-xl text-accent motion-reduce:hidden"></div>
+        <p className="text-lg">Loading Metadata...</p>
       </Center>
     );
   }
 
   if (loadingStatus === 'errored') {
     return (
-      <Center h="100%">
-        <Alert color="red" variant="filled">
+      <Center>
+        <div role="alert" className="alert alert-error alert-soft">
           Error Loading Metadata
-        </Alert>
+        </div>
       </Center>
     );
   }
 
   return (
-    <Stack gap={0} pos="relative" className={formContainerStyles}>
-      <LoadingOverlay
-        visible={form.formState.isSubmitting}
-        overlayProps={{ blur: 2 }}
-      />
-
+    <div className="h-full">
       <FormProvider {...form}>
         <form
-          id="metadata-form"
-          className={formStyles}
+          className="flex flex-col h-full"
           onSubmit={form.handleSubmit(async (newExif: ExifData) => {
-            setIsEditing(false);
             await saveMetadata(newExif);
+            setIsEditing(false);
           })}
         >
-          <Tabs value={tab} onChange={setTab} className={tabContainerStyles}>
-            <Tabs.List>
-              <Tabs.Tab value="exif">EXIF</Tabs.Tab>
-              <Tabs.Tab value="gps">Location</Tabs.Tab>
-            </Tabs.List>
+          <div role="tablist" className="tabs tabs-lift bg-base-200 px-4 pt-2">
+            {(['Exif', 'Location'] as const).map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                role="tab"
+                id={`${tab}-tab`}
+                aria-controls={`${tab}-pane`}
+                aria-selected={tab === activeTab}
+                className={classNames('tab', {
+                  'tab-active': tab === activeTab,
+                })}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
 
-            <Box py="sm" px="md" className={tabContentStyles}>
-              <Tabs.Panel value="exif">
-                <ExifTab />
-              </Tabs.Panel>
-
-              <Tabs.Panel value="gps" style={{ height: '100%' }}>
-                <LocationTab />
-              </Tabs.Panel>
-            </Box>
-
-            <div>
-              <Divider />
-
-              <Group p="md" justify="space-between">
-                {!isEditing && (
-                  <Button
-                    type="button"
-                    title="Edit"
-                    leftSection={<IconEdit size={16} />}
-                    onClick={() => setIsEditing(true)}
-                    size="xs"
-                  >
-                    Edit
-                  </Button>
-                )}
-
-                {isEditing && (
-                  <>
-                    <Button
-                      type="button"
-                      variant="default"
-                      leftSection={<IconCancel size={16} />}
-                      size="xs"
-                      onClick={() => {
-                        setIsEditing(false);
-                        form.reset();
-                      }}
-                    >
-                      Cancel
-                    </Button>
-
-                    <Button
-                      type="submit"
-                      form="metadata-form"
-                      leftSection={<IconCheck size={16} />}
-                      size="xs"
-                      disabled={!form.formState.isValid}
-                    >
-                      Save
-                    </Button>
-                  </>
-                )}
-              </Group>
+          <div className="px-2 pb-3 grow overflow-auto">
+            <div
+              id="Exif-pane"
+              role="tabpanel"
+              aria-labelledby="Exif-tab"
+              className={classNames({ hidden: activeTab !== 'Exif' })}
+            >
+              <ExifTab />
             </div>
-          </Tabs>
+
+            <div
+              id="Location-pane"
+              role="tabpanel"
+              aria-labelledby="Location-tab"
+              className={classNames('h-full pt-3', {
+                hidden: activeTab !== 'Location',
+              })}
+            >
+              <LocationTab />
+            </div>
+          </div>
+
+          <div className="bg-base-200 z-10 px-4 py-2 flex justify-between">
+            {!isEditing ? (
+              <button
+                type="button"
+                className="btn btn-soft btn-sm btn-accent"
+                disabled={form.formState.isSubmitting}
+                onClick={() => setIsEditing(true)}
+              >
+                Edit
+              </button>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="btn btn-soft btn-sm btn-secondary"
+                  disabled={form.formState.isSubmitting}
+                  onClick={() => {
+                    setIsEditing(false);
+                    form.reset();
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="btn btn-soft btn-sm btn-primary"
+                  disabled={
+                    !form.formState.isValid || form.formState.isSubmitting
+                  }
+                >
+                  {form.formState.isSubmitting && (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  )}
+                  Save
+                </button>
+              </>
+            )}
+          </div>
         </form>
       </FormProvider>
-    </Stack>
+    </div>
   );
 }
 
