@@ -1,11 +1,11 @@
 import type { load } from '@tauri-apps/plugin-store';
-import userEvent from '@testing-library/user-event';
-import { fs } from 'memfs';
 import {
   render,
   screen,
   waitForElementToBeRemoved,
-} from 'test-support/test-utils';
+} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { fs } from 'memfs';
 import { ImageOne, ImageTwo } from '../../core/__specs__/fake-images';
 import type { onImagesOpened } from '../../core/events';
 import { ImageProvider } from '../../ImageContext';

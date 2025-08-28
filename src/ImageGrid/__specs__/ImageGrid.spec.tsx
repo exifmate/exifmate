@@ -1,5 +1,5 @@
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { render, screen } from 'test-support/test-utils';
 import type { Mock } from 'vitest';
 import type { ImageInfo } from '../../core/types';
 import { useImageSelection } from '../../ImageContext';

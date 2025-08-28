@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormProvider, useForm } from 'react-hook-form';
-import { fireEvent, render, screen } from 'test-support/test-utils';
 import { exifData } from '../../core/types';
 import ExifInput from '../ExifInput';
 
