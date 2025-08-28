@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { createAppMenu } from './core/app-menu';
 import { isMobile } from './core/util';
 import { ImageProvider } from './ImageContext';
+import Notifications from './Shell/Notifications';
 import Shell from './Shell/Shell';
 
 const root = document.getElementById('root');
@@ -14,6 +15,7 @@ createRoot(root).render(
   <StrictMode>
     <ImageProvider>
       <Shell />
+      <Notifications />
     </ImageProvider>
   </StrictMode>,
 );
