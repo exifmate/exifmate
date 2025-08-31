@@ -2,20 +2,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import Center from '../components/Center';
 import { type ExifData, exifData } from '../core/types';
 import { useImageSelection } from '../ImageContext';
 import ExifTab from './ExifTab';
 import LocationTab from './LocationTab';
 import useExif from './useExif';
-
-function Center(props: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      {...props}
-      className="h-full flex items-center justify-center flex-col gap-3"
-    />
-  );
-}
 
 function MetadataEditor() {
   const { selectedImages } = useImageSelection();

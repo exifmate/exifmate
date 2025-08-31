@@ -4,9 +4,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { MdLocationPin } from 'react-icons/md';
 import MapGL, { Marker } from 'react-map-gl/maplibre';
+import Fieldset from '../components/Fieldset';
 import { type ExifData, exifData } from '../core/types';
 import ExifInput from './ExifInput';
-import Fieldset from './Fieldset';
 
 interface Loc {
   lat: number;

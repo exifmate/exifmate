@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import Center from '../components/Center';
 import { useImageSelection } from '../ImageContext';
 
 /*
@@ -11,9 +12,9 @@ const ImageGrid = () => {
 
   if (images.length === 0) {
     return (
-      <div className="flex items-center justify-center flex-1">
+      <Center>
         <p className="text-lg">No Images Loaded</p>
-      </div>
+      </Center>
     );
   }
 
@@ -32,11 +33,11 @@ const ImageGrid = () => {
                 onClick={(e) => {
                   handleImageSelection(e, image);
                 }}
+                // aria-selected={isSelected}
                 className={classNames(
                   'card card-xs w-56 bg-neutral cursor-pointer',
                   { 'outline-primary outline-2 outline-offset-3': isSelected },
                 )}
-                // aria-selected={isSelected}
               >
                 <figure>
                   <img
