@@ -1,14 +1,15 @@
-import classNames from 'classnames';
+import { Item } from 'react-stately';
 import Center from '../components/Center';
 import { useImageSelection } from '../ImageContext';
+import GridList from './GridList';
 
 /*
  * I think this'll go slow if the images are large; need to test.
  * May want to convert to thumbnail size base64 in Rust, but that might
  * be slow going too, but probably ultimately better.
  */
-const ImageGrid = () => {
-  const { images, selectedImages, handleImageSelection } = useImageSelection();
+function ImageGrid() {
+  const { images, setSelectedImages } = useImageSelection();
 
   if (images.length === 0) {
     return (
@@ -20,47 +21,44 @@ const ImageGrid = () => {
 
   return (
     <div className="flex overflow-scroll p-4">
-      <ul className="flex flex-wrap gap-4">
-        {images.map((image) => {
-          const isSelected: boolean = !!selectedImages.find(
-            (i) => i.path === image.path,
-          );
+      <GridList
+        items={images}
+        aria-label="Image Grid"
+        selectionMode="multiple"
+        selectionBehavior="replace"
+        onSelectionChange={(selection) => {
+          if (selection instanceof Set) {
+            const newSelectedImages = images.filter((i) =>
+              selection.has(i.path),
+            );
+            setSelectedImages(newSelectedImages);
+          } else {
+            setSelectedImages(images);
+          }
+        }}
+      >
+        {(image) => (
+          <Item key={image.path} textValue={image.filename}>
+            <div className="card card-xs w-56 bg-neutral">
+              <figure>
+                <img
+                  src={image.assetUrl}
+                  alt={image.filename}
+                  className="h-56 w-56 object-cover"
+                  height={288}
+                  width={288}
+                />
+              </figure>
 
-          return (
-            <li key={image.path}>
-              {/* biome-ignore lint/a11y/useSemanticElements: I don't want to do this now */}
-              <button
-                type="button"
-                onClick={(e) => {
-                  handleImageSelection(e, image);
-                }}
-                role="checkbox"
-                aria-checked={isSelected}
-                className={classNames(
-                  'card card-xs w-56 bg-neutral cursor-pointer',
-                  { 'outline-primary outline-2 outline-offset-3': isSelected },
-                )}
-              >
-                <figure>
-                  <img
-                    src={image.assetUrl}
-                    alt={image.filename}
-                    className="h-56 w-56 object-cover"
-                    height={288}
-                    width={288}
-                  />
-                </figure>
-
-                <div className="card-body">
-                  <div className="card-title">{image.filename}</div>
-                </div>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+              <div className="card-body">
+                <div className="card-title">{image.filename}</div>
+              </div>
+            </div>
+          </Item>
+        )}
+      </GridList>
     </div>
   );
-};
+}
 
 export default ImageGrid;

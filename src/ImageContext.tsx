@@ -1,7 +1,9 @@
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import {
   createContext,
+  type Dispatch,
   type ReactNode,
+  type SetStateAction,
   useContext,
   useEffect,
   useState,
@@ -12,68 +14,16 @@ import type { ImageInfo } from './core/types';
 interface ImageContext {
   images: ImageInfo[];
   selectedImages: ImageInfo[];
-  handleImageSelection: (
-    event: React.MouseEvent,
-    selectedImage: ImageInfo,
-  ) => void;
+  setSelectedImages: Dispatch<SetStateAction<ImageInfo[]>>;
 }
 
 const ImageSelectionContext = createContext<ImageContext>({
   images: [],
   selectedImages: [],
-  handleImageSelection: () => {},
+  setSelectedImages: () => {},
 });
 
 export const useImageSelection = () => useContext(ImageSelectionContext);
-
-const useGridSelection = (images: ImageInfo[]) => {
-  const [selectedImages, setSelectedImages] = useState<ImageInfo[]>([]);
-  const [anchorImage, setAnchorImage] = useState<ImageInfo | null>(null);
-
-  const handleImageSelection = (
-    event: React.MouseEvent,
-    selectedImage: ImageInfo,
-  ) => {
-    const isMultiSelect = event.metaKey || event.ctrlKey;
-    const isRangeSelect = event.shiftKey && anchorImage !== null;
-
-    if (isRangeSelect) {
-      let startIndex = images.findIndex(
-        (image) => image.path === anchorImage.path,
-      );
-      let endIndex = images.findIndex(
-        (image) => image.path === selectedImage.path,
-      );
-
-      if (startIndex > endIndex) {
-        const prevStart = startIndex;
-        startIndex = endIndex;
-        endIndex = prevStart;
-      }
-
-      const END_OFFSET = 1;
-      setSelectedImages(images.slice(startIndex, endIndex + END_OFFSET));
-    } else if (isMultiSelect) {
-      setSelectedImages((prev) => {
-        if (prev.find((i) => i.path === selectedImage.path)) {
-          return prev.filter((item) => item.path !== selectedImage.path);
-        }
-
-        return prev.concat(selectedImage);
-      });
-
-      setAnchorImage(selectedImage);
-    } else {
-      setSelectedImages([selectedImage]);
-      setAnchorImage(selectedImage);
-    }
-  };
-
-  return {
-    handleImageSelection,
-    selectedImages,
-  };
-};
 
 interface Props {
   children: ReactNode;
@@ -81,7 +31,7 @@ interface Props {
 
 export function ImageProvider({ children }: Props) {
   const [images, setImages] = useState<ImageInfo[]>([]);
-  const { selectedImages, handleImageSelection } = useGridSelection(images);
+  const [selectedImages, setSelectedImages] = useState<ImageInfo[]>([]);
 
   useEffect(() => {
     let unlisten: UnlistenFn | null = null;
@@ -99,7 +49,7 @@ export function ImageProvider({ children }: Props) {
 
   return (
     <ImageSelectionContext.Provider
-      value={{ images, selectedImages, handleImageSelection }}
+      value={{ images, selectedImages, setSelectedImages }}
     >
       {children}
     </ImageSelectionContext.Provider>

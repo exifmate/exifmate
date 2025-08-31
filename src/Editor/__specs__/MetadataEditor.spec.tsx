@@ -34,7 +34,7 @@ vi.mock('../../ImageContext.tsx', () => ({
   useImageSelection: vi.fn<typeof useImageSelection>().mockReturnValue({
     images: [],
     selectedImages: [],
-    handleImageSelection: vi.fn(),
+    setSelectedImages: vi.fn(),
   }),
 }));
 
@@ -62,7 +62,7 @@ describe('MetadataEditor', () => {
           },
         ],
         images: [],
-        handleImageSelection: () => {},
+        setSelectedImages: vi.fn(),
       });
     });
 

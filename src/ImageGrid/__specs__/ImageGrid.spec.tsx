@@ -13,7 +13,7 @@ vi.mock('../../ImageContext.tsx', () => ({
   useImageSelection: vi.fn<typeof useImageSelection>().mockReturnValue({
     images: [],
     selectedImages: [],
-    handleImageSelection: vi.fn(),
+    setSelectedImages: vi.fn(),
   }),
 }));
 
@@ -37,15 +37,15 @@ describe('ImageGrid', () => {
       },
     ] as const;
 
-    let mockHandleImageSelection: Mock;
+    let mockSetSelectedImages: Mock;
 
     beforeEach(() => {
-      mockHandleImageSelection = vi.fn();
+      mockSetSelectedImages = vi.fn();
 
       useImageSelectionMock.mockReturnValue({
         images: fakeImages,
         selectedImages: [fakeImages[0]],
-        handleImageSelection: mockHandleImageSelection,
+        setSelectedImages: mockSetSelectedImages,
       });
     });
 
@@ -59,26 +59,17 @@ describe('ImageGrid', () => {
 
     it('can select an image', async () => {
       render(<ImageGrid />);
-      const selectedImage = screen.getByAltText(fakeImages[0].filename);
-      const unselectedImage = screen.getByAltText(fakeImages[1].filename);
+      const image = screen.getByLabelText(fakeImages[0].filename);
 
-      expect(selectedImage.closest('button')).toBeVisible();
-      expect(selectedImage.closest('button')).toHaveAttribute(
-        'aria-checked',
-        'true',
-      );
-      expect(unselectedImage.closest('button')).toBeVisible();
-      expect(unselectedImage.closest('button')).toHaveAttribute(
-        'aria-checked',
-        'false',
-      );
+      expect(image).toHaveAttribute('aria-selected', 'false');
+      expect(mockSetSelectedImages).not.toHaveBeenCalled();
 
-      expect(mockHandleImageSelection).not.toHaveBeenCalled();
-      await userEvent.click(unselectedImage);
-      expect(mockHandleImageSelection).toHaveBeenCalledExactlyOnceWith(
-        expect.anything(),
-        fakeImages[1],
-      );
+      await userEvent.click(image);
+
+      expect(mockSetSelectedImages).toHaveBeenCalledExactlyOnceWith([
+        fakeImages[0],
+      ]);
+      expect(image).toHaveAttribute('aria-selected', 'true');
     });
   });
 });
