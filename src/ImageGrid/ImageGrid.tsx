@@ -19,7 +19,7 @@ const ImageGrid = () => {
   }
 
   return (
-    <div className="flex flex-1 overflow-scroll p-4">
+    <div className="flex overflow-scroll p-4">
       <ul className="flex flex-wrap gap-4">
         {images.map((image) => {
           const isSelected: boolean = !!selectedImages.find(
