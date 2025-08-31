@@ -27,13 +27,15 @@ const ImageGrid = () => {
           );
 
           return (
-            <li key={image.path} className="">
+            <li key={image.path}>
+              {/* biome-ignore lint/a11y/useSemanticElements: I don't want to do this now */}
               <button
                 type="button"
                 onClick={(e) => {
                   handleImageSelection(e, image);
                 }}
-                // aria-selected={isSelected}
+                role="checkbox"
+                aria-checked={isSelected}
                 className={classNames(
                   'card card-xs w-56 bg-neutral cursor-pointer',
                   { 'outline-primary outline-2 outline-offset-3': isSelected },

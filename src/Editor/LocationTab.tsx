@@ -46,7 +46,7 @@ function TheMap() {
   }, []);
 
   if (!initialLoc) {
-    return <div className="skeleton h-full w-full"></div>;
+    return <div className="skeleton h-full w-full" title="Loading Map"></div>;
   }
 
   const getLoc = (part: 'GPSLatitude' | 'GPSLongitude'): number => {

@@ -11,7 +11,7 @@ import useExif from './useExif';
 
 function MetadataEditor() {
   const { selectedImages } = useImageSelection();
-  const [activeTab, setActiveTab] = useState<'Exif' | 'Location'>('Exif');
+  const [activeTab, setActiveTab] = useState<'EXIF' | 'Location'>('EXIF');
   const { loadingStatus, exif, saveMetadata } = useExif(selectedImages);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -72,7 +72,7 @@ function MetadataEditor() {
           })}
         >
           <div role="tablist" className="tabs tabs-lift bg-base-200 px-4 pt-2">
-            {(['Exif', 'Location'] as const).map((tab) => (
+            {(['EXIF', 'Location'] as const).map((tab) => (
               <button
                 key={tab}
                 type="button"
@@ -92,10 +92,11 @@ function MetadataEditor() {
 
           <div className="px-2 pb-3 grow overflow-auto">
             <div
-              id="Exif-pane"
+              id="EXIF-pane"
               role="tabpanel"
-              aria-labelledby="Exif-tab"
-              className={classNames({ hidden: activeTab !== 'Exif' })}
+              aria-labelledby="EXIF-tab"
+              hidden={activeTab !== 'EXIF'}
+              className={classNames({ hidden: activeTab !== 'EXIF' })}
             >
               <ExifTab />
             </div>
@@ -104,6 +105,7 @@ function MetadataEditor() {
               id="Location-pane"
               role="tabpanel"
               aria-labelledby="Location-tab"
+              hidden={activeTab !== 'Location'}
               className={classNames('h-full pt-3', {
                 hidden: activeTab !== 'Location',
               })}

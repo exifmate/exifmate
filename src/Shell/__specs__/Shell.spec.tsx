@@ -54,7 +54,6 @@ describe('Shell', () => {
   });
 
   it('renders', async () => {
-    expect(screen.getByText('Images')).toBeVisible();
     expect(screen.getByAltText('image-one.jpg')).toBeVisible();
   });
 

@@ -18,7 +18,10 @@ function Shell() {
 
         <PanelResizeHandle />
 
-        <Panel className="rounded-2xl bg-base-100 text-neutral-content">
+        <Panel
+          defaultSize={35}
+          className="rounded-2xl bg-base-100 text-neutral-content"
+        >
           <MetadataEditor />
         </Panel>
       </PanelGroup>

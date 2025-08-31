@@ -64,12 +64,12 @@ describe('ImageGrid', () => {
 
       expect(selectedImage.closest('button')).toBeVisible();
       expect(selectedImage.closest('button')).toHaveAttribute(
-        'aria-selected',
+        'aria-checked',
         'true',
       );
       expect(unselectedImage.closest('button')).toBeVisible();
       expect(unselectedImage.closest('button')).toHaveAttribute(
-        'aria-selected',
+        'aria-checked',
         'false',
       );
 

@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import type { HTMLAttributes } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { ZodEnum } from 'zod/v4';
 import { type ExifData, exifData } from '../core/types';
@@ -21,15 +22,26 @@ function ExifInput({ tagName }: Props) {
   const registration = register(tagName);
   registration.disabled = registration.disabled || formState.isSubmitting;
 
+  const commonProps: HTMLAttributes<HTMLSelectElement | HTMLInputElement> = {
+    id: tagName,
+    'aria-invalid': !!errorMessage,
+  };
+  if (errorMessage) {
+    commonProps['aria-describedby'] = `${tagName}-error`;
+  }
+  if (description) {
+    commonProps['aria-describedby'] = ` ${tagName}-description`;
+  }
+
   return (
     <div className="flex flex-col gap-1" aria-live="polite">
       <label className="label" htmlFor={tagName}>
         {tagName}
-        {description && <small>{description}</small>}
       </label>
+      {description && <p id={`${tagName}-description`}>{description}</p>}
 
       {tag instanceof ZodEnum ? (
-        <select {...registration} className="select w-full">
+        <select {...registration} {...commonProps} className="select w-full">
           <option value="" disabled></option>
           {tag.options.map((option) => (
             <option key={option}>{option}</option>
@@ -38,15 +50,13 @@ function ExifInput({ tagName }: Props) {
       ) : (
         <input
           {...registration}
-          id={tagName}
+          {...commonProps}
           className={classNames('input w-full', {
             'input-error': errorMessage,
           })}
           placeholder={tagName}
           type={isDateInput ? 'datetime-local' : 'text'}
           step={isDateInput ? 1 : undefined}
-          aria-invalid={!!errorMessage}
-          aria-describedby={`${tagName}-error`}
         />
       )}
       {errorMessage && (
