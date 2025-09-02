@@ -1,13 +1,12 @@
-import { Fieldset, Group, Skeleton, Stack } from '@mantine/core';
-import { IconMapPinFilled } from '@tabler/icons-react';
 import { load } from '@tauri-apps/plugin-store';
 import type { MapLibreEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
+import { MdLocationPin } from 'react-icons/md';
 import MapGL, { Marker } from 'react-map-gl/maplibre';
+import Fieldset from '../components/Fieldset';
 import { type ExifData, exifData } from '../core/types';
 import ExifInput from './ExifInput';
-import { mapContainerStyles } from './LocationTab.css';
 
 interface Loc {
   lat: number;
@@ -47,7 +46,7 @@ function TheMap() {
   }, []);
 
   if (!initialLoc) {
-    return <Skeleton height="100%" width="100%" title="Loading Map" />;
+    return <div className="skeleton h-full w-full" title="Loading Map"></div>;
   }
 
   const getLoc = (part: 'GPSLatitude' | 'GPSLongitude'): number => {
@@ -83,7 +82,7 @@ function TheMap() {
         longitude={getLoc('GPSLongitude')}
         anchor="bottom"
       >
-        <IconMapPinFilled />
+        <MdLocationPin color="red" size={36} />
       </Marker>
     </MapGL>
   );
@@ -91,18 +90,18 @@ function TheMap() {
 
 function LocationTab() {
   return (
-    <Stack h="100%">
-      <div className={mapContainerStyles}>
+    <div className="h-full flex flex-col">
+      <div className="min-h-52 grow rounded-xl overflow-clip">
         <TheMap />
       </div>
 
-      <Fieldset mt="lg" legend="GPS">
-        <Group gap="xs">
+      <Fieldset legend="GPS">
+        <div className="flex gap-3">
           <ExifInput tagName="GPSLatitude" />
           <ExifInput tagName="GPSLongitude" />
-        </Group>
+        </div>
       </Fieldset>
-    </Stack>
+    </div>
   );
 }
 

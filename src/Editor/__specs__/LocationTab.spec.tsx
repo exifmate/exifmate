@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { load } from '@tauri-apps/plugin-store';
+import { render, screen } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { render, screen } from 'test-support/test-utils';
 import type { Mock } from 'vitest';
 import { exifData } from '../../core/types';
 import LocationTab from '../LocationTab';

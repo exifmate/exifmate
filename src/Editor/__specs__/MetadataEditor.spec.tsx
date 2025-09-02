@@ -1,11 +1,11 @@
 import type { load } from '@tauri-apps/plugin-store';
-import userEvent from '@testing-library/user-event';
 import {
   render,
   screen,
   waitFor,
   waitForElementToBeRemoved,
-} from 'test-support/test-utils';
+} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
 import { readMetadata, updateMetadata } from '../../core/metadata-handler';
 import { useImageSelection } from '../../ImageContext';
@@ -34,7 +34,7 @@ vi.mock('../../ImageContext.tsx', () => ({
   useImageSelection: vi.fn<typeof useImageSelection>().mockReturnValue({
     images: [],
     selectedImages: [],
-    handleImageSelection: vi.fn(),
+    setSelectedImages: vi.fn(),
   }),
 }));
 
@@ -62,7 +62,7 @@ describe('MetadataEditor', () => {
           },
         ],
         images: [],
-        handleImageSelection: () => {},
+        setSelectedImages: vi.fn(),
       });
     });
 

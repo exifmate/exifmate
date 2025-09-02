@@ -1,64 +1,65 @@
-import { Card, Flex, Image, rem, Text, UnstyledButton } from '@mantine/core';
+import { Item } from 'react-stately';
+import Center from '../components/Center';
 import { useImageSelection } from '../ImageContext';
-import { containerStyles, selectedCardStyles } from './ImageGrid.css';
+import GridList from './GridList';
 
 /*
  * I think this'll go slow if the images are large; need to test.
  * May want to convert to thumbnail size base64 in Rust, but that might
  * be slow going too, but probably ultimately better.
  */
-const ImageGrid = () => {
-  const { images, selectedImages, handleImageSelection } = useImageSelection();
+function ImageGrid() {
+  const { images, setSelectedImages } = useImageSelection();
 
   if (images.length === 0) {
     return (
-      <Flex align="center" justify="center" h="100%">
-        <Text c="dimmed">No Images Loaded</Text>
-      </Flex>
+      <Center>
+        <p className="text-lg">No Images Loaded</p>
+      </Center>
     );
   }
 
   return (
-    <Flex wrap="wrap" gap="lg" className={containerStyles}>
-      {images?.map((image) => {
-        const isSelected: boolean = !!selectedImages.find(
-          (i) => i.path === image.path,
-        );
-
-        return (
-          <UnstyledButton
-            key={image.filename}
-            aria-selected={isSelected}
-            onClick={(e) => {
-              handleImageSelection(e, image);
-            }}
-            style={{ flexGrow: 1 }}
-          >
-            <Card
-              shadow="md"
-              className={isSelected ? selectedCardStyles : undefined}
-              h="100%"
-            >
-              <Card.Section>
-                <Image
+    <div className="flex overflow-scroll p-4">
+      <GridList
+        items={images}
+        aria-label="Image Grid"
+        selectionMode="multiple"
+        selectionBehavior="replace"
+        data-testid="test-gridlist"
+        onSelectionChange={(selection) => {
+          if (selection instanceof Set) {
+            const newSelectedImages = images.filter((i) =>
+              selection.has(i.path),
+            );
+            setSelectedImages(newSelectedImages);
+          } else {
+            setSelectedImages(images);
+          }
+        }}
+      >
+        {(image) => (
+          <Item key={image.path} textValue={image.filename}>
+            <div className="card card-xs w-56 bg-neutral">
+              <figure>
+                <img
                   src={image.assetUrl}
-                  fit="contain"
                   alt={image.filename}
-                  mx="auto"
-                  w={rem(225)}
-                  h={rem(225)}
+                  className="h-56 w-56 object-cover"
+                  height={288}
+                  width={288}
                 />
-              </Card.Section>
+              </figure>
 
-              <Card.Section inheritPadding py="xs">
-                <Text>{image.filename}</Text>
-              </Card.Section>
-            </Card>
-          </UnstyledButton>
-        );
-      })}
-    </Flex>
+              <div className="card-body">
+                <div className="card-title">{image.filename}</div>
+              </div>
+            </div>
+          </Item>
+        )}
+      </GridList>
+    </div>
   );
-};
+}
 
 export default ImageGrid;

@@ -1,57 +1,31 @@
-import { ActionIcon, Box, Divider, Flex, Stack, Title } from '@mantine/core';
-import { IconPhotoPlus } from '@tabler/icons-react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import { findImages } from '../core/file-manager';
 import MetadataEditor from '../Editor/MetadataEditor';
 import ImageGrid from '../ImageGrid/ImageGrid';
-import {
-  editorPanelStyles,
-  imageGridPanelStyles,
-  imageSelectionStyles,
-  rootStyles,
-  titlebarStyles,
-} from './Shell.css';
+import Toolbar from './Toolbar';
 
 function Shell() {
   return (
-    <Stack h="100vh" gap={0}>
-      <Flex
-        direction="row"
-        align="center"
-        justify="space-between"
-        className={titlebarStyles}
-      >
-        <Title order={1} size="h2">
-          Images
-        </Title>
-
-        <ActionIcon
-          type="button"
-          variant="filled"
-          size="md"
-          title="Add Images"
-          onClick={() => findImages()}
+    <div className="h-screen">
+      <PanelGroup direction="horizontal" className="p-2 gap-2 bg-neutral">
+        <Panel
+          defaultSize={65}
+          className="rounded-box bg-base-100 text-neutral-content flex flex-col"
         >
-          <IconPhotoPlus />
-        </ActionIcon>
-      </Flex>
+          <Toolbar />
 
-      <PanelGroup direction="horizontal" className={rootStyles}>
-        <Panel className={imageSelectionStyles} defaultSize={65}>
-          <Box p="lg" className={imageGridPanelStyles}>
-            <ImageGrid />
-          </Box>
+          <ImageGrid />
         </Panel>
 
-        <PanelResizeHandle>
-          <Divider orientation="vertical" size="xs" h="100%" />
-        </PanelResizeHandle>
+        <PanelResizeHandle />
 
-        <Panel className={editorPanelStyles} defaultSize={35}>
+        <Panel
+          defaultSize={35}
+          className="rounded-2xl bg-base-100 text-neutral-content"
+        >
           <MetadataEditor />
         </Panel>
       </PanelGroup>
-    </Stack>
+    </div>
   );
 }
 

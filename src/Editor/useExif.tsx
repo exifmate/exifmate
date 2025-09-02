@@ -1,5 +1,5 @@
-import { notifications } from '@mantine/notifications';
 import { useCallback, useEffect, useState } from 'react';
+import { showNotification } from '../core/events';
 import { readMetadata, updateMetadata } from '../core/metadata-handler';
 import type { ExifData, ImageInfo } from '../core/types';
 
@@ -39,12 +39,10 @@ function useExif(images: ImageInfo[]) {
         await updateMetadata(images, newExif);
         await fetchMetadata();
       } catch (err) {
-        console.log('err', err);
-
-        notifications.show({
-          title: 'Failed saving an image',
-          message: `Images: ${images.map((i) => i.filename).join(', ')}`,
-          color: 'red',
+        console.error('Failed saving:', err);
+        await showNotification({
+          level: 'error',
+          message: `Failed to save images: ${images.map((i) => i.filename).join(', ')}`,
         });
       }
     },
