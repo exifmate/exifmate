@@ -1,3 +1,4 @@
+import { User } from '@react-aria/test-utils';
 import type { load } from '@tauri-apps/plugin-store';
 import {
   render,
@@ -39,6 +40,20 @@ vi.mock(import('../../core/events'), async (importOriginal) => {
   };
 });
 
+const selectRow = async (rowText: string) => {
+  const testUtilUser = new User({
+    interactionType: 'mouse',
+    advanceTimer: vi.advanceTimersByTime,
+  });
+  const gridListTester = testUtilUser.createTester('GridList', {
+    root: screen.getByTestId('test-gridlist'),
+    interactionType: 'keyboard',
+  });
+
+  const row = gridListTester.findRow({ rowIndexOrText: rowText });
+  await gridListTester.toggleRowSelection({ row });
+};
+
 describe('Shell', () => {
   beforeEach(async () => {
     await Promise.all([
@@ -62,13 +77,13 @@ describe('Shell', () => {
   it('can select an image', async () => {
     expect(screen.getByText('No Image Selected')).toBeVisible();
     expect(screen.queryByLabelText('Artist')).toBeNull();
-    await userEvent.click(screen.getByAltText('image-one.jpg'));
+    await selectRow('image-one.jpg');
     expect(await screen.findByLabelText('Artist')).toBeVisible();
   });
 
   describe('when selected image is changed', () => {
     beforeEach(async () => {
-      await userEvent.click(screen.getByAltText('image-one.jpg'));
+      await selectRow('image-one.jpg');
       await waitForElementToBeRemoved(screen.getByText('Loading Metadata...'));
     });
 
@@ -80,7 +95,7 @@ describe('Shell', () => {
       expect(screen.getByLabelText('Artist')).not.toBeVisible();
       expect(screen.getByLabelText('GPSLatitude')).toBeVisible();
 
-      await userEvent.click(screen.getByAltText('image-two.jpg'));
+      await selectRow('image-two.jpg');
       await waitForElementToBeRemoved(screen.getByText('Loading Metadata...'));
 
       expect(screen.getByLabelText('Artist')).not.toBeVisible();
@@ -91,7 +106,7 @@ describe('Shell', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
       expect(screen.getByLabelText('Artist')).toBeEnabled();
 
-      await userEvent.click(screen.getByAltText('image-two.jpg'));
+      await selectRow('image-two.jpg');
       await waitForElementToBeRemoved(screen.getByText('Loading Metadata...'));
       expect(screen.getByLabelText('Artist')).toBeDisabled();
     });

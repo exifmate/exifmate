@@ -26,6 +26,7 @@ function ImageGrid() {
         aria-label="Image Grid"
         selectionMode="multiple"
         selectionBehavior="replace"
+        data-testid="test-gridlist"
         onSelectionChange={(selection) => {
           if (selection instanceof Set) {
             const newSelectedImages = images.filter((i) =>
