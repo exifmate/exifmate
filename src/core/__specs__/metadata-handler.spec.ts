@@ -40,7 +40,7 @@ describe('readMetadata', () => {
     },
   ])('can read the metadata from an image', async ({ file, expectedData }) => {
     const exif = await readMetadata([
-      { path: `/${file}`, filename: file, assetUrl: '' },
+      { path: `/${file}`, filename: file },
     ]);
 
     expect(exif).toEqual(expectedData);
@@ -49,8 +49,8 @@ describe('readMetadata', () => {
   describe('when reading multiple images', () => {
     it('aggregates the common metadata of images', async () => {
       const exif = await readMetadata([
-        { path: '/image-one.jpg', filename: 'image-one', assetUrl: '' },
-        { path: '/image-two.jpg', filename: 'image-two', assetUrl: '' },
+        { path: '/image-one.jpg', filename: 'image-one' },
+        { path: '/image-two.jpg', filename: 'image-two' },
       ]);
 
       // undefined is treated as different
@@ -62,7 +62,7 @@ describe('readMetadata', () => {
     it('can notify of that', async () => {
       await expect(async () => {
         await readMetadata([
-          { path: '/image-one.jpg', filename: '', assetUrl: '' },
+          { path: '/image-one.jpg', filename: '' },
         ]);
       }).rejects.toThrowError('Failed to read exif data for /image-one.jpg');
     });
@@ -87,8 +87,8 @@ describe('updateMetadata', () => {
 
   it('updates the metadata for the given images', async () => {
     const images: ImageInfo[] = [
-      { path: '/image-one.jpg', filename: 'one', assetUrl: '' },
-      { path: '/image-two.jpg', filename: 'two', assetUrl: '' },
+      { path: '/image-one.jpg', filename: 'one' },
+      { path: '/image-two.jpg', filename: 'two' },
     ];
     await updateMetadata(images, { FNumber: '2' });
 

@@ -14,7 +14,7 @@ import Shell from '../Shell';
 
 vi.mock('@tauri-apps/plugin-fs');
 vi.mock('@tauri-apps/plugin-store', () => ({
-  load: vi.fn<typeof load>(() => new Promise(() => {})),
+  load: vi.fn<typeof load>(() => new Promise(() => { })),
 }));
 
 vi.mock(import('../../core/events'), async (importOriginal) => {
@@ -26,16 +26,14 @@ vi.mock(import('../../core/events'), async (importOriginal) => {
       cb([
         {
           filename: 'image-one.jpg',
-          assetUrl: '/image-one.jpg',
           path: '/image-one.jpg',
         },
         {
           filename: 'image-two.jpg',
-          assetUrl: '/image-two.jpg',
           path: '/image-two.jpg',
         },
       ]);
-      return Promise.resolve(() => {});
+      return Promise.resolve(() => { });
     }),
   };
 });

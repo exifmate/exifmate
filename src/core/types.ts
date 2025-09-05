@@ -17,7 +17,6 @@ const exifdatetime = z.string().transform((val) => {
 
 export interface ImageInfo {
   filename: string;
-  assetUrl: string;
   path: string;
 }
 

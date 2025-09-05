@@ -27,12 +27,10 @@ describe('ImageGrid', () => {
     const fakeImages: ImageInfo[] = [
       {
         filename: 'image1.jpg',
-        assetUrl: '/images/image1.jpg',
         path: '/images/image1.jpg',
       },
       {
         filename: 'image2.jpg',
-        assetUrl: '/images/image2.jpg',
         path: '/images/image2.jpg',
       },
     ] as const;

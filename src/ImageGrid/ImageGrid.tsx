@@ -2,6 +2,7 @@ import { Item } from 'react-stately';
 import Center from '../components/Center';
 import { useImageSelection } from '../ImageContext';
 import GridList from './GridList';
+import ImageCard from './ImageCard';
 
 /*
  * I think this'll go slow if the images are large; need to test.
@@ -40,21 +41,7 @@ function ImageGrid() {
       >
         {(image) => (
           <Item key={image.path} textValue={image.filename}>
-            <div className="card card-xs w-56 bg-neutral">
-              <figure>
-                <img
-                  src={image.assetUrl}
-                  alt={image.filename}
-                  className="h-56 w-56 object-cover"
-                  height={288}
-                  width={288}
-                />
-              </figure>
-
-              <div className="card-body">
-                <div className="card-title">{image.filename}</div>
-              </div>
-            </div>
+            <ImageCard path={image.path} filename={image.filename} />
           </Item>
         )}
       </GridList>
