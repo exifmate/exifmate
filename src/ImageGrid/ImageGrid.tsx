@@ -6,8 +6,7 @@ import ImageCard from './ImageCard';
 
 /*
  * I think this'll go slow if the images are large; need to test.
- * May want to convert to thumbnail size base64 in Rust, but that might
- * be slow going too, but probably ultimately better.
+ * May want to look into lazy loading the images or `Virtualizer` from react-aria.
  */
 function ImageGrid() {
   const { images, setSelectedImages } = useImageSelection();
