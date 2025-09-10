@@ -39,9 +39,7 @@ describe('readMetadata', () => {
       },
     },
   ])('can read the metadata from an image', async ({ file, expectedData }) => {
-    const exif = await readMetadata([
-      { path: `/${file}`, filename: file },
-    ]);
+    const exif = await readMetadata([{ path: `/${file}`, filename: file }]);
 
     expect(exif).toEqual(expectedData);
   });
@@ -61,9 +59,7 @@ describe('readMetadata', () => {
   describe('when exiftool was unsuccessful', () => {
     it('can notify of that', async () => {
       await expect(async () => {
-        await readMetadata([
-          { path: '/image-one.jpg', filename: '' },
-        ]);
+        await readMetadata([{ path: '/image-one.jpg', filename: '' }]);
       }).rejects.toThrowError('Failed to read exif data for /image-one.jpg');
     });
   });

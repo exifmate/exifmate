@@ -3,15 +3,19 @@ import { useEffect, useState } from 'react';
 import { MdWarning } from 'react-icons/md';
 import type { ImageInfo } from '../core/types';
 
-type ThumbnailState = {
-  state: 'loading' | 'failed';
-} | {
-  state: 'resolved';
-  assetUrl: string;
-}
+type ThumbnailState =
+  | {
+      state: 'loading' | 'failed';
+    }
+  | {
+      state: 'resolved';
+      assetUrl: string;
+    };
 
 function ImageCard({ path, filename }: ImageInfo) {
-  const [thumbnail, setThumbnail] = useState<ThumbnailState>({ state: 'loading' });
+  const [thumbnail, setThumbnail] = useState<ThumbnailState>({
+    state: 'loading',
+  });
 
   useEffect(() => {
     setThumbnail({ state: 'loading' });
@@ -22,7 +26,7 @@ function ImageCard({ path, filename }: ImageInfo) {
         setThumbnail({ assetUrl, state: 'resolved' });
       })
       .catch((err) => {
-        setThumbnail({ state: 'failed' })
+        setThumbnail({ state: 'failed' });
         console.error('Failed to load thumbnail:', err);
       });
   }, [path]);
