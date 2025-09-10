@@ -57,7 +57,6 @@ describe('MetadataEditor', () => {
         selectedImages: [
           {
             filename: 'test.jpg',
-            assetUrl: '/test.jpg',
             path: '/test.jpg',
           },
         ],

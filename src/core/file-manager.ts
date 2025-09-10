@@ -1,4 +1,3 @@
-import { convertFileSrc } from '@tauri-apps/api/core';
 import { basename } from '@tauri-apps/api/path';
 import { open } from '@tauri-apps/plugin-dialog';
 import { imagesOpened } from './events';
@@ -14,12 +13,11 @@ export async function findImages() {
   }
 
   const images: ImageInfo[] = await Promise.all(
-    paths.map(async (path) => {
+    paths.map(async (path): Promise<ImageInfo> => {
       const filePath = isMobile() ? new URL(path).pathname : path;
 
       return {
         path,
-        assetUrl: convertFileSrc(filePath),
         filename: await basename(filePath),
       };
     }),
