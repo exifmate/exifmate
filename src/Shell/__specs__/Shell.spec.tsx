@@ -17,6 +17,10 @@ vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi.fn<typeof load>(() => new Promise(() => {})),
 }));
 
+vi.stubGlobal('URL', {
+  createObjectURL: vi.fn(),
+});
+
 vi.mock(import('../../core/events'), async (importOriginal) => {
   const actual = await importOriginal();
 
@@ -64,10 +68,7 @@ describe('Shell', () => {
         <Shell />
       </ImageProvider>,
     );
-  });
-
-  it('renders', async () => {
-    expect(screen.getByAltText('image-one.jpg')).toBeVisible();
+    expect(await screen.findByAltText('image-one.jpg thumbnail')).toBeVisible();
   });
 
   it.todo('has a resizable panel for images and metadata editor');
