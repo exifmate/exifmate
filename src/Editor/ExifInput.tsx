@@ -22,19 +22,22 @@ function ExifInput({ tagName }: Props) {
   const registration = register(tagName);
   registration.disabled = registration.disabled || formState.isSubmitting;
 
+  const describedBy = [];
+  if (errorMessage) {
+    describedBy.push(`${tagName}-error`);
+  }
+  if (description) {
+    describedBy.push(`${tagName}-description`);
+  }
+
   const commonProps: HTMLAttributes<HTMLSelectElement | HTMLInputElement> = {
     id: tagName,
     'aria-invalid': !!errorMessage,
+    'aria-describedby': describedBy.join(' '),
   };
-  if (errorMessage) {
-    commonProps['aria-describedby'] = `${tagName}-error`;
-  }
-  if (description) {
-    commonProps['aria-describedby'] = ` ${tagName}-description`;
-  }
 
   return (
-    <div className="flex flex-col gap-1" aria-live="polite">
+    <div className="flex flex-col gap-1">
       <label className="label" htmlFor={tagName}>
         {tagName}
       </label>
@@ -60,7 +63,7 @@ function ExifInput({ tagName }: Props) {
         />
       )}
       {errorMessage && (
-        <p id={`${tagName}-error`} className="mt-1 text-error">
+        <p id={`${tagName}-error`} className="mt-1 text-error" role="alert">
           {errorMessage}
         </p>
       )}
