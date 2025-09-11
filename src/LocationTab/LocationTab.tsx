@@ -1,5 +1,6 @@
 import Fieldset from '../components/Fieldset';
 import ExifInput from '../Editor/ExifInput';
+import LocationPasteButton from './LocationPasteButton';
 import TheMap from './TheMap';
 
 function LocationTab() {
@@ -10,9 +11,11 @@ function LocationTab() {
       </div>
 
       <Fieldset legend="GPS">
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-end">
           <ExifInput tagName="GPSLatitude" />
           <ExifInput tagName="GPSLongitude" />
+
+          <LocationPasteButton />
         </div>
       </Fieldset>
     </div>
