@@ -5,8 +5,8 @@ import { FormProvider, useForm } from 'react-hook-form';
 import Center from '../components/Center';
 import { type ExifData, exifData } from '../core/types';
 import { useImageSelection } from '../ImageContext';
+import LocationTab from '../LocationTab/LocationTab';
 import ExifTab from './ExifTab';
-import LocationTab from './LocationTab';
 import useExif from './useExif';
 
 function MetadataEditor() {

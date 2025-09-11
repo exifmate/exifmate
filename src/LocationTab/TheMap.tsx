@@ -4,15 +4,17 @@ import { useCallback, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { MdLocationPin } from 'react-icons/md';
 import MapGL, { Marker } from 'react-map-gl/maplibre';
-import Fieldset from '../components/Fieldset';
+import { z } from 'zod/v4';
 import { type ExifData, exifData } from '../core/types';
-import ExifInput from './ExifInput';
 
-interface Loc {
-  lat: number;
-  lng: number;
-  zoom: number;
-}
+const Loc = z.object({
+  lat: z.number(),
+  lng: z.number(),
+  zoom: z.number(),
+});
+
+type Loc = z.infer<typeof Loc>;
+
 const LONDON_LOC: Loc = { lat: 51.5, lng: 0, zoom: 12 } as const;
 
 function TheMap() {
@@ -25,9 +27,10 @@ function TheMap() {
 
   useEffect(() => {
     load('state.json')
-      .then((store) => store.get<Loc>('initialLoc'))
+      .then((store) => store.get('initialLoc'))
+      .then((raw) => Loc.safeParseAsync(raw))
       .then((savedInitialLoc) => {
-        setInitialLoc(savedInitialLoc ?? LONDON_LOC);
+        setInitialLoc(savedInitialLoc.data ?? LONDON_LOC);
       });
   }, []);
 
@@ -88,21 +91,4 @@ function TheMap() {
   );
 }
 
-function LocationTab() {
-  return (
-    <div className="h-full flex flex-col">
-      <div className="min-h-52 grow rounded-xl overflow-clip">
-        <TheMap />
-      </div>
-
-      <Fieldset legend="GPS">
-        <div className="flex gap-3">
-          <ExifInput tagName="GPSLatitude" />
-          <ExifInput tagName="GPSLongitude" />
-        </div>
-      </Fieldset>
-    </div>
-  );
-}
-
-export default LocationTab;
+export default TheMap;
