@@ -15,8 +15,6 @@ const Loc = z.object({
 
 type Loc = z.infer<typeof Loc>;
 
-const LONDON_LOC: Loc = { lat: 51.5, lng: 0, zoom: 12 } as const;
-
 function TheMap() {
   const [initialLoc, setInitialLoc] = useState<Loc | undefined>();
   const {
@@ -30,7 +28,8 @@ function TheMap() {
       .then((store) => store.get('initialLoc'))
       .then((raw) => Loc.safeParseAsync(raw))
       .then((savedInitialLoc) => {
-        setInitialLoc(savedInitialLoc.data ?? LONDON_LOC);
+        const DEFAULT_LOC: Loc = { lat: 0, lng: 0, zoom: 0 } as const;
+        setInitialLoc(savedInitialLoc.data ?? DEFAULT_LOC);
       });
   }, []);
 
