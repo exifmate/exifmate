@@ -150,8 +150,8 @@ export const exifData = z.object({
   XResolution: z.coerce.number().optional(),
   YResolution: z.coerce.number().optional(),
   // TODO: probably need to set ref
-  GPSLatitude: z.coerce.number().optional(),
-  GPSLongitude: z.coerce.number().optional(),
+  GPSLatitude: z.coerce.number().min(-90).max(90).optional(),
+  GPSLongitude: z.coerce.number().min(-180).max(180).optional(),
 });
 
 export type ExifData = z.infer<typeof exifData>;
