@@ -34,7 +34,7 @@ function Notifications() {
   return (
     <div className="toast toast-center">
       {Array.from(notifications.entries()).map((n) => (
-        <div key={n[0]} className={`alert alert-${n[1].level}`}>
+        <div key={n[0]} className={`alert alert-${n[1].level}`} role="alert">
           <span>{n[1].message}</span>
         </div>
       ))}

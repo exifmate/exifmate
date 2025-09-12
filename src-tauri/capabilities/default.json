@@ -12,6 +12,7 @@
     "fs:default",
     "os:default",
     "fs:allow-document-write",
-    "store:default"
+    "store:default",
+    "clipboard-manager:allow-read-text"
   ]
 }
