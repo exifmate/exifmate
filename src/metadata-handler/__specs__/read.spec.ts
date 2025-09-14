@@ -1,18 +1,9 @@
 import { fs } from 'memfs';
-import type { ImageInfo } from '../file-manager';
-import { readMetadata, updateMetadata } from '../metadata-handler';
-import { ImageOne, ImageTwo } from './fake-images';
+import { ImageOne, ImageTwo } from 'test-support/fake-images';
+import type { ExifData } from '../exifdata';
+import { aggregateExif, readMetadata } from '../read';
 
 vi.mock('@tauri-apps/plugin-fs');
-
-vi.mock(import('../util'), async (importOriginal) => {
-  const mod = await importOriginal();
-
-  return {
-    ...mod,
-    isMobile: vi.fn().mockReturnValue(false),
-  };
-});
 
 describe('readMetadata', () => {
   beforeEach(async () => {
@@ -73,36 +64,37 @@ describe('readMetadata', () => {
   });
 });
 
-describe('updateMetadata', () => {
-  beforeEach(async () => {
-    await Promise.all([
-      fs.promises.writeFile('/image-one.jpg', ImageOne),
-      fs.promises.writeFile('/image-two.jpg', ImageTwo),
-    ]);
-  });
-
-  it('updates the metadata for the given images', async () => {
-    const images: ImageInfo[] = [
-      { path: '/image-one.jpg', filename: 'one' },
-      { path: '/image-two.jpg', filename: 'two' },
+describe('aggregateExif', () => {
+  it('aggregates the given exif data', () => {
+    const test: ExifData[] = [
+      {
+        Artist: '',
+        ImageDescription: 'test',
+        Make: 'foo',
+        Orientation: 'Horizontal (normal)',
+        WhiteBalance: 'Auto',
+      },
+      {
+        Artist: '',
+        ImageDescription: 'test',
+        Make: 'bar',
+        Orientation: 'Horizontal (normal)',
+        WhiteBalance: 'Auto',
+      },
+      {
+        Artist: '',
+        ImageDescription: 'test',
+        Make: 'foo',
+        WhiteBalance: 'Auto',
+      },
     ];
-    await updateMetadata(images, { FNumber: '2' });
 
-    const exif = await readMetadata(images);
-    expect(exif).toEqual(
-      expect.objectContaining({ FNumber: '2', Make: 'Test' }),
-    );
-  });
+    const expected: ExifData = {
+      Artist: '',
+      ImageDescription: 'test',
+      WhiteBalance: 'Auto',
+    };
 
-  describe('when an image fails to save', () => {
-    it.todo('indicates the error');
-  });
-
-  describe('when there is a warning', () => {
-    it.todo('warns of the warning');
-  });
-
-  describe('when GPSLatitude or GPSLongitude is set', () => {
-    it.todo('updates the respective ref');
+    expect(aggregateExif(test)).toEqual(expected);
   });
 });

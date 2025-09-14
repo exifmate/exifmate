@@ -39,6 +39,7 @@ export default defineConfig(async () => ({
     alias: {
       'test-support': resolve(__dirname, 'test-support'),
       '@app': resolve(__dirname, 'src'),
+      '@vendor': resolve(__dirname, 'vendor'),
     },
   },
 

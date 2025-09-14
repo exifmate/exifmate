@@ -1,4 +1,3 @@
-import { ImageOne, ImageTwo } from '@app/core/__specs__/fake-images';
 import type { onImagesOpened } from '@app/core/file-manager';
 import { User } from '@react-aria/test-utils';
 import type { load } from '@tauri-apps/plugin-store';
@@ -9,6 +8,7 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fs } from 'memfs';
+import { ImageOne, ImageTwo } from 'test-support/fake-images';
 import Shell from '../Shell';
 
 vi.mock('@tauri-apps/plugin-fs');

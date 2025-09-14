@@ -1,6 +1,7 @@
 import type { ImageInfo } from '@app/core/file-manager';
-import { readMetadata, updateMetadata } from '@app/core/metadata-handler';
-import type { ExifData } from '@app/core/types';
+import type { ExifData } from '@app/metadata-handler/exifdata';
+import { readMetadata } from '@app/metadata-handler/read';
+import { updateMetadata } from '@app/metadata-handler/update';
 import { showToast } from '@app/Toasts/toast-queue';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -54,8 +55,8 @@ function useExif(images: ImageInfo[]) {
         console.error('Failed refreshing metadata:', err);
         await showToast({
           level: 'warning',
-          message: 'Failed refreshing metadata after saving'
-        })
+          message: 'Failed refreshing metadata after saving',
+        });
       }
     },
     [images, fetchMetadata],

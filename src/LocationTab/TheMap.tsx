@@ -1,4 +1,4 @@
-import { type ExifData, exifData } from '@app/core/types';
+import { ExifData } from '@app/metadata-handler/exifdata';
 import { load } from '@tauri-apps/plugin-store';
 import type { MapLibreEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useState } from 'react';
@@ -53,7 +53,7 @@ function TheMap() {
 
   const getLoc = (part: 'GPSLatitude' | 'GPSLongitude'): number => {
     const val = watch(part);
-    return exifData.shape[part].safeParse(val).data ?? 0;
+    return ExifData.shape[part].safeParse(val).data ?? 0;
   };
 
   return (

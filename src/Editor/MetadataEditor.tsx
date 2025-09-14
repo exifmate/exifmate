@@ -1,6 +1,6 @@
 import type { ImageInfo } from '@app/core/file-manager';
-import { type ExifData, exifData } from '@app/core/types';
 import LocationTab from '@app/LocationTab/LocationTab';
+import { ExifData } from '@app/metadata-handler/exifdata';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
@@ -22,7 +22,7 @@ function MetadataEditor({ selectedImages }: Props) {
   const form = useForm({
     mode: 'onChange',
     disabled: !isEditing,
-    resolver: zodResolver(exifData),
+    resolver: zodResolver(ExifData),
   });
 
   useEffect(() => {

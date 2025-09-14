@@ -1,16 +1,16 @@
-import { type ExifData, exifData } from '@app/core/types';
+import { ExifData } from '@app/metadata-handler/exifdata';
 import classNames from 'classnames';
 import type { HTMLAttributes } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { ZodEnum } from 'zod/v4';
 
 interface Props {
-  tagName: keyof typeof exifData.shape;
+  tagName: keyof ExifData;
 }
 
 function ExifInput({ tagName }: Props) {
   const { register, formState } = useFormContext<ExifData>();
-  const tag = exifData.shape[tagName].unwrap();
+  const tag = ExifData.shape[tagName].unwrap();
   const description = tag.meta()?.description;
   const errorMessage = formState.errors[tagName]?.message;
 

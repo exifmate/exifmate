@@ -1,5 +1,6 @@
 import type { ImageInfo } from '@app/core/file-manager';
-import { readMetadata, updateMetadata } from '@app/core/metadata-handler';
+import { readMetadata } from '@app/metadata-handler/read';
+import { updateMetadata } from '@app/metadata-handler/update';
 import type { load } from '@tauri-apps/plugin-store';
 import {
   render,
@@ -24,7 +25,8 @@ vi.mock('@tauri-apps/plugin-store', () => ({
     ),
 }));
 
-vi.mock('@app/core/metadata-handler');
+vi.mock('@app/metadata-handler/read');
+vi.mock('@app/metadata-handler/update');
 
 vi.mock('react-map-gl/maplibre');
 

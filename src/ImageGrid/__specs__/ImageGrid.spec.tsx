@@ -1,9 +1,9 @@
-import { ImageOne, ImageTwo } from '@app/core/__specs__/fake-images';
 import { onImagesOpened } from '@app/core/file-manager';
 import type { load } from '@tauri-apps/plugin-store';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fs } from 'memfs';
+import { ImageOne, ImageTwo } from 'test-support/fake-images';
 import type { Mock } from 'vitest';
 import ImageGrid from '../ImageGrid';
 
