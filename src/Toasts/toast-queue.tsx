@@ -2,7 +2,7 @@ import { emit, listen } from '@tauri-apps/api/event';
 import { ToastQueue } from 'react-stately';
 
 export interface ToastContent {
-  level: 'success' | 'error';
+  level: 'success' | 'error' | 'warning';
   message: string;
 }
 

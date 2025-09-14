@@ -2,8 +2,10 @@
 
 @source inline("alert-success");
 @source inline("alert-error");
+@source inline("alert-warning");
 @source inline("btn-success");
 @source inline("btn-error");
+@source inline("btn-warning");
 
 @plugin "daisyui" {
   /* biome-ignore lint/correctness/noUnknownProperty: `themes` comes from DaisyUI */

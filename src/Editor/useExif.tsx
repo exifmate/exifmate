@@ -38,13 +38,24 @@ function useExif(images: ImageInfo[]) {
 
       try {
         await updateMetadata(images, newExif);
-        await fetchMetadata();
       } catch (err) {
         console.error('Failed saving:', err);
         await showToast({
           level: 'error',
-          message: `Failed to save images: ${images.map((i) => i.filename).join(', ')}`,
+          message: 'Failed to save images',
         });
+
+        return;
+      }
+
+      try {
+        await fetchMetadata();
+      } catch (err) {
+        console.error('Failed refreshing metadata:', err);
+        await showToast({
+          level: 'warning',
+          message: 'Failed refreshing metadata after saving'
+        })
       }
     },
     [images, fetchMetadata],
