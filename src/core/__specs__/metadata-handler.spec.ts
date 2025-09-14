@@ -1,6 +1,6 @@
 import { fs } from 'memfs';
+import type { ImageInfo } from '../file-manager';
 import { readMetadata, updateMetadata } from '../metadata-handler';
-import type { ImageInfo } from '../types';
 import { ImageOne, ImageTwo } from './fake-images';
 
 vi.mock('@tauri-apps/plugin-fs');

@@ -1,4 +1,4 @@
-import type { ImageInfo } from '@app/core/types';
+import type { ImageInfo } from '@app/core/file-manager';
 import MetadataEditor from '@app/Editor/MetadataEditor';
 import ImageGrid from '@app/ImageGrid/ImageGrid';
 import { useState } from 'react';

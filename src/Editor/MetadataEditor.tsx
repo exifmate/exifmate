@@ -1,4 +1,5 @@
-import { type ExifData, exifData, type ImageInfo } from '@app/core/types';
+import type { ImageInfo } from '@app/core/file-manager';
+import { type ExifData, exifData } from '@app/core/types';
 import LocationTab from '@app/LocationTab/LocationTab';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';

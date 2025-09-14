@@ -1,5 +1,6 @@
+import type { ImageInfo } from '@app/core/file-manager';
 import { readMetadata, updateMetadata } from '@app/core/metadata-handler';
-import type { ExifData, ImageInfo } from '@app/core/types';
+import type { ExifData } from '@app/core/types';
 import { showToast } from '@app/Toasts/toast-queue';
 import { useCallback, useEffect, useState } from 'react';
 

@@ -15,11 +15,6 @@ const exifdatetime = z.string().transform((val) => {
   return val;
 });
 
-export interface ImageInfo {
-  filename: string;
-  path: string;
-}
-
 // need to think about how to handle if an enum gains an option
 // specifically how to futureproof without needing to update if i stop maintaining
 export const exifData = z.object({

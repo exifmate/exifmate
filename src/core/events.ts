@@ -1,5 +1,5 @@
 import { emit, listen, type UnlistenFn } from '@tauri-apps/api/event';
-import type { ImageInfo } from './types';
+import type { ImageInfo } from './file-manager';
 
 type onImagesOpened = (
   cb: (images: ImageInfo[]) => void,
