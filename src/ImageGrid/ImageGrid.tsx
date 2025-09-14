@@ -1,10 +1,10 @@
 import Center from '@app/components/Center';
+import GridList from '@app/components/GridList';
 import { onImagesOpened } from '@app/core/events';
 import type { ImageInfo } from '@app/core/types';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import { useEffect, useState } from 'react';
 import { Item } from 'react-stately';
-import GridList from './GridList';
 import ImageCard from './ImageCard';
 
 interface Props {
