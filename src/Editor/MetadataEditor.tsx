@@ -1,5 +1,4 @@
-import { type ExifData, exifData } from '@app/core/types';
-import { useImageSelection } from '@app/ImageContext';
+import { type ExifData, exifData, type ImageInfo } from '@app/core/types';
 import LocationTab from '@app/LocationTab/LocationTab';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
@@ -9,8 +8,11 @@ import Center from '../components/Center';
 import ExifTab from './ExifTab';
 import useExif from './useExif';
 
-function MetadataEditor() {
-  const { selectedImages } = useImageSelection();
+interface Props {
+  selectedImages: ImageInfo[];
+}
+
+function MetadataEditor({ selectedImages }: Props) {
   const [activeTab, setActiveTab] = useState<'EXIF' | 'Location'>('EXIF');
   const { loadingStatus, exif, saveMetadata } = useExif(selectedImages);
 

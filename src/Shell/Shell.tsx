@@ -1,9 +1,13 @@
+import type { ImageInfo } from '@app/core/types';
 import MetadataEditor from '@app/Editor/MetadataEditor';
 import ImageGrid from '@app/ImageGrid/ImageGrid';
+import { useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import Toolbar from './Toolbar';
 
 function Shell() {
+  const [selectedImages, setSelectedImages] = useState<ImageInfo[]>([]);
+
   return (
     <div className="h-screen">
       <PanelGroup direction="horizontal" className="p-2 gap-2 bg-neutral">
@@ -13,7 +17,7 @@ function Shell() {
         >
           <Toolbar />
 
-          <ImageGrid />
+          <ImageGrid onImageSelection={setSelectedImages} />
         </Panel>
 
         <PanelResizeHandle />
@@ -22,7 +26,7 @@ function Shell() {
           defaultSize={35}
           className="rounded-2xl bg-base-100 text-neutral-content"
         >
-          <MetadataEditor />
+          <MetadataEditor selectedImages={selectedImages} />
         </Panel>
       </PanelGroup>
     </div>

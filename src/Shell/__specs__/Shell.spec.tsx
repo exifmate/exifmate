@@ -1,6 +1,5 @@
 import { ImageOne, ImageTwo } from '@app/core/__specs__/fake-images';
 import type { onImagesOpened } from '@app/core/events';
-import { ImageProvider } from '@app/ImageContext';
 import { User } from '@react-aria/test-utils';
 import type { load } from '@tauri-apps/plugin-store';
 import {
@@ -63,11 +62,7 @@ describe('Shell', () => {
       fs.promises.writeFile('/image-two.jpg', ImageTwo),
     ]);
 
-    render(
-      <ImageProvider>
-        <Shell />
-      </ImageProvider>,
-    );
+    render(<Shell />);
     expect(await screen.findByAltText('image-one.jpg thumbnail')).toBeVisible();
   });
 

@@ -1,5 +1,5 @@
 import { readMetadata, updateMetadata } from '@app/core/metadata-handler';
-import { useImageSelection } from '@app/ImageContext';
+import type { ImageInfo } from '@app/core/types';
 import type { load } from '@tauri-apps/plugin-store';
 import {
   render,
@@ -10,10 +10,6 @@ import {
 import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
 import MetadataEditor from '../MetadataEditor';
-
-const useImageSelectionMock = useImageSelection as unknown as Mock<
-  typeof useImageSelection
->;
 
 const readMetadataMock = readMetadata as unknown as Mock<typeof readMetadata>;
 const updateMetadataMock = updateMetadata as unknown as Mock<
@@ -30,14 +26,6 @@ vi.mock('@tauri-apps/plugin-store', () => ({
 
 vi.mock('@app/core/metadata-handler');
 
-vi.mock('@app/ImageContext.tsx', () => ({
-  useImageSelection: vi.fn<typeof useImageSelection>().mockReturnValue({
-    images: [],
-    selectedImages: [],
-    setSelectedImages: vi.fn(),
-  }),
-}));
-
 vi.mock('react-map-gl/maplibre');
 
 describe('MetadataEditor', () => {
@@ -46,27 +34,18 @@ describe('MetadataEditor', () => {
   });
 
   it('indicates when no image is selected', () => {
-    render(<MetadataEditor />);
+    render(<MetadataEditor selectedImages={[]} />);
     expect(screen.getByText('No Image Selected')).toBeVisible();
     expect(screen.queryByText('Loading Metadata...')).toBeNull();
   });
 
   describe('when images are selected', () => {
-    beforeEach(() => {
-      useImageSelectionMock.mockReturnValue({
-        selectedImages: [
-          {
-            filename: 'test.jpg',
-            path: '/test.jpg',
-          },
-        ],
-        images: [],
-        setSelectedImages: vi.fn(),
-      });
-    });
+    const selectedImages: ImageInfo[] = [
+      { filename: 'test.jpg', path: '/test.jpg' },
+    ] as const;
 
     it('indicates when metadata is loading', async () => {
-      render(<MetadataEditor />);
+      render(<MetadataEditor selectedImages={selectedImages} />);
 
       expect(screen.queryByText('No Image Selected')).toBeNull();
       expect(screen.queryByText('Error Loading Metadata')).toBeNull();
@@ -78,7 +57,7 @@ describe('MetadataEditor', () => {
     describe('when failing to open an image', () => {
       it('indicates failure with no form even with partial load error', async () => {
         readMetadataMock.mockRejectedValueOnce(new Error('No'));
-        render(<MetadataEditor />);
+        render(<MetadataEditor selectedImages={selectedImages} />);
         await waitForElementToBeRemoved(
           screen.queryByText('Loading Metadata...'),
         );
@@ -90,7 +69,7 @@ describe('MetadataEditor', () => {
     describe('when finished loading metadata', () => {
       beforeEach(async () => {
         readMetadataMock.mockResolvedValueOnce({ Artist: 'test person' });
-        render(<MetadataEditor />);
+        render(<MetadataEditor selectedImages={selectedImages} />);
         await waitForElementToBeRemoved(
           screen.queryByText('Loading Metadata...'),
         );

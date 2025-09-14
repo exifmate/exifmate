@@ -1,6 +1,5 @@
 import { createAppMenu } from '@app/core/app-menu';
 import { isMobile } from '@app/core/util';
-import { ImageProvider } from '@app/ImageContext';
 import Notifications from '@app/Shell/Notifications';
 import Shell from '@app/Shell/Shell';
 import { StrictMode } from 'react';
@@ -13,10 +12,8 @@ if (!root) {
 
 createRoot(root).render(
   <StrictMode>
-    <ImageProvider>
-      <Shell />
-      <Notifications />
-    </ImageProvider>
+    <Shell />
+    <Notifications />
   </StrictMode>,
 );
 
