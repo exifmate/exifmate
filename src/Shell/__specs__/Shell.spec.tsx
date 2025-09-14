@@ -1,5 +1,5 @@
 import { ImageOne, ImageTwo } from '@app/core/__specs__/fake-images';
-import type { onImagesOpened } from '@app/core/events';
+import type { onImagesOpened } from '@app/core/file-manager';
 import { User } from '@react-aria/test-utils';
 import type { load } from '@tauri-apps/plugin-store';
 import {
@@ -20,7 +20,7 @@ vi.stubGlobal('URL', {
   createObjectURL: vi.fn(),
 });
 
-vi.mock(import('@app/core/events'), async (importOriginal) => {
+vi.mock(import('@app/core/file-manager'), async (importOriginal) => {
   const actual = await importOriginal();
 
   return {
