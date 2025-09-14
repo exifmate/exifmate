@@ -12,20 +12,3 @@ export const onImagesOpened: onImagesOpened = (cb) =>
 
 export const imagesOpened = (images: ImageInfo[]) =>
   emit('images-opened', { images });
-
-export interface Notification {
-  level: 'success' | 'error';
-  message: string;
-}
-
-export const showNotification = (notification: Notification) =>
-  emit('notification-sent', { notification });
-
-type onNotification = (
-  cb: (notification: Notification) => void,
-) => Promise<UnlistenFn>;
-
-export const onNotification: onNotification = (cb) =>
-  listen<{ notification: Notification }>('notification-sent', (res) => {
-    cb(res.payload.notification);
-  });

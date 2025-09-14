@@ -1,6 +1,6 @@
-import { showNotification } from '@app/core/events';
 import { readMetadata, updateMetadata } from '@app/core/metadata-handler';
 import type { ExifData, ImageInfo } from '@app/core/types';
+import { showToast } from '@app/Toasts/toast-queue';
 import { useCallback, useEffect, useState } from 'react';
 
 type Activity = 'idle' | 'active' | 'errored';
@@ -40,7 +40,7 @@ function useExif(images: ImageInfo[]) {
         await fetchMetadata();
       } catch (err) {
         console.error('Failed saving:', err);
-        await showNotification({
+        await showToast({
           level: 'error',
           message: `Failed to save images: ${images.map((i) => i.filename).join(', ')}`,
         });

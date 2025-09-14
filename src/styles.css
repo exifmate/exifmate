@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@source inline("alert-success");
+@source inline("alert-error");
+@source inline("btn-success");
+@source inline("btn-error");
+
 @plugin "daisyui" {
   /* biome-ignore lint/correctness/noUnknownProperty: `themes` comes from DaisyUI */
   themes: dim --default;
