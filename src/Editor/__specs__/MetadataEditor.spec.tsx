@@ -84,20 +84,19 @@ describe('MetadataEditor', () => {
         expect(exifTab).toBeVisible();
         expect(locationTab).toBeVisible();
 
-        expect(exifTab.closest('button')).toHaveRole('tab');
-        expect(locationTab.closest('button')).toHaveRole('tab');
+        expect(exifTab).toHaveRole('tab');
+        expect(locationTab).toHaveRole('tab');
 
         const artistInput = screen.getByLabelText('Artist');
-        const latInput = screen.getByLabelText('GPSLatitude');
         // TODO: this might be better offloading to the reset test
         expect(artistInput).toHaveValue('test person');
-
         expect(artistInput).toBeVisible();
-        expect(latInput).not.toBeVisible();
+
+        expect(screen.queryByLabelText('GPSLatitude')).toBeNull();
 
         await userEvent.click(locationTab);
-        expect(artistInput).not.toBeVisible();
-        expect(latInput).toBeVisible();
+        expect(screen.queryByLabelText('Artist')).toBeNull();
+        expect(screen.queryByLabelText('GPSLatitude')).toBeVisible();
       });
 
       it('has different buttons when the form is disabled', async () => {
@@ -114,15 +113,18 @@ describe('MetadataEditor', () => {
 
       it('can enable the form', async () => {
         const artistInput = screen.getByLabelText('Artist');
-        const latInput = screen.getByLabelText('GPSLatitude');
 
         expect(artistInput).toBeDisabled();
+        await userEvent.click(screen.getByRole('tab', { name: 'Location' }));
+
+        const latInput = screen.getByLabelText('GPSLatitude');
         expect(latInput).toBeDisabled();
 
         await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
-        expect(artistInput).toBeEnabled();
         expect(latInput).toBeEnabled();
+        await userEvent.click(screen.getByRole('tab', { name: 'EXIF' }));
+        expect(artistInput).toBeEnabled();
       });
 
       describe('when form changes are cancelled', () => {

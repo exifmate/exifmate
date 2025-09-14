@@ -82,17 +82,27 @@ describe('Shell', () => {
     });
 
     it('persists the opened tab between image selection changing', async () => {
-      expect(screen.getByLabelText('Artist')).toBeVisible();
-      expect(screen.getByLabelText('GPSLatitude')).not.toBeVisible();
+      const testUtilUser = new User({
+        interactionType: 'mouse',
+        advanceTimer: vi.advanceTimersByTime,
+      });
+      const tabTester = testUtilUser.createTester('Tabs', {
+        root: screen.getByLabelText('Editor Tabs'),
+        interactionType: 'keyboard',
+      });
 
-      await userEvent.click(screen.getByText('Location'));
-      expect(screen.getByLabelText('Artist')).not.toBeVisible();
+      expect(await screen.findByLabelText('Artist')).toBeVisible();
+      expect(screen.queryByLabelText('GPSLatitude')).toBeNull();
+
+      await tabTester.triggerTab({ tab: 'Location' });
+
       expect(screen.getByLabelText('GPSLatitude')).toBeVisible();
+      expect(screen.queryByLabelText('Artist')).toBeNull();
 
       await selectRow('image-two.jpg');
       await waitForElementToBeRemoved(screen.getByText('Loading Metadata...'));
 
-      expect(screen.getByLabelText('Artist')).not.toBeVisible();
+      expect(screen.queryByLabelText('Artist')).toBeNull();
       expect(screen.getByLabelText('GPSLatitude')).toBeVisible();
     });
 
