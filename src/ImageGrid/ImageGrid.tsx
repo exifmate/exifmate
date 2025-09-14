@@ -1,6 +1,6 @@
+import Center from '@app/components/Center';
+import { useImageSelection } from '@app/ImageContext';
 import { Item } from 'react-stately';
-import Center from '../components/Center';
-import { useImageSelection } from '../ImageContext';
 import GridList from './GridList';
 import ImageCard from './ImageCard';
 

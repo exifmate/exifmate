@@ -1,8 +1,8 @@
+import { type ExifData, exifData } from '@app/core/types';
 import classNames from 'classnames';
 import type { HTMLAttributes } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { ZodEnum } from 'zod/v4';
-import { type ExifData, exifData } from '../core/types';
 
 interface Props {
   tagName: keyof typeof exifData.shape;

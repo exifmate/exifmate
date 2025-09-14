@@ -1,4 +1,4 @@
-import Fieldset from '../components/Fieldset';
+import Fieldset from '@app/components/Fieldset';
 import ExifInput from './ExifInput';
 
 function ExifTab() {

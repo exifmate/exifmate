@@ -1,6 +1,6 @@
+import MetadataEditor from '@app/Editor/MetadataEditor';
+import ImageGrid from '@app/ImageGrid/ImageGrid';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import MetadataEditor from '../Editor/MetadataEditor';
-import ImageGrid from '../ImageGrid/ImageGrid';
 import Toolbar from './Toolbar';
 
 function Shell() {

@@ -1,11 +1,11 @@
+import { type ExifData, exifData } from '@app/core/types';
+import { useImageSelection } from '@app/ImageContext';
+import LocationTab from '@app/LocationTab/LocationTab';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import Center from '../components/Center';
-import { type ExifData, exifData } from '../core/types';
-import { useImageSelection } from '../ImageContext';
-import LocationTab from '../LocationTab/LocationTab';
 import ExifTab from './ExifTab';
 import useExif from './useExif';
 

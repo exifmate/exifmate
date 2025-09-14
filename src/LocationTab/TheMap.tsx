@@ -1,3 +1,4 @@
+import { type ExifData, exifData } from '@app/core/types';
 import { load } from '@tauri-apps/plugin-store';
 import type { MapLibreEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useState } from 'react';
@@ -5,7 +6,6 @@ import { useFormContext } from 'react-hook-form';
 import { MdLocationPin } from 'react-icons/md';
 import MapGL, { Marker } from 'react-map-gl/maplibre';
 import { z } from 'zod/v4';
-import { type ExifData, exifData } from '../core/types';
 
 const Loc = z.object({
   lat: z.number(),

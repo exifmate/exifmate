@@ -1,3 +1,6 @@
+import { ImageOne, ImageTwo } from '@app/core/__specs__/fake-images';
+import type { onImagesOpened } from '@app/core/events';
+import { ImageProvider } from '@app/ImageContext';
 import { User } from '@react-aria/test-utils';
 import type { load } from '@tauri-apps/plugin-store';
 import {
@@ -7,9 +10,6 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fs } from 'memfs';
-import { ImageOne, ImageTwo } from '../../core/__specs__/fake-images';
-import type { onImagesOpened } from '../../core/events';
-import { ImageProvider } from '../../ImageContext';
 import Shell from '../Shell';
 
 vi.mock('@tauri-apps/plugin-fs');
@@ -21,7 +21,7 @@ vi.stubGlobal('URL', {
   createObjectURL: vi.fn(),
 });
 
-vi.mock(import('../../core/events'), async (importOriginal) => {
+vi.mock(import('@app/core/events'), async (importOriginal) => {
   const actual = await importOriginal();
 
   return {

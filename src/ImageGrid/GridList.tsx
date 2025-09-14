@@ -1,3 +1,4 @@
+import type { ImageInfo } from '@app/core/types';
 import classNames from 'classnames';
 import { useRef } from 'react';
 import {
@@ -12,7 +13,6 @@ import {
   type Node,
   useListState,
 } from 'react-stately';
-import type { ImageInfo } from '../core/types';
 
 function GridList(props: ListProps<ImageInfo>) {
   const state = useListState<ImageInfo>(props);

@@ -1,5 +1,5 @@
+import { findImages } from '@app/core/file-manager';
 import { MdOutlineAddPhotoAlternate } from 'react-icons/md';
-import { findImages } from '../core/file-manager';
 
 function Toolbar() {
   return (

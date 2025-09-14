@@ -1,6 +1,6 @@
+import { type Notification, onNotification } from '@app/core/events';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import { useEffect, useState } from 'react';
-import { type Notification, onNotification } from '../core/events';
 
 function Notifications() {
   const [notifications, setNotifications] = useState<Map<number, Notification>>(

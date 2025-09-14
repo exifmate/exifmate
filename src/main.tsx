@@ -1,10 +1,10 @@
+import { createAppMenu } from '@app/core/app-menu';
+import { isMobile } from '@app/core/util';
+import { ImageProvider } from '@app/ImageContext';
+import Notifications from '@app/Shell/Notifications';
+import Shell from '@app/Shell/Shell';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createAppMenu } from './core/app-menu';
-import { isMobile } from './core/util';
-import { ImageProvider } from './ImageContext';
-import Notifications from './Shell/Notifications';
-import Shell from './Shell/Shell';
 
 const root = document.getElementById('root');
 if (!root) {

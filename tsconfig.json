@@ -22,7 +22,8 @@
 
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "paths": {
-      "test-support/*": ["./test-support/*"]
+      "test-support/*": ["./test-support/*"],
+      "@app/*": ["./src/*"]
     }
   },
   "include": ["src", "./test-support/vitest-setup.ts"],

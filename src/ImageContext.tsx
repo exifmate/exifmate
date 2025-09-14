@@ -1,3 +1,5 @@
+import { onImagesOpened } from '@app/core/events';
+import type { ImageInfo } from '@app/core/types';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import {
   createContext,
@@ -8,8 +10,6 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { onImagesOpened } from './core/events';
-import type { ImageInfo } from './core/types';
 
 interface ImageContext {
   images: ImageInfo[];

@@ -1,7 +1,7 @@
+import { showNotification } from '@app/core/events';
+import { readMetadata, updateMetadata } from '@app/core/metadata-handler';
+import type { ExifData, ImageInfo } from '@app/core/types';
 import { useCallback, useEffect, useState } from 'react';
-import { showNotification } from '../core/events';
-import { readMetadata, updateMetadata } from '../core/metadata-handler';
-import type { ExifData, ImageInfo } from '../core/types';
 
 type Activity = 'idle' | 'active' | 'errored';
 

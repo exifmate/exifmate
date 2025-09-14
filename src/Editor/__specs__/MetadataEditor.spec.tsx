@@ -1,3 +1,5 @@
+import { readMetadata, updateMetadata } from '@app/core/metadata-handler';
+import { useImageSelection } from '@app/ImageContext';
 import type { load } from '@tauri-apps/plugin-store';
 import {
   render,
@@ -7,8 +9,6 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
-import { readMetadata, updateMetadata } from '../../core/metadata-handler';
-import { useImageSelection } from '../../ImageContext';
 import MetadataEditor from '../MetadataEditor';
 
 const useImageSelectionMock = useImageSelection as unknown as Mock<
@@ -28,9 +28,9 @@ vi.mock('@tauri-apps/plugin-store', () => ({
     ),
 }));
 
-vi.mock('../../core/metadata-handler');
+vi.mock('@app/core/metadata-handler');
 
-vi.mock('../../ImageContext.tsx', () => ({
+vi.mock('@app/ImageContext.tsx', () => ({
   useImageSelection: vi.fn<typeof useImageSelection>().mockReturnValue({
     images: [],
     selectedImages: [],

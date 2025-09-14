@@ -1,8 +1,8 @@
+import type { ExifData } from '@app/core/types';
 import { readText } from '@tauri-apps/plugin-clipboard-manager';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { MdContentPaste } from 'react-icons/md';
-import type { ExifData } from '../core/types';
 
 const PASTE_LABEL = 'Paste Location';
 const PASTED_LABEL = 'Location Pasted!';
