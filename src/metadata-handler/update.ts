@@ -1,5 +1,5 @@
-import type { ImageInfo } from '@app/core/file-manager';
-import { isMobile } from '@app/core/util';
+import type { ImageInfo } from '@app/platform/file-manager';
+import { isMobile } from '@app/platform/util';
 import { BaseDirectory, readFile, writeFile } from '@tauri-apps/plugin-fs';
 import { writeMetadata } from '@uswriting/exiftool';
 import zeroperl from '@vendor/zeroperl-1.0.0.wasm?url';

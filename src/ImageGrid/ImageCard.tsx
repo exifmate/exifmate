@@ -1,4 +1,4 @@
-import type { ImageInfo } from '@app/core/file-manager';
+import type { ImageInfo } from '@app/platform/file-manager';
 import { readFile } from '@tauri-apps/plugin-fs';
 import { useEffect, useState } from 'react';
 import { MdWarning } from 'react-icons/md';

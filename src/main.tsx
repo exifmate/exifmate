@@ -1,5 +1,5 @@
-import { createAppMenu } from '@app/core/app-menu';
-import { isMobile } from '@app/core/util';
+import { createAppMenu } from '@app/platform/app-menu';
+import { isMobile } from '@app/platform/util';
 import Shell from '@app/Shell/Shell';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

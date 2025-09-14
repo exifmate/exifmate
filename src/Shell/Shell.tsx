@@ -1,6 +1,6 @@
-import type { ImageInfo } from '@app/core/file-manager';
 import MetadataEditor from '@app/Editor/MetadataEditor';
 import ImageGrid from '@app/ImageGrid/ImageGrid';
+import type { ImageInfo } from '@app/platform/file-manager';
 import { useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import Toolbar from './Toolbar';

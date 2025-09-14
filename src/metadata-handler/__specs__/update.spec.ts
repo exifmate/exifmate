@@ -1,4 +1,4 @@
-import type { ImageInfo } from '@app/core/file-manager';
+import type { ImageInfo } from '@app/platform/file-manager';
 import { fs } from 'memfs';
 import { ImageOne, ImageTwo } from 'test-support/fake-images';
 import { readMetadata } from '../read';
@@ -6,7 +6,7 @@ import { updateMetadata } from '../update';
 
 vi.mock('@tauri-apps/plugin-fs');
 
-vi.mock(import('@app/core/util'), async (importOriginal) => {
+vi.mock(import('@app/platform/util'), async (importOriginal) => {
   const mod = await importOriginal();
 
   return {

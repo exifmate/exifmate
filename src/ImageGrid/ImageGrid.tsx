@@ -1,7 +1,7 @@
 import Center from '@app/components/Center';
 import GridList from '@app/components/GridList';
-import type { ImageInfo } from '@app/core/file-manager';
-import { onImagesOpened } from '@app/core/file-manager';
+import type { ImageInfo } from '@app/platform/file-manager';
+import { onImagesOpened } from '@app/platform/file-manager';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import { useEffect, useState } from 'react';
 import { Item } from 'react-stately';

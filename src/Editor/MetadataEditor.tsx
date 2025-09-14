@@ -1,6 +1,6 @@
-import type { ImageInfo } from '@app/core/file-manager';
 import LocationTab from '@app/LocationTab/LocationTab';
 import { ExifData } from '@app/metadata-handler/exifdata';
+import type { ImageInfo } from '@app/platform/file-manager';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';

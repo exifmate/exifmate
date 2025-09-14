@@ -1,6 +1,6 @@
-import type { ImageInfo } from '@app/core/file-manager';
 import { readMetadata } from '@app/metadata-handler/read';
 import { updateMetadata } from '@app/metadata-handler/update';
+import type { ImageInfo } from '@app/platform/file-manager';
 import type { load } from '@tauri-apps/plugin-store';
 import {
   render,

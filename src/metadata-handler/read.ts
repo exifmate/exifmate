@@ -1,4 +1,4 @@
-import type { ImageInfo } from '@app/core/file-manager';
+import type { ImageInfo } from '@app/platform/file-manager';
 import { readFile } from '@tauri-apps/plugin-fs';
 import { parseMetadata } from '@uswriting/exiftool';
 import zeroperl from '../../vendor/zeroperl-1.0.0.wasm?url';
