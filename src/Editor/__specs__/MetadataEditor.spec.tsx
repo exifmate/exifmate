@@ -1,3 +1,6 @@
+import { readMetadata } from '@app/metadata-handler/read';
+import { updateMetadata } from '@app/metadata-handler/update';
+import type { ImageInfo } from '@app/platform/file-manager';
 import type { load } from '@tauri-apps/plugin-store';
 import {
   render,
@@ -7,13 +10,7 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
-import { readMetadata, updateMetadata } from '../../core/metadata-handler';
-import { useImageSelection } from '../../ImageContext';
 import MetadataEditor from '../MetadataEditor';
-
-const useImageSelectionMock = useImageSelection as unknown as Mock<
-  typeof useImageSelection
->;
 
 const readMetadataMock = readMetadata as unknown as Mock<typeof readMetadata>;
 const updateMetadataMock = updateMetadata as unknown as Mock<
@@ -28,15 +25,8 @@ vi.mock('@tauri-apps/plugin-store', () => ({
     ),
 }));
 
-vi.mock('../../core/metadata-handler');
-
-vi.mock('../../ImageContext.tsx', () => ({
-  useImageSelection: vi.fn<typeof useImageSelection>().mockReturnValue({
-    images: [],
-    selectedImages: [],
-    setSelectedImages: vi.fn(),
-  }),
-}));
+vi.mock('@app/metadata-handler/read');
+vi.mock('@app/metadata-handler/update');
 
 vi.mock('react-map-gl/maplibre');
 
@@ -46,27 +36,18 @@ describe('MetadataEditor', () => {
   });
 
   it('indicates when no image is selected', () => {
-    render(<MetadataEditor />);
+    render(<MetadataEditor selectedImages={[]} />);
     expect(screen.getByText('No Image Selected')).toBeVisible();
     expect(screen.queryByText('Loading Metadata...')).toBeNull();
   });
 
   describe('when images are selected', () => {
-    beforeEach(() => {
-      useImageSelectionMock.mockReturnValue({
-        selectedImages: [
-          {
-            filename: 'test.jpg',
-            path: '/test.jpg',
-          },
-        ],
-        images: [],
-        setSelectedImages: vi.fn(),
-      });
-    });
+    const selectedImages: ImageInfo[] = [
+      { filename: 'test.jpg', path: '/test.jpg' },
+    ] as const;
 
     it('indicates when metadata is loading', async () => {
-      render(<MetadataEditor />);
+      render(<MetadataEditor selectedImages={selectedImages} />);
 
       expect(screen.queryByText('No Image Selected')).toBeNull();
       expect(screen.queryByText('Error Loading Metadata')).toBeNull();
@@ -78,7 +59,7 @@ describe('MetadataEditor', () => {
     describe('when failing to open an image', () => {
       it('indicates failure with no form even with partial load error', async () => {
         readMetadataMock.mockRejectedValueOnce(new Error('No'));
-        render(<MetadataEditor />);
+        render(<MetadataEditor selectedImages={selectedImages} />);
         await waitForElementToBeRemoved(
           screen.queryByText('Loading Metadata...'),
         );
@@ -90,7 +71,7 @@ describe('MetadataEditor', () => {
     describe('when finished loading metadata', () => {
       beforeEach(async () => {
         readMetadataMock.mockResolvedValueOnce({ Artist: 'test person' });
-        render(<MetadataEditor />);
+        render(<MetadataEditor selectedImages={selectedImages} />);
         await waitForElementToBeRemoved(
           screen.queryByText('Loading Metadata...'),
         );
@@ -103,20 +84,19 @@ describe('MetadataEditor', () => {
         expect(exifTab).toBeVisible();
         expect(locationTab).toBeVisible();
 
-        expect(exifTab.closest('button')).toHaveRole('tab');
-        expect(locationTab.closest('button')).toHaveRole('tab');
+        expect(exifTab).toHaveRole('tab');
+        expect(locationTab).toHaveRole('tab');
 
         const artistInput = screen.getByLabelText('Artist');
-        const latInput = screen.getByLabelText('GPSLatitude');
         // TODO: this might be better offloading to the reset test
         expect(artistInput).toHaveValue('test person');
-
         expect(artistInput).toBeVisible();
-        expect(latInput).not.toBeVisible();
+
+        expect(screen.queryByLabelText('GPSLatitude')).toBeNull();
 
         await userEvent.click(locationTab);
-        expect(artistInput).not.toBeVisible();
-        expect(latInput).toBeVisible();
+        expect(screen.queryByLabelText('Artist')).toBeNull();
+        expect(screen.queryByLabelText('GPSLatitude')).toBeVisible();
       });
 
       it('has different buttons when the form is disabled', async () => {
@@ -133,15 +113,18 @@ describe('MetadataEditor', () => {
 
       it('can enable the form', async () => {
         const artistInput = screen.getByLabelText('Artist');
-        const latInput = screen.getByLabelText('GPSLatitude');
 
         expect(artistInput).toBeDisabled();
+        await userEvent.click(screen.getByRole('tab', { name: 'Location' }));
+
+        const latInput = screen.getByLabelText('GPSLatitude');
         expect(latInput).toBeDisabled();
 
         await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
-        expect(artistInput).toBeEnabled();
         expect(latInput).toBeEnabled();
+        await userEvent.click(screen.getByRole('tab', { name: 'EXIF' }));
+        expect(artistInput).toBeEnabled();
       });
 
       describe('when form changes are cancelled', () => {

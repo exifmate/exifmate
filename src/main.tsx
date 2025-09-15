@@ -1,10 +1,9 @@
+import { createAppMenu } from '@app/platform/app-menu';
+import { isMobile } from '@app/platform/util';
+import Shell from '@app/Shell/Shell';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createAppMenu } from './core/app-menu';
-import { isMobile } from './core/util';
-import { ImageProvider } from './ImageContext';
-import Notifications from './Shell/Notifications';
-import Shell from './Shell/Shell';
+import ToastRegion from './Toasts/ToastRegion';
 
 const root = document.getElementById('root');
 if (!root) {
@@ -13,10 +12,8 @@ if (!root) {
 
 createRoot(root).render(
   <StrictMode>
-    <ImageProvider>
-      <Shell />
-      <Notifications />
-    </ImageProvider>
+    <Shell />
+    <ToastRegion />
   </StrictMode>,
 );
 

@@ -1,41 +1,9 @@
+import type { ImageInfo } from '@app/platform/file-manager';
+import { isMobile } from '@app/platform/util';
 import { BaseDirectory, readFile, writeFile } from '@tauri-apps/plugin-fs';
-import { parseMetadata, writeMetadata } from '@uswriting/exiftool';
-import zeroperl from '../../vendor/zeroperl-1.0.0.wasm?url';
-import { type ExifData, exifData, type ImageInfo } from './types';
-import { aggregateExif, isMobile } from './util';
-
-async function readImageMetadata({
-  path,
-  filename,
-}: ImageInfo): Promise<ExifData> {
-  const binary = await readFile(path);
-  const readTags = exifData.keyof().options.map((tag) => `-${tag}`);
-
-  try {
-    const readResult = await parseMetadata(
-      { name: filename, data: binary },
-      {
-        args: [...readTags, '-json', '-c', '%+.9f'],
-        transform: (data) => JSON.parse(data),
-        fetch: () => fetch(zeroperl),
-      },
-    );
-
-    // TODO: handle this separately from reading
-    // (maybe be more graceful about invalid data too)
-    return exifData.parseAsync(readResult.data[0]);
-  } catch (err) {
-    throw new Error(`Failed to read exif data for ${path}: ${err}`);
-  }
-}
-
-export async function readMetadata(
-  images: ImageInfo[],
-): Promise<ExifData | null> {
-  const reads: Promise<ExifData>[] = images.map((i) => readImageMetadata(i));
-  const allMetadata = await Promise.all(reads);
-  return aggregateExif(allMetadata);
-}
+import { writeMetadata } from '@uswriting/exiftool';
+import zeroperl from '@vendor/zeroperl-1.0.0.wasm?url';
+import type { ExifData } from './exifdata';
 
 // TODO: should consider making empty values be nulled
 async function updateImageMetadata(

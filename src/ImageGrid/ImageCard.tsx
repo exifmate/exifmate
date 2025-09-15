@@ -1,7 +1,7 @@
+import type { ImageInfo } from '@app/platform/file-manager';
 import { readFile } from '@tauri-apps/plugin-fs';
 import { useEffect, useState } from 'react';
 import { MdWarning } from 'react-icons/md';
-import type { ImageInfo } from '../core/types';
 
 type ThumbnailState =
   | {

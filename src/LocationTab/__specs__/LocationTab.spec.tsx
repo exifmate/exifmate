@@ -1,9 +1,9 @@
+import { ExifData } from '@app/metadata-handler/exifdata';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { load } from '@tauri-apps/plugin-store';
 import { render, screen } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
 import type { Mock } from 'vitest';
-import { exifData } from '../../core/types';
 import LocationTab from '../LocationTab';
 
 vi.mock('@tauri-apps/plugin-store', () => ({
@@ -15,7 +15,7 @@ vi.mock('react-map-gl/maplibre');
 
 function TestContainer() {
   const form = useForm({
-    resolver: zodResolver(exifData),
+    resolver: zodResolver(ExifData),
   });
 
   return (

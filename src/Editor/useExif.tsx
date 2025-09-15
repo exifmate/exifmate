@@ -1,7 +1,9 @@
+import type { ExifData } from '@app/metadata-handler/exifdata';
+import { readMetadata } from '@app/metadata-handler/read';
+import { updateMetadata } from '@app/metadata-handler/update';
+import type { ImageInfo } from '@app/platform/file-manager';
+import { showToast } from '@app/Toasts/toast-queue';
 import { useCallback, useEffect, useState } from 'react';
-import { showNotification } from '../core/events';
-import { readMetadata, updateMetadata } from '../core/metadata-handler';
-import type { ExifData, ImageInfo } from '../core/types';
 
 type Activity = 'idle' | 'active' | 'errored';
 
@@ -37,12 +39,23 @@ function useExif(images: ImageInfo[]) {
 
       try {
         await updateMetadata(images, newExif);
-        await fetchMetadata();
       } catch (err) {
         console.error('Failed saving:', err);
-        await showNotification({
+        await showToast({
           level: 'error',
-          message: `Failed to save images: ${images.map((i) => i.filename).join(', ')}`,
+          message: 'Failed to save images',
+        });
+
+        return;
+      }
+
+      try {
+        await fetchMetadata();
+      } catch (err) {
+        console.error('Failed refreshing metadata:', err);
+        await showToast({
+          level: 'warning',
+          message: 'Failed refreshing metadata after saving',
         });
       }
     },

@@ -1,15 +1,36 @@
+import Center from '@app/components/Center';
+import GridList from '@app/components/GridList';
+import type { ImageInfo } from '@app/platform/file-manager';
+import { onImagesOpened } from '@app/platform/file-manager';
+import type { UnlistenFn } from '@tauri-apps/api/event';
+import { useEffect, useState } from 'react';
 import { Item } from 'react-stately';
-import Center from '../components/Center';
-import { useImageSelection } from '../ImageContext';
-import GridList from './GridList';
 import ImageCard from './ImageCard';
+
+interface Props {
+  onImageSelection: (images: ImageInfo[]) => void;
+}
 
 /*
  * I think this'll go slow if the images are large; need to test.
  * May want to look into lazy loading the images or `Virtualizer` from react-aria.
  */
-function ImageGrid() {
-  const { images, setSelectedImages } = useImageSelection();
+function ImageGrid({ onImageSelection }: Props) {
+  const [images, setImages] = useState<ImageInfo[]>([]);
+
+  useEffect(() => {
+    let unlisten: UnlistenFn | null = null;
+
+    onImagesOpened((newImages) => {
+      setImages(newImages);
+    }).then((clean) => {
+      unlisten = clean;
+    });
+
+    return () => {
+      unlisten?.();
+    };
+  }, []);
 
   if (images.length === 0) {
     return (
@@ -32,9 +53,9 @@ function ImageGrid() {
             const newSelectedImages = images.filter((i) =>
               selection.has(i.path),
             );
-            setSelectedImages(newSelectedImages);
+            onImageSelection(newSelectedImages);
           } else {
-            setSelectedImages(images);
+            onImageSelection(images);
           }
         }}
       >

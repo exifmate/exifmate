@@ -1,16 +1,20 @@
+import Tabs from '@app/components/Tabs';
+import LocationTab from '@app/LocationTab/LocationTab';
+import { ExifData } from '@app/metadata-handler/exifdata';
+import type { ImageInfo } from '@app/platform/file-manager';
 import { zodResolver } from '@hookform/resolvers/zod';
-import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { Item } from 'react-stately';
 import Center from '../components/Center';
-import { type ExifData, exifData } from '../core/types';
-import { useImageSelection } from '../ImageContext';
-import LocationTab from '../LocationTab/LocationTab';
 import ExifTab from './ExifTab';
 import useExif from './useExif';
 
-function MetadataEditor() {
-  const { selectedImages } = useImageSelection();
+interface Props {
+  selectedImages: ImageInfo[];
+}
+
+function MetadataEditor({ selectedImages }: Props) {
   const [activeTab, setActiveTab] = useState<'EXIF' | 'Location'>('EXIF');
   const { loadingStatus, exif, saveMetadata } = useExif(selectedImages);
 
@@ -19,7 +23,7 @@ function MetadataEditor() {
   const form = useForm({
     mode: 'onChange',
     disabled: !isEditing,
-    resolver: zodResolver(exifData),
+    resolver: zodResolver(ExifData),
   });
 
   useEffect(() => {
@@ -71,48 +75,18 @@ function MetadataEditor() {
             setIsEditing(false);
           })}
         >
-          <div role="tablist" className="tabs tabs-lift bg-base-200 px-4 pt-2">
-            {(['EXIF', 'Location'] as const).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                role="tab"
-                id={`${tab}-tab`}
-                aria-controls={`${tab}-pane`}
-                aria-selected={tab === activeTab}
-                className={classNames('tab', {
-                  'tab-active': tab === activeTab,
-                })}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-
-          <div className="px-2 pb-3 grow overflow-auto">
-            <div
-              id="EXIF-pane"
-              role="tabpanel"
-              aria-labelledby="EXIF-tab"
-              hidden={activeTab !== 'EXIF'}
-              className={classNames({ hidden: activeTab !== 'EXIF' })}
-            >
+          <Tabs
+            aria-label="Editor Tabs"
+            selectedKey={activeTab}
+            onSelectionChange={(k) => setActiveTab(k as 'EXIF' | 'Location')}
+          >
+            <Item key="EXIF" title="EXIF">
               <ExifTab />
-            </div>
-
-            <div
-              id="Location-pane"
-              role="tabpanel"
-              aria-labelledby="Location-tab"
-              hidden={activeTab !== 'Location'}
-              className={classNames('h-full pt-3', {
-                hidden: activeTab !== 'Location',
-              })}
-            >
+            </Item>
+            <Item key="Location" title="Location">
               <LocationTab />
-            </div>
-          </div>
+            </Item>
+          </Tabs>
 
           <div className="bg-base-200 z-10 px-4 py-2 flex justify-between">
             {!isEditing ? (

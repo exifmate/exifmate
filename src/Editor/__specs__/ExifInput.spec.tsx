@@ -1,18 +1,18 @@
+import { ExifData } from '@app/metadata-handler/exifdata';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormProvider, useForm } from 'react-hook-form';
-import { exifData } from '../../core/types';
 import ExifInput from '../ExifInput';
 
 interface TestContainerProps {
   cb?: (v: unknown) => void;
-  tagName: keyof typeof exifData.shape;
+  tagName: keyof typeof ExifData.shape;
 }
 
 function TestContainer({ cb, tagName }: TestContainerProps) {
   const form = useForm({
-    resolver: zodResolver(exifData),
+    resolver: zodResolver(ExifData),
   });
 
   return (
@@ -66,7 +66,7 @@ describe('ExifInput', () => {
 
       const inputOptions = (input as HTMLSelectElement).options;
       const values = Array.from(inputOptions).map((a) => a.value);
-      const expectedOptions = exifData.shape.Flash.unwrap().options;
+      const expectedOptions = ExifData.shape.Flash.unwrap().options;
       expect(values).toEqual([''].concat(expectedOptions));
 
       await userEvent.selectOptions(input, 'Fired');

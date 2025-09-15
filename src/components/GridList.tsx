@@ -12,10 +12,9 @@ import {
   type Node,
   useListState,
 } from 'react-stately';
-import type { ImageInfo } from '../core/types';
 
-function GridList(props: ListProps<ImageInfo>) {
-  const state = useListState<ImageInfo>(props);
+function GridList<T extends object>(props: ListProps<T>) {
+  const state = useListState<T>(props);
   const ref = useRef<HTMLUListElement | null>(null);
   const { gridProps } = useGridList(props, state, ref);
 
@@ -28,12 +27,12 @@ function GridList(props: ListProps<ImageInfo>) {
   );
 }
 
-function GridItem({
+function GridItem<T extends object>({
   item,
   state,
 }: {
-  item: Node<ImageInfo>;
-  state: ListState<ImageInfo>;
+  item: Node<T>;
+  state: ListState<T>;
 }) {
   const ref = useRef(null);
   const { rowProps, gridCellProps, isSelected } = useGridListItem(

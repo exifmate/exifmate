@@ -2,9 +2,9 @@ import { z } from 'zod/v4';
 import dayjs from './dayjs';
 
 // TODO: maybe better handle when datetime-local typed in
-// gives ex. 2024-12-26T15:10 which is said to be invalid
+// gives ex. 2024-12-26T15:10 which is said to be invalid.
 //
-// For some reason the `-dateFormat` flag wasn't getting respected
+// For some reason the `-dateFormat` flag wasn't getting respected.
 const exifdatetime = z.string().transform((val) => {
   const date = dayjs.utc(val, 'YYYY:MM:DD HH:mm:ss');
   if (date.isValid()) {
@@ -15,14 +15,9 @@ const exifdatetime = z.string().transform((val) => {
   return val;
 });
 
-export interface ImageInfo {
-  filename: string;
-  path: string;
-}
-
-// need to think about how to handle if an enum gains an option
-// specifically how to futureproof without needing to update if i stop maintaining
-export const exifData = z.object({
+// Need to think about how to handle if an enum gains an option,
+// specifically how to futureproof without needing to update if I stop maintaining
+export const ExifData = z.object({
   Artist: z.string().optional(),
   ImageDescription: z.string().optional(),
   Copyright: z.string().optional(),
@@ -52,7 +47,7 @@ export const exifData = z.object({
     .meta({
       description: 'also called FocalLengthIn35mmFilm',
     })
-    .optional(), // todo: is this able to be determined from focal length?
+    .optional(),
   ExposureCompensation: z.coerce
     .number()
     .meta({
@@ -149,9 +144,8 @@ export const exifData = z.object({
     .optional(),
   XResolution: z.coerce.number().optional(),
   YResolution: z.coerce.number().optional(),
-  // TODO: probably need to set ref
   GPSLatitude: z.coerce.number().min(-90).max(90).optional(),
   GPSLongitude: z.coerce.number().min(-180).max(180).optional(),
 });
 
-export type ExifData = z.infer<typeof exifData>;
+export type ExifData = z.infer<typeof ExifData>;

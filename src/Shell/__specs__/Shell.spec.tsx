@@ -1,3 +1,4 @@
+import type { onImagesOpened } from '@app/platform/file-manager';
 import { User } from '@react-aria/test-utils';
 import type { load } from '@tauri-apps/plugin-store';
 import {
@@ -7,9 +8,7 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fs } from 'memfs';
-import { ImageOne, ImageTwo } from '../../core/__specs__/fake-images';
-import type { onImagesOpened } from '../../core/events';
-import { ImageProvider } from '../../ImageContext';
+import { ImageOne, ImageTwo } from 'test-support/fake-images';
 import Shell from '../Shell';
 
 vi.mock('@tauri-apps/plugin-fs');
@@ -21,7 +20,7 @@ vi.stubGlobal('URL', {
   createObjectURL: vi.fn(),
 });
 
-vi.mock(import('../../core/events'), async (importOriginal) => {
+vi.mock(import('@app/platform/file-manager'), async (importOriginal) => {
   const actual = await importOriginal();
 
   return {
@@ -63,11 +62,7 @@ describe('Shell', () => {
       fs.promises.writeFile('/image-two.jpg', ImageTwo),
     ]);
 
-    render(
-      <ImageProvider>
-        <Shell />
-      </ImageProvider>,
-    );
+    render(<Shell />);
     expect(await screen.findByAltText('image-one.jpg thumbnail')).toBeVisible();
   });
 
@@ -87,17 +82,27 @@ describe('Shell', () => {
     });
 
     it('persists the opened tab between image selection changing', async () => {
-      expect(screen.getByLabelText('Artist')).toBeVisible();
-      expect(screen.getByLabelText('GPSLatitude')).not.toBeVisible();
+      const testUtilUser = new User({
+        interactionType: 'mouse',
+        advanceTimer: vi.advanceTimersByTime,
+      });
+      const tabTester = testUtilUser.createTester('Tabs', {
+        root: screen.getByLabelText('Editor Tabs'),
+        interactionType: 'keyboard',
+      });
 
-      await userEvent.click(screen.getByText('Location'));
-      expect(screen.getByLabelText('Artist')).not.toBeVisible();
+      expect(await screen.findByLabelText('Artist')).toBeVisible();
+      expect(screen.queryByLabelText('GPSLatitude')).toBeNull();
+
+      await tabTester.triggerTab({ tab: 'Location' });
+
       expect(screen.getByLabelText('GPSLatitude')).toBeVisible();
+      expect(screen.queryByLabelText('Artist')).toBeNull();
 
       await selectRow('image-two.jpg');
       await waitForElementToBeRemoved(screen.getByText('Loading Metadata...'));
 
-      expect(screen.getByLabelText('Artist')).not.toBeVisible();
+      expect(screen.queryByLabelText('Artist')).toBeNull();
       expect(screen.getByLabelText('GPSLatitude')).toBeVisible();
     });
 
