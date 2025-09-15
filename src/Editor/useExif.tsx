@@ -58,6 +58,12 @@ function useExif(images: ImageInfo[]) {
           message: 'Failed refreshing metadata after saving',
         });
       }
+
+      await showToast({
+        level: 'success',
+        timeout: 3_000,
+        message: 'Saved Metadata!',
+      });
     },
     [images, fetchMetadata],
   );

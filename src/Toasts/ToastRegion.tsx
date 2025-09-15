@@ -13,7 +13,7 @@ function useToastState(): ReturnType<typeof useToastQueue<ToastContent>> {
     let unlisten: UnlistenFn | undefined;
 
     onToast((toast) => {
-      state.add(toast);
+      state.add(toast, { timeout: toast.timeout });
     }).then((newUnlisten) => {
       unlisten = newUnlisten;
     });
