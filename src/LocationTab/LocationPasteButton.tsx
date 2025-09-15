@@ -38,10 +38,10 @@ function LocationPasteButton() {
           const [lat, lon] = text.split(',').map((l) => parseFloat(l));
 
           if (lat) {
-            setValue('GPSLatitude', lat, { shouldValidate: true });
+            setValue('GPSLatitude', lat, { shouldDirty: true, shouldValidate: true });
           }
           if (lon) {
-            setValue('GPSLongitude', lon, { shouldValidate: true });
+            setValue('GPSLongitude', lon, { shouldDirty: true, shouldValidate: true });
           }
 
           setLabelText(PASTED_LABEL);
