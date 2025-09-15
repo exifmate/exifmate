@@ -7,7 +7,6 @@ function Toolbar() {
       <button
         type="button"
         className="btn btn-ghost"
-        // TODO: need to handle if findImages fails
         onClick={() => findImages()}
       >
         <MdOutlineAddPhotoAlternate size={26} />
