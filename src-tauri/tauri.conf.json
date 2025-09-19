@@ -15,7 +15,15 @@
         "title": "exifmate",
         "width": 1100,
         "height": 700,
-        "visible": false
+        "visible": false,
+        "decorations": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "dragDropEnabled": true,
+        "trafficLightPosition": {
+          "x": 12,
+          "y": 20
+        }
       }
     ],
     "security": {

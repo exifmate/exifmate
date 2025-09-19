@@ -1,15 +1,15 @@
 import { findImages } from '@app/platform/file-manager';
-import { MdOutlineAddPhotoAlternate } from 'react-icons/md';
+import { MdAddPhotoAlternate } from 'react-icons/md';
 
 function Toolbar() {
   return (
-    <div className="bg-base-200 px-4 py-1">
+    <div className="bg-base-200 h-12 flex flex-row-reverse items-center px-4" data-tauri-drag-region>
       <button
         type="button"
-        className="btn btn-ghost"
+        className="btn btn-ghost btn-sm"
         onClick={() => findImages()}
       >
-        <MdOutlineAddPhotoAlternate size={26} />
+        <MdAddPhotoAlternate size={25} />
         <span className="sr-only">Add Image</span>
       </button>
     </div>

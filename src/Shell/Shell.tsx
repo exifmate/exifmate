@@ -10,13 +10,13 @@ function Shell() {
 
   return (
     <div className="h-screen">
+      <Toolbar />
+
       <PanelGroup direction="horizontal" className="p-2 gap-2 bg-neutral">
         <Panel
           defaultSize={65}
           className="rounded-box bg-base-100 text-neutral-content flex flex-col"
         >
-          <Toolbar />
-
           <ImageGrid onImageSelection={setSelectedImages} />
         </Panel>
 
