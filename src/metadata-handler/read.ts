@@ -1,40 +1,14 @@
 import type { ImageInfo } from '@app/platform/file-manager';
-import { readFile } from '@tauri-apps/plugin-fs';
-import { parseMetadata } from '@uswriting/exiftool';
-import zeroperl from '../../vendor/zeroperl-1.0.0.wasm?url';
 import { ExifData } from './exifdata';
-
-async function readImageMetadata({
-  path,
-  filename,
-}: ImageInfo): Promise<ExifData> {
-  const binary = await readFile(path);
-  const readTags = ExifData.keyof().options.map((tag) => `-${tag}`);
-
-  try {
-    const readResult = await parseMetadata(
-      { name: filename, data: binary },
-      {
-        args: [...readTags, '-json', '-c', '%+.9f'],
-        transform: (data) => JSON.parse(data),
-        fetch: () => fetch(zeroperl),
-      },
-    );
-
-    // TODO: handle this separately from reading
-    // (maybe be more graceful about invalid data too)
-    return ExifData.parseAsync(readResult.data[0]);
-  } catch (err) {
-    throw new Error(`Failed to read exif data for ${path}: ${err}`);
-  }
-}
+import { invoke } from '@tauri-apps/api/core';
+import { z } from 'zod/v4';
 
 export async function readMetadata(
   images: ImageInfo[],
 ): Promise<ExifData | null> {
-  const reads: Promise<ExifData>[] = images.map((i) => readImageMetadata(i));
-  const allMetadata = await Promise.all(reads);
-  return aggregateExif(allMetadata);
+  const allMetadata = await invoke('read_metadata', { imgPaths: images.map((i) => i.path) });
+  const parsed = z.array(ExifData).parse(allMetadata);
+  return aggregateExif(parsed);
 }
 
 export function aggregateExif(items: ExifData[]): ExifData {
