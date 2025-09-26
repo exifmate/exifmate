@@ -1,6 +1,7 @@
 import { readMetadata } from '@app/metadata-handler/read';
 import { updateMetadata } from '@app/metadata-handler/update';
 import type { ImageInfo } from '@app/platform/file-manager';
+import { showToast } from '@app/Toasts/toast-queue';
 import type { load } from '@tauri-apps/plugin-store';
 import {
   render,
@@ -16,6 +17,7 @@ const readMetadataMock = readMetadata as unknown as Mock<typeof readMetadata>;
 const updateMetadataMock = updateMetadata as unknown as Mock<
   typeof updateMetadata
 >;
+const showToastMock = showToast as unknown as Mock<typeof showToast>;
 
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi
@@ -27,6 +29,7 @@ vi.mock('@tauri-apps/plugin-store', () => ({
 
 vi.mock('@app/metadata-handler/read');
 vi.mock('@app/metadata-handler/update');
+vi.mock('@app/Toasts/toast-queue');
 
 vi.mock('react-map-gl/maplibre');
 
@@ -153,9 +156,13 @@ describe('MetadataEditor', () => {
           expect(artistInput).toBeEnabled();
 
           await userEvent.type(artistInput, 'Test');
+          expect(showToastMock).not.toHaveBeenCalled();
           await userEvent.click(screen.getByRole('button', { name: 'Save' }));
 
           expect(screen.getByLabelText('Artist')).toBeDisabled();
+          expect(showToastMock).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({ level: 'success' }),
+          );
         });
 
         // this has no properties to test against
@@ -181,6 +188,8 @@ describe('MetadataEditor', () => {
           );
           expect(updateMetadataMock).toHaveBeenCalledOnce();
         });
+
+        it.todo('can not submit if the form is not dirty');
 
         it('can not submit if the form is invalid', async () => {
           await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
