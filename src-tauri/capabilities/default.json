@@ -13,6 +13,8 @@
     "os:default",
     "fs:allow-document-write",
     "store:default",
-    "clipboard-manager:allow-read-text"
+    "clipboard-manager:allow-read-text",
+    "core:window:default",
+    "core:window:allow-start-dragging"
   ]
 }

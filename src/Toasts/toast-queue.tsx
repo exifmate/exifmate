@@ -3,6 +3,7 @@ import { ToastQueue } from 'react-stately';
 
 export interface ToastContent {
   level: 'error' | 'success' | 'warning';
+  timeout?: number;
   message: string;
 }
 

@@ -61,6 +61,8 @@ describe('LocationTab', () => {
     describe('when the map is clicked', () => {
       it.todo('updates the location inputs');
 
+      it.todo('dirties the form and triggers validation');
+
       it.todo('moves the pin');
 
       describe('when the form is disabled', () => {

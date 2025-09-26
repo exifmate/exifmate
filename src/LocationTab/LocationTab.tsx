@@ -5,8 +5,8 @@ import TheMap from './TheMap';
 
 function LocationTab() {
   return (
-    <div className="h-full flex flex-col">
-      <div className="min-h-52 grow rounded-xl overflow-clip">
+    <div className="h-full flex flex-col gap-4 pt-4">
+      <div className="min-h-52 grow rounded-box overflow-clip">
         <TheMap />
       </div>
 

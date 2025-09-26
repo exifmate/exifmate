@@ -66,70 +66,70 @@ function MetadataEditor({ selectedImages }: Props) {
   }
 
   return (
-    <div className="h-full">
-      <FormProvider {...form}>
-        <form
-          className="flex flex-col h-full"
-          onSubmit={form.handleSubmit(async (newExif: ExifData) => {
-            await saveMetadata(newExif);
-            setIsEditing(false);
-          })}
+    <FormProvider {...form}>
+      <form
+        className="grow flex flex-1 flex-col overflow-clip"
+        onSubmit={form.handleSubmit(async (newExif: ExifData) => {
+          await saveMetadata(newExif);
+          setIsEditing(false);
+        })}
+      >
+        <Tabs
+          aria-label="Editor Tabs"
+          selectedKey={activeTab}
+          onSelectionChange={(k) => setActiveTab(k as 'EXIF' | 'Location')}
         >
-          <Tabs
-            aria-label="Editor Tabs"
-            selectedKey={activeTab}
-            onSelectionChange={(k) => setActiveTab(k as 'EXIF' | 'Location')}
-          >
-            <Item key="EXIF" title="EXIF">
-              <ExifTab />
-            </Item>
-            <Item key="Location" title="Location">
-              <LocationTab />
-            </Item>
-          </Tabs>
+          <Item key="EXIF" title="EXIF">
+            <ExifTab />
+          </Item>
+          <Item key="Location" title="Location">
+            <LocationTab />
+          </Item>
+        </Tabs>
 
-          <div className="bg-base-200 z-10 px-4 py-2 flex justify-between">
-            {!isEditing ? (
+        <div className="bg-base-200 z-10 px-4 py-2 flex justify-between">
+          {!isEditing ? (
+            <button
+              type="button"
+              className="btn btn-soft btn-sm btn-accent"
+              disabled={form.formState.isSubmitting}
+              onClick={() => setIsEditing(true)}
+            >
+              Edit
+            </button>
+          ) : (
+            <>
               <button
                 type="button"
-                className="btn btn-soft btn-sm btn-accent"
+                className="btn btn-soft btn-sm btn-secondary"
                 disabled={form.formState.isSubmitting}
-                onClick={() => setIsEditing(true)}
+                onClick={() => {
+                  setIsEditing(false);
+                  form.reset();
+                }}
               >
-                Edit
+                Cancel
               </button>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  className="btn btn-soft btn-sm btn-secondary"
-                  disabled={form.formState.isSubmitting}
-                  onClick={() => {
-                    setIsEditing(false);
-                    form.reset();
-                  }}
-                >
-                  Cancel
-                </button>
 
-                <button
-                  type="submit"
-                  className="btn btn-soft btn-sm btn-primary"
-                  disabled={
-                    !form.formState.isValid || form.formState.isSubmitting
-                  }
-                >
-                  {form.formState.isSubmitting && (
-                    <span className="loading loading-spinner loading-sm"></span>
-                  )}
-                  Save
-                </button>
-              </>
-            )}
-          </div>
-        </form>
-      </FormProvider>
-    </div>
+              <button
+                type="submit"
+                className="btn btn-soft btn-sm btn-primary"
+                disabled={
+                  !form.formState.isDirty ||
+                  !form.formState.isValid ||
+                  form.formState.isSubmitting
+                }
+              >
+                {form.formState.isSubmitting && (
+                  <span className="loading loading-spinner loading-sm"></span>
+                )}
+                Save
+              </button>
+            </>
+          )}
+        </div>
+      </form>
+    </FormProvider>
   );
 }
 
