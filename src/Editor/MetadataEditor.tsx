@@ -74,7 +74,6 @@ function MetadataEditor({ selectedImages }: Props) {
           setIsEditing(false);
         })}
       >
-
         <Tabs
           aria-label="Editor Tabs"
           selectedKey={activeTab}
@@ -116,7 +115,9 @@ function MetadataEditor({ selectedImages }: Props) {
                 type="submit"
                 className="btn btn-soft btn-sm btn-primary"
                 disabled={
-                  !form.formState.isDirty || !form.formState.isValid || form.formState.isSubmitting
+                  !form.formState.isDirty ||
+                  !form.formState.isValid ||
+                  form.formState.isSubmitting
                 }
               >
                 {form.formState.isSubmitting && (

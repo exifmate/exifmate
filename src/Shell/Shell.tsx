@@ -31,7 +31,7 @@ function Shell() {
           <MetadataEditor selectedImages={selectedImages} />
         </Panel>
       </PanelGroup>
-    </div >
+    </div>
   );
 }
 

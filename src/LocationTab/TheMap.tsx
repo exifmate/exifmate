@@ -73,8 +73,14 @@ function TheMap() {
       }}
       onClick={({ lngLat: { lat, lng } }) => {
         if (!disabled) {
-          setValue('GPSLatitude', lat, { shouldDirty: true, shouldValidate: true });
-          setValue('GPSLongitude', lng, { shouldDirty: true, shouldValidate: true });
+          setValue('GPSLatitude', lat, {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
+          setValue('GPSLongitude', lng, {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
         }
       }}
       onIdle={onMapIdle}
