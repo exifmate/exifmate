@@ -9,27 +9,29 @@ function Shell() {
   const [selectedImages, setSelectedImages] = useState<ImageInfo[]>([]);
 
   return (
-    <div className="h-screen">
+    <div className="flex flex-col h-screen">
       <Toolbar />
 
-      <PanelGroup direction="horizontal" className="p-2 gap-2 bg-neutral">
+      <PanelGroup direction="horizontal" className="p-2 gap-2">
         <Panel
           defaultSize={65}
-          className="rounded-box bg-base-100 text-neutral-content flex flex-col"
+          className="rounded-box bg-base-100 text-neutral-content"
         >
-          <ImageGrid onImageSelection={setSelectedImages} />
+          <div className="h-full overflow-auto">
+            <ImageGrid onImageSelection={setSelectedImages} />
+          </div>
         </Panel>
 
         <PanelResizeHandle />
 
         <Panel
           defaultSize={35}
-          className="rounded-2xl bg-base-100 text-neutral-content"
+          className="rounded-box bg-base-100 text-neutral-content flex flex-col"
         >
           <MetadataEditor selectedImages={selectedImages} />
         </Panel>
       </PanelGroup>
-    </div>
+    </div >
   );
 }
 

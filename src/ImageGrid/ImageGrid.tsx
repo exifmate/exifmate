@@ -41,7 +41,7 @@ function ImageGrid({ onImageSelection }: Props) {
   }
 
   return (
-    <div className="flex overflow-scroll p-4">
+    <div className="p-4">
       <GridList
         items={images}
         aria-label="Image Grid"

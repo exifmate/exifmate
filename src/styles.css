@@ -11,3 +11,7 @@
   /* biome-ignore lint/correctness/noUnknownProperty: `themes` comes from DaisyUI */
   themes: dim --default;
 }
+
+:root {
+  --root-bg: var(--color-neutral);
+}

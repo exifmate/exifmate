@@ -55,7 +55,7 @@ function TabPanel<T>({ state, ...props }: TabPanelProps<T>) {
   const { tabPanelProps } = useTabPanel(props, state, ref);
 
   return (
-    <div {...tabPanelProps} ref={ref} className="px-2 pb-3 grow overflow-auto">
+    <div {...tabPanelProps} ref={ref} className="px-2 pb-3 grow h-full overflow-auto">
       {state.selectedItem?.props.children}
     </div>
   );
