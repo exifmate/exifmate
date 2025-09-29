@@ -7,6 +7,7 @@ export async function readMetadata(
   images: ImageInfo[],
 ): Promise<ExifData | null> {
   const allMetadata = await invoke('read_metadata', { imgPaths: images.map((i) => i.path) });
+  // TODO: should indicate if it fails to parse or fails at exiftool (at least log)
   const parsed = z.array(ExifData).parse(allMetadata);
   return aggregateExif(parsed);
 }
