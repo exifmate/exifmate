@@ -1,7 +1,7 @@
 import type { ImageInfo } from '@app/platform/file-manager';
-import { ExifData } from './exifdata';
 import { invoke } from '@tauri-apps/api/core';
 import { z } from 'zod/v4';
+import { ExifData } from './exifdata';
 
 export async function readMetadata(
   images: ImageInfo[],
