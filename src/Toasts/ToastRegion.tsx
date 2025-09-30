@@ -1,33 +1,12 @@
-import type { UnlistenFn } from '@tauri-apps/api/event';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { type AriaToastRegionProps, useToastRegion } from 'react-aria';
 import { createPortal } from 'react-dom';
 import { useToastQueue } from 'react-stately';
 import Toast from './Toast';
-import { _toastQueue, onToast, type ToastContent } from './toast-queue';
-
-function useToastState(): ReturnType<typeof useToastQueue<ToastContent>> {
-  const state = useToastQueue<ToastContent>(_toastQueue);
-
-  useEffect(() => {
-    let unlisten: UnlistenFn | undefined;
-
-    onToast((toast) => {
-      state.add(toast, { timeout: toast.timeout });
-    }).then((newUnlisten) => {
-      unlisten = newUnlisten;
-    });
-
-    return () => {
-      unlisten?.();
-    };
-  }, [state.add]);
-
-  return state;
-}
+import { _toastQueue, type ToastContent } from './toast-queue';
 
 function ToastRegion(props: AriaToastRegionProps) {
-  const state = useToastState();
+  const state = useToastQueue<ToastContent>(_toastQueue);
   const ref = useRef(null);
   const { regionProps } = useToastRegion(props, state, ref);
 

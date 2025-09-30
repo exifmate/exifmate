@@ -15,7 +15,6 @@ const EVENT_NAME = 'toast-sent';
 
 export const showToast = (toast: ToastContent) => emit(EVENT_NAME, { toast });
 
-export const onToast = (cb: (toast: ToastContent) => void) =>
-  listen<{ toast: ToastContent }>(EVENT_NAME, (res) => {
-    cb(res.payload.toast);
-  });
+listen<{ toast: ToastContent }>(EVENT_NAME, (res) => {
+  _toastQueue.add(res.payload.toast, { timeout: res.payload.toast.timeout });
+});
