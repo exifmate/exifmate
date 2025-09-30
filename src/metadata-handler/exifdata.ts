@@ -18,10 +18,10 @@ const exifdatetime = z.string().transform((val) => {
 // Need to think about how to handle if an enum gains an option,
 // specifically how to futureproof without needing to update if I stop maintaining
 export const ExifData = z.object({
-  Artist: z.string().optional(),
-  ImageDescription: z.string().optional(),
-  Copyright: z.string().optional(),
-  Software: z.string().or(z.number()).optional(),
+  Artist: z.coerce.string().optional(),
+  ImageDescription: z.coerce.string().optional(),
+  Copyright: z.coerce.string().optional(),
+  Software: z.coerce.string().optional(),
   // UserComment: z.string(), // undef
   DateTimeOriginal: exifdatetime.optional(),
   CreateDate: exifdatetime
@@ -30,9 +30,9 @@ export const ExifData = z.object({
     })
     .optional(),
   ModifyDate: exifdatetime.optional(),
-  Make: z.string().optional(),
-  Model: z.string().optional(),
-  SerialNumber: z
+  Make: z.coerce.string().optional(),
+  Model: z.coerce.string().optional(),
+  SerialNumber: z.coerce
     .string()
     .meta({
       description: 'also called BodySerialNumber',
@@ -41,8 +41,8 @@ export const ExifData = z.object({
   ISO: z.coerce.number().optional(),
   FNumber: z.coerce.string().optional(),
   // ShutterSpeed: z.number().optional(), // doesn't seem to want value at end // TODO: need to not save this
-  FocalLength: z.string().optional(),
-  FocalLengthIn35mmFormat: z
+  FocalLength: z.coerce.string().optional(),
+  FocalLengthIn35mmFormat: z.coerce
     .string()
     .meta({
       description: 'also called FocalLengthIn35mmFilm',
@@ -102,7 +102,7 @@ export const ExifData = z.object({
       'Bulb', // should I note this is non-standard?
     ])
     .optional(),
-  ExposureTime: z.string().or(z.number()).optional(),
+  ExposureTime: z.coerce.string().optional(),
   MeteringMode: z
     .enum([
       'Unknown',
@@ -118,10 +118,10 @@ export const ExifData = z.object({
   WhiteBalance: z.enum(['Auto', 'Manual']).optional(),
   Saturation: z.enum(['Normal', 'Low', 'High']).optional(),
   Sharpness: z.enum(['Normal', 'Soft', 'Hard']).optional(),
-  LensMake: z.string().optional(),
-  LensModel: z.string().optional(),
-  Lens: z.string().optional(),
-  LensSerialNumber: z.string().optional(),
+  LensMake: z.coerce.string().optional(),
+  LensModel: z.coerce.string().optional(),
+  Lens: z.coerce.string().optional(),
+  LensSerialNumber: z.coerce.string().optional(),
   Orientation: z
     .enum([
       'Horizontal (normal)',
