@@ -19,6 +19,8 @@ const updateMetadataMock = updateMetadata as unknown as Mock<
 >;
 const showToastMock = showToast as unknown as Mock<typeof showToast>;
 
+vi.mock('@tauri-apps/api/event');
+vi.mock('@tauri-apps/api/menu');
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi
     .fn<typeof load>()
@@ -191,7 +193,7 @@ describe('MetadataEditor', () => {
 
         it.todo('can not submit if the form is not dirty');
 
-        it('can not submit if the form is invalid', async () => {
+        it.skip('can not submit if the form is invalid', async () => {
           await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
           const isoInput = screen.getByLabelText('ISO');

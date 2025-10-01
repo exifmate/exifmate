@@ -11,6 +11,7 @@ const onImagesOpenedMock = onImagesOpened as unknown as Mock<
   typeof onImagesOpened
 >;
 
+vi.mock('@tauri-apps/api/event');
 vi.mock('@tauri-apps/plugin-fs');
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi.fn<typeof load>(() => new Promise(() => {})),
