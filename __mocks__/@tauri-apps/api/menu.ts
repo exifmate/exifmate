@@ -10,4 +10,6 @@ export const MenuItem = {
 
 export const PredefinedMenuItem = { new: vi.fn() };
 
-export const Submenu = { new: vi.fn().mockReturnValue({ setEnabled: vi.fn() }) };
+export const Submenu = {
+  new: vi.fn().mockReturnValue({ setEnabled: vi.fn() }),
+};

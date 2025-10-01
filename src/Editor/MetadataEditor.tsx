@@ -29,10 +29,11 @@ function MetadataEditor({ selectedImages }: Props) {
     reValidateMode: 'onChange',
   });
 
-  const badState = !form.formState.isDirty ||
+  const badState =
+    !form.formState.isDirty ||
     !form.formState.isValid ||
     form.formState.disabled ||
-    form.formState.isSubmitting
+    form.formState.isSubmitting;
 
   useEffect(() => {
     if (badState) {
@@ -50,7 +51,9 @@ function MetadataEditor({ selectedImages }: Props) {
     let unlisten: UnlistenFn | undefined;
 
     onSaveAction(() => {
-      formRef.current?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+      formRef.current?.dispatchEvent(
+        new Event('submit', { cancelable: true, bubbles: true }),
+      );
     }).then((u) => {
       unlisten = u;
     });

@@ -1,5 +1,10 @@
 import { emit, listen } from '@tauri-apps/api/event';
-import { Menu, MenuItem, PredefinedMenuItem, Submenu } from '@tauri-apps/api/menu';
+import {
+  Menu,
+  MenuItem,
+  PredefinedMenuItem,
+  Submenu,
+} from '@tauri-apps/api/menu';
 import { findImages } from './file-manager';
 
 const SAVE_ACTION = 'save-form';
