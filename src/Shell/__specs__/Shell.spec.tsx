@@ -11,9 +11,11 @@ import { fs } from 'memfs';
 import { ImageOne, ImageTwo } from 'test-support/fake-images';
 import Shell from '../Shell';
 
+vi.mock('@tauri-apps/api/event');
+vi.mock('@tauri-apps/api/menu');
 vi.mock('@tauri-apps/plugin-fs');
 vi.mock('@tauri-apps/plugin-store', () => ({
-  load: vi.fn<typeof load>(() => new Promise(() => {})),
+  load: vi.fn<typeof load>(() => new Promise(() => { })),
 }));
 
 vi.stubGlobal('URL', {
@@ -36,7 +38,7 @@ vi.mock(import('@app/platform/file-manager'), async (importOriginal) => {
           path: '/image-two.jpg',
         },
       ]);
-      return Promise.resolve(() => {});
+      return Promise.resolve(() => { });
     }),
   };
 });

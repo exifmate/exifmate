@@ -11,9 +11,10 @@ const onImagesOpenedMock = onImagesOpened as unknown as Mock<
   typeof onImagesOpened
 >;
 
+vi.mock('@tauri-apps/api/event');
 vi.mock('@tauri-apps/plugin-fs');
 vi.mock('@tauri-apps/plugin-store', () => ({
-  load: vi.fn<typeof load>(() => new Promise(() => {})),
+  load: vi.fn<typeof load>(() => new Promise(() => { })),
 }));
 
 vi.stubGlobal('URL', {
@@ -25,7 +26,7 @@ vi.mock(import('@app/platform/file-manager'), async (importOriginal) => {
 
   return {
     ...actual,
-    onImagesOpened: vi.fn<typeof onImagesOpened>().mockResolvedValue(() => {}),
+    onImagesOpened: vi.fn<typeof onImagesOpened>().mockResolvedValue(() => { }),
   };
 });
 
@@ -55,7 +56,7 @@ describe('ImageGrid', () => {
             path: '/image2.jpg',
           },
         ]);
-        return Promise.resolve(() => {});
+        return Promise.resolve(() => { });
       });
     });
 
