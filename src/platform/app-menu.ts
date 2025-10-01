@@ -1,5 +1,10 @@
-import { Menu, PredefinedMenuItem, Submenu } from '@tauri-apps/api/menu';
+import { emit, listen } from '@tauri-apps/api/event';
+import { Menu, MenuItem, PredefinedMenuItem, Submenu } from '@tauri-apps/api/menu';
 import { findImages } from './file-manager';
+
+const SAVE_ACTION = 'save-form';
+
+export const onSaveAction = (cb: () => void) => listen(SAVE_ACTION, cb);
 
 const appMenu = await Submenu.new({
   text: 'exifmate',
@@ -12,6 +17,15 @@ const appMenu = await Submenu.new({
   ],
 });
 
+export const saveMenuItem = await MenuItem.new({
+  text: 'Save',
+  accelerator: 'CmdOrCtrl+s',
+  enabled: false,
+  async action() {
+    await emit(SAVE_ACTION);
+  },
+});
+
 const fileMenu = await Submenu.new({
   text: 'File',
   items: [
@@ -22,8 +36,8 @@ const fileMenu = await Submenu.new({
         await findImages();
       },
     },
+    saveMenuItem,
   ],
-  // TODO: add save options
 });
 
 const editMenu = await Submenu.new({

@@ -1,9 +1,11 @@
 import Tabs from '@app/components/Tabs';
 import LocationTab from '@app/LocationTab/LocationTab';
 import { ExifData } from '@app/metadata-handler/exifdata';
+import { onSaveAction, saveMenuItem } from '@app/platform/app-menu';
 import type { ImageInfo } from '@app/platform/file-manager';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from 'react';
+import type { UnlistenFn } from '@tauri-apps/api/event';
+import { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Item } from 'react-stately';
 import Center from '../components/Center';
@@ -19,12 +21,40 @@ function MetadataEditor({ selectedImages }: Props) {
   const { loadingStatus, exif, saveMetadata } = useExif(selectedImages);
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const form = useForm({
     disabled: !isEditing,
     resolver: zodResolver(ExifData),
     reValidateMode: 'onChange',
   });
+
+  const badState = !form.formState.isDirty ||
+    !form.formState.isValid ||
+    form.formState.disabled ||
+    form.formState.isSubmitting
+
+  useEffect(() => {
+    if (badState) {
+      saveMenuItem.setEnabled(false);
+    } else {
+      saveMenuItem.setEnabled(true);
+    }
+  }, [badState]);
+
+  useEffect(() => {
+    let unlisten: UnlistenFn | undefined;
+
+    onSaveAction(() => {
+      formRef.current?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    }).then((u) => {
+      unlisten = u;
+    });
+
+    return () => {
+      unlisten?.();
+    };
+  }, []);
 
   useEffect(() => {
     if (exif) {
@@ -69,6 +99,7 @@ function MetadataEditor({ selectedImages }: Props) {
   return (
     <FormProvider {...form}>
       <form
+        ref={formRef}
         className="grow flex flex-1 flex-col overflow-clip"
         onSubmit={form.handleSubmit(async (newExif: ExifData) => {
           await saveMetadata(newExif);
@@ -115,11 +146,7 @@ function MetadataEditor({ selectedImages }: Props) {
               <button
                 type="submit"
                 className="btn btn-soft btn-sm btn-primary"
-                disabled={
-                  !form.formState.isDirty ||
-                  !form.formState.isValid ||
-                  form.formState.isSubmitting
-                }
+                disabled={badState}
               >
                 {form.formState.isSubmitting && (
                   <span className="loading loading-spinner loading-sm"></span>
