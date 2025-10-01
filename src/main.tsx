@@ -1,9 +1,8 @@
-import { createAppMenu } from '@app/platform/app-menu';
-import { isMobile } from '@app/platform/util';
 import Shell from '@app/Shell/Shell';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import ToastRegion from './Toasts/ToastRegion';
+import '@app/platform/app-menu';
 
 const root = document.getElementById('root');
 if (!root) {
@@ -16,7 +15,3 @@ createRoot(root).render(
     <ToastRegion />
   </StrictMode>,
 );
-
-if (!isMobile()) {
-  createAppMenu();
-}
