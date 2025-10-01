@@ -58,19 +58,13 @@ function TheMap() {
 
   return (
     <MapGL
+      reuseMaps
       initialViewState={{
         latitude: initialLoc.lat,
         longitude: initialLoc.lng,
         zoom: initialLoc.zoom,
       }}
       mapStyle="https://tiles.openfreemap.org/styles/bright"
-      onLoad={(m) => {
-        m.target.setCenter({
-          lat: initialLoc.lat,
-          lng: initialLoc.lng,
-        });
-        m.target.setZoom(initialLoc.zoom);
-      }}
       onClick={({ lngLat: { lat, lng } }) => {
         if (!disabled) {
           setValue('GPSLatitude', lat, {
