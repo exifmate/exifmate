@@ -21,16 +21,17 @@ function MetadataEditor({ selectedImages }: Props) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const form = useForm({
-    mode: 'onChange',
     disabled: !isEditing,
     resolver: zodResolver(ExifData),
+    reValidateMode: 'onChange',
   });
 
   useEffect(() => {
     if (exif) {
       form.reset(exif);
+      form.trigger();
     }
-  }, [exif, form.reset]);
+  }, [exif, form.reset, form.trigger]);
 
   useEffect(() => {
     if (selectedImages) {
