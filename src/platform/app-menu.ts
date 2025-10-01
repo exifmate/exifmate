@@ -40,7 +40,7 @@ const fileMenu = await Submenu.new({
   ],
 });
 
-const editMenu = await Submenu.new({
+export const editMenu = await Submenu.new({
   text: 'Edit',
   items: [
     // should i have a note to users that this isn't more than undoing text?
