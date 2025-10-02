@@ -12,7 +12,6 @@ import { ImageOne, ImageTwo } from 'test-support/fake-images';
 import Shell from '../Shell';
 
 vi.mock('@tauri-apps/api/event');
-vi.mock('@tauri-apps/api/menu');
 vi.mock('@tauri-apps/plugin-fs');
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi.fn<typeof load>(() => new Promise(() => {})),

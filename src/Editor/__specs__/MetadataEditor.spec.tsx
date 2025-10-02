@@ -20,7 +20,6 @@ const updateMetadataMock = updateMetadata as unknown as Mock<
 const showToastMock = showToast as unknown as Mock<typeof showToast>;
 
 vi.mock('@tauri-apps/api/event');
-vi.mock('@tauri-apps/api/menu');
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi
     .fn<typeof load>()

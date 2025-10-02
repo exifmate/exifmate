@@ -5,12 +5,12 @@ import { MdWarning } from 'react-icons/md';
 
 type ThumbnailState =
   | {
-    state: 'loading' | 'failed';
-  }
+      state: 'loading' | 'failed';
+    }
   | {
-    state: 'resolved';
-    assetUrl: string;
-  };
+      state: 'resolved';
+      assetUrl: string;
+    };
 
 function ImageCard({ path, filename }: ImageInfo) {
   const [thumbnail, setThumbnail] = useState<ThumbnailState>({
