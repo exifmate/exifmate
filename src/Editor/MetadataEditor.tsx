@@ -1,7 +1,7 @@
 import Tabs from '@app/components/Tabs';
 import LocationTab from '@app/LocationTab/LocationTab';
 import { ExifData } from '@app/metadata-handler/exifdata';
-import { editMenu, onSaveAction, saveMenuItem } from '@app/platform/app-menu';
+import { onSaveAction, setEditMenuEnabled, setSaveMenuItemEnabled } from '@app/platform/app-menu';
 import type { ImageInfo } from '@app/platform/file-manager';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { UnlistenFn } from '@tauri-apps/api/event';
@@ -36,15 +36,11 @@ function MetadataEditor({ selectedImages }: Props) {
     form.formState.isSubmitting;
 
   useEffect(() => {
-    if (badState) {
-      saveMenuItem.setEnabled(false);
-    } else {
-      saveMenuItem.setEnabled(true);
-    }
+    setSaveMenuItemEnabled(!badState);
   }, [badState]);
 
   useEffect(() => {
-    editMenu.setEnabled(!form.formState.disabled);
+    setEditMenuEnabled(!form.formState.disabled);
   }, [form.formState.disabled]);
 
   useEffect(() => {
