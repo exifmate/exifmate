@@ -5,12 +5,12 @@ import { MdWarning } from 'react-icons/md';
 
 type ThumbnailState =
   | {
-      state: 'loading' | 'failed';
-    }
+    state: 'loading' | 'failed';
+  }
   | {
-      state: 'resolved';
-      assetUrl: string;
-    };
+    state: 'resolved';
+    assetUrl: string;
+  };
 
 function ImageCard({ path, filename }: ImageInfo) {
   const [thumbnail, setThumbnail] = useState<ThumbnailState>({
@@ -32,7 +32,7 @@ function ImageCard({ path, filename }: ImageInfo) {
   }, [path]);
 
   return (
-    <div className="card card-xs w-56 bg-neutral">
+    <div className="card card-xs w-56 bg-neutral cursor-pointer">
       {thumbnail.state === 'loading' ? (
         <div className="skeleton h-56 w-56"></div>
       ) : (
