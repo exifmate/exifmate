@@ -1,7 +1,11 @@
 import Tabs from '@app/components/Tabs';
 import LocationTab from '@app/LocationTab/LocationTab';
 import { ExifData } from '@app/metadata-handler/exifdata';
-import { onSaveAction, setEditMenuEnabled, setSaveMenuItemEnabled } from '@app/platform/app-menu';
+import {
+  onSaveAction,
+  setEditMenuEnabled,
+  setSaveMenuItemEnabled,
+} from '@app/platform/app-menu';
 import type { ImageInfo } from '@app/platform/file-manager';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { UnlistenFn } from '@tauri-apps/api/event';

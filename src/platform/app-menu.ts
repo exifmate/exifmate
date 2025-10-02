@@ -13,8 +13,10 @@ const EDIT_MENU_ENABLED = 'edit-enabled';
 
 export const onSaveAction = (cb: () => void) => listen(SAVE_ACTION, cb);
 
-export const setSaveMenuItemEnabled = (isEnabled: boolean) => emit(SAVE_MENU_ENABLED, { isEnabled });
-export const setEditMenuEnabled = (isEnabled: boolean) => emit(EDIT_MENU_ENABLED, { isEnabled });
+export const setSaveMenuItemEnabled = (isEnabled: boolean) =>
+  emit(SAVE_MENU_ENABLED, { isEnabled });
+export const setEditMenuEnabled = (isEnabled: boolean) =>
+  emit(EDIT_MENU_ENABLED, { isEnabled });
 
 export async function createAppMenu() {
   const appMenu = await Submenu.new({
@@ -37,9 +39,12 @@ export async function createAppMenu() {
     },
   });
 
-  listen<{ isEnabled: boolean }>(SAVE_MENU_ENABLED, ({ payload: { isEnabled } }) => {
-    saveMenuItem.setEnabled(isEnabled);
-  });
+  listen<{ isEnabled: boolean }>(
+    SAVE_MENU_ENABLED,
+    ({ payload: { isEnabled } }) => {
+      saveMenuItem.setEnabled(isEnabled);
+    },
+  );
 
   const fileMenu = await Submenu.new({
     text: 'File',
@@ -70,9 +75,12 @@ export async function createAppMenu() {
     ],
   });
 
-  listen<{ isEnabled: boolean }>(EDIT_MENU_ENABLED, ({ payload: { isEnabled } }) => {
-    editMenu.setEnabled(isEnabled);
-  });
+  listen<{ isEnabled: boolean }>(
+    EDIT_MENU_ENABLED,
+    ({ payload: { isEnabled } }) => {
+      editMenu.setEnabled(isEnabled);
+    },
+  );
 
   const viewMenu = await Submenu.new({
     text: 'View',
