@@ -8,5 +8,8 @@ export async function updateMetadata(
   images: ImageInfo[],
   newData: Partial<ExifData>,
 ) {
-  await invoke('write_metadata', { newData, imgPaths: images.map((i) => i.path) });
+  await invoke('write_metadata', {
+    newData,
+    imgPaths: images.map((i) => i.path),
+  });
 }
