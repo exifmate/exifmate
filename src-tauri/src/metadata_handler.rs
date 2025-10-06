@@ -52,7 +52,6 @@ pub fn read_metadata(img_paths: Vec<String>) -> Result<Vec<ImageData>, String> {
 
 #[tauri::command]
 pub fn write_metadata(img_paths: Vec<String>, new_data: ImageData) -> Result<(), String> {
-    println!("writing!!");
     let Ok(mut exiftool) = ExifTool::new() else {
         return Err("Failed initiating exiftool".to_string());
     };
