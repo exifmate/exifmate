@@ -26,10 +26,12 @@ export async function findImages() {
     }
 
     const images: ImageInfo[] = await Promise.all(
-      paths.map(async (path): Promise<ImageInfo> => ({
-        path,
-        filename: await basename(path),
-      })),
+      paths.map(
+        async (path): Promise<ImageInfo> => ({
+          path,
+          filename: await basename(path),
+        }),
+      ),
     );
 
     await imagesOpened(images);
