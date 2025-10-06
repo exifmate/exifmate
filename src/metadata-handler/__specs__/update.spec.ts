@@ -6,15 +6,6 @@ import { updateMetadata } from '../update';
 
 vi.mock('@tauri-apps/plugin-fs');
 
-vi.mock(import('@app/platform/util'), async (importOriginal) => {
-  const mod = await importOriginal();
-
-  return {
-    ...mod,
-    isMobile: vi.fn().mockReturnValue(false),
-  };
-});
-
 describe('updateMetadata', () => {
   beforeEach(async () => {
     await Promise.all([

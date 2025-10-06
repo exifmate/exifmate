@@ -2,7 +2,6 @@ import { showToast } from '@app/Toasts/toast-queue';
 import { emit, listen } from '@tauri-apps/api/event';
 import { basename } from '@tauri-apps/api/path';
 import { open } from '@tauri-apps/plugin-dialog';
-import { isMobile } from './util';
 
 export interface ImageInfo {
   filename: string;
@@ -27,14 +26,10 @@ export async function findImages() {
     }
 
     const images: ImageInfo[] = await Promise.all(
-      paths.map(async (path): Promise<ImageInfo> => {
-        const filePath = isMobile() ? new URL(path).pathname : path;
-
-        return {
-          path,
-          filename: await basename(filePath),
-        };
-      }),
+      paths.map(async (path): Promise<ImageInfo> => ({
+        path,
+        filename: await basename(path),
+      })),
     );
 
     await imagesOpened(images);
