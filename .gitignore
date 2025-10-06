@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 .vite
 out
+
+# ExifTool build
+src-tauri/resources/exiftool/

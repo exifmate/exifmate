@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::fmt;
 use std::{collections::HashMap, path::Path};
+use tauri::path::BaseDirectory;
+use tauri::Manager;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -32,8 +34,18 @@ fn map_json(val: &Value) -> Result<ImageData, serde_json::Error> {
 }
 
 #[tauri::command]
-pub fn read_metadata(img_paths: Vec<String>) -> Result<Vec<ImageData>, String> {
-    let Ok(mut exiftool) = ExifTool::new() else {
+pub fn read_metadata(
+    handle: tauri::AppHandle,
+    img_paths: Vec<String>,
+) -> Result<Vec<ImageData>, String> {
+    let Ok(exiftool_path) = handle
+        .path()
+        .resolve("resources/exiftool/exiftool", BaseDirectory::Resource)
+    else {
+        return Err("Failed to get path to exiftool".to_string());
+    };
+
+    let Ok(mut exiftool) = ExifTool::with_executable(exiftool_path.as_path()) else {
         return Err("Failed initiating exiftool".to_string());
     };
 
