@@ -4,7 +4,7 @@ mod metadata_handler;
 fn read_metadata(
     handle: tauri::AppHandle,
     img_paths: Vec<String>,
-) -> Result<Vec<metadata_handler::ImageData>, String> {
+) -> Result<metadata_handler::ImageData, String> {
     metadata_handler::load_metadata(handle, img_paths)
 }
 

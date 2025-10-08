@@ -2,12 +2,14 @@ use exiftool::ExifTool;
 use serde;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::collections::{HashMap, HashSet};
 use std::fmt;
-use std::{collections::HashMap, path::Path};
+use std::path::Path;
+use std::string::String;
 use tauri::path::BaseDirectory;
 use tauri::Manager;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(untagged)]
 pub enum ExifValue {
     String(String),
@@ -36,7 +38,7 @@ fn map_json(val: &Value) -> Result<ImageData, serde_json::Error> {
 pub fn load_metadata(
     handle: tauri::AppHandle,
     img_paths: Vec<String>,
-) -> Result<Vec<ImageData>, String> {
+) -> Result<ImageData, String> {
     let Ok(exiftool_path) = handle
         .path()
         .resolve("resources/exiftool/exiftool", BaseDirectory::Resource)
@@ -54,11 +56,11 @@ pub fn load_metadata(
         return Err("Failed running exiftool".to_string());
     };
 
-    let Ok(converted) = exif_data.iter().map(map_json).collect() else {
+    let Ok(converted): Result<Vec<ImageData>, _> = exif_data.iter().map(map_json).collect() else {
         return Err("Failed mapping exif data".to_string());
     };
 
-    Ok(converted)
+    Ok(aggregate_exif(&converted))
 }
 
 pub fn save_metadata(img_paths: Vec<String>, new_data: ImageData) -> Result<(), String> {
@@ -92,5 +94,117 @@ pub fn save_metadata(img_paths: Vec<String>, new_data: ImageData) -> Result<(), 
             eprintln!("Failed to convert data: {}", e);
             Err("Failed updating metadata".to_string())
         }
+    }
+}
+
+fn aggregate_exif(items: &Vec<ImageData>) -> ImageData {
+    let mut result = HashMap::<String, ExifValue>::new();
+
+    if items.is_empty() {
+        return result;
+    }
+
+    let mut all_keys = HashSet::new();
+    for item in items {
+        for key in item.keys() {
+            all_keys.insert(key.clone());
+        }
+    }
+
+    for key in all_keys {
+        let Some(first_item) = items.first() else {
+            continue;
+        };
+        let Some(common_value) = first_item.get(&key) else {
+            continue;
+        };
+
+        let all_same = items
+            .iter()
+            .all(|item| item.get(&key) == Some(common_value));
+
+        if all_same {
+            result.insert(key, common_value.clone());
+        }
+    }
+
+    result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_add() {
+        let first = ImageData::from([
+            ("Artist".to_string(), ExifValue::String("".to_string())),
+            (
+                "ImageDescription".to_string(),
+                ExifValue::String("test".to_string()),
+            ),
+            ("Make".to_string(), ExifValue::String("foo".to_string())),
+            (
+                "Orientation".to_string(),
+                ExifValue::String("Horizontal (normal)".to_string()),
+            ),
+            (
+                "WhiteBalance".to_string(),
+                ExifValue::String("Auto".to_string()),
+            ),
+            ("SerialNumber".to_string(), ExifValue::Number(123.0)),
+            ("LensSerialNumber".to_string(), ExifValue::Number(1.0)),
+            ("DateTimeOriginal".to_string(), ExifValue::Null),
+        ]);
+        let second = ImageData::from([
+            ("Artist".to_string(), ExifValue::String("".to_string())),
+            (
+                "ImageDescription".to_string(),
+                ExifValue::String("test".to_string()),
+            ),
+            ("Make".to_string(), ExifValue::String("bar".to_string())),
+            (
+                "Orientation".to_string(),
+                ExifValue::String("Horizontal (normal)".to_string()),
+            ),
+            (
+                "WhiteBalance".to_string(),
+                ExifValue::String("Auto".to_string()),
+            ),
+            ("SerialNumber".to_string(), ExifValue::Number(123.0)),
+            ("LensSerialNumber".to_string(), ExifValue::Number(2.0)),
+            ("DateTimeOriginal".to_string(), ExifValue::Null),
+        ]);
+        let third = ImageData::from([
+            ("Artist".to_string(), ExifValue::String("".to_string())),
+            (
+                "ImageDescription".to_string(),
+                ExifValue::String("test".to_string()),
+            ),
+            ("Make".to_string(), ExifValue::String("foo".to_string())),
+            (
+                "WhiteBalance".to_string(),
+                ExifValue::String("Auto".to_string()),
+            ),
+            ("SerialNumber".to_string(), ExifValue::Number(123.0)),
+            ("LensSerialNumber".to_string(), ExifValue::Number(3.0)),
+            ("DateTimeOriginal".to_string(), ExifValue::Null),
+        ]);
+
+        let expected = ImageData::from([
+            ("Artist".to_string(), ExifValue::String("".to_string())),
+            (
+                "ImageDescription".to_string(),
+                ExifValue::String("test".to_string()),
+            ),
+            (
+                "WhiteBalance".to_string(),
+                ExifValue::String("Auto".to_string()),
+            ),
+            ("SerialNumber".to_string(), ExifValue::Number(123.0)),
+            ("DateTimeOriginal".to_string(), ExifValue::Null),
+        ]);
+
+        assert_eq!(aggregate_exif(&Vec::from([first, second, third])), expected);
     }
 }
