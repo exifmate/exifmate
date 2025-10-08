@@ -23,7 +23,6 @@
     "@tauri-apps/plugin-os": "~2",
     "@tauri-apps/plugin-store": "~2",
     "@tauri-apps/plugin-window-state": "~2",
-    "@uswriting/exiftool": "^1.0.4",
     "classnames": "^2.5.1",
     "daisyui": "^5.0.51",
     "dayjs": "^1.11.13",

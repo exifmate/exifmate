@@ -1,50 +1,35 @@
-import type { ImageInfo } from '@app/platform/file-manager';
-import { fs } from 'memfs';
-import { ImageOne, ImageTwo } from 'test-support/fake-images';
-import { readMetadata } from '../read';
+import { invoke } from '@tauri-apps/api/core';
+import type { Mock } from 'vitest';
 import { updateMetadata } from '../update';
 
-vi.mock('@tauri-apps/plugin-fs');
+const mockInvoke = invoke as unknown as Mock<typeof invoke>;
 
-vi.mock(import('@app/platform/util'), async (importOriginal) => {
-  const mod = await importOriginal();
-
-  return {
-    ...mod,
-    isMobile: vi.fn().mockReturnValue(false),
-  };
-});
+vi.mock('@tauri-apps/api/core');
 
 describe('updateMetadata', () => {
-  beforeEach(async () => {
-    await Promise.all([
-      fs.promises.writeFile('/image-one.jpg', ImageOne),
-      fs.promises.writeFile('/image-two.jpg', ImageTwo),
-    ]);
-  });
-
-  it('updates the metadata for the given images', async () => {
-    const images: ImageInfo[] = [
-      { path: '/image-one.jpg', filename: 'one' },
-      { path: '/image-two.jpg', filename: 'two' },
-    ];
-    await updateMetadata(images, { FNumber: '2' });
-
-    const exif = await readMetadata(images);
-    expect(exif).toEqual(
-      expect.objectContaining({ FNumber: '2', Make: 'Test' }),
+  it('calls a Tauri command to write metadata', async () => {
+    expect(mockInvoke).not.toHaveBeenCalled();
+    const newData = { Artist: 'Test' };
+    await updateMetadata(
+      [
+        { path: 'one.jpg', filename: 'one' },
+        { path: 'two.jpg', filename: 'two' },
+      ],
+      newData,
     );
+    expect(mockInvoke).toHaveBeenCalledExactlyOnceWith('write_metadata', {
+      newData,
+      imgPaths: ['one.jpg', 'two.jpg'],
+    });
   });
 
   describe('when an image fails to save', () => {
-    it.todo('indicates the error');
-  });
+    it('indicates the error', async () => {
+      mockInvoke.mockRejectedValueOnce('no');
 
-  describe('when there is a warning', () => {
-    it.todo('warns of the warning');
-  });
-
-  describe('when GPSLatitude or GPSLongitude is set', () => {
-    it.todo('updates the respective ref');
+      await expect(async () => {
+        await updateMetadata([{ path: 'one.jpg', filename: 'one' }], {});
+      }).rejects.toThrowError('no');
+    });
   });
 });

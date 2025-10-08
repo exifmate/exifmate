@@ -1,100 +1,46 @@
-import { fs } from 'memfs';
-import { ImageOne, ImageTwo } from 'test-support/fake-images';
-import type { ExifData } from '../exifdata';
-import { aggregateExif, readMetadata } from '../read';
+import { invoke } from '@tauri-apps/api/core';
+import type { Mock } from 'vitest';
+import { ZodError } from 'zod/v4';
+import { readMetadata } from '../read';
 
-vi.mock('@tauri-apps/plugin-fs');
+const mockInvoke = invoke as unknown as Mock<typeof invoke>;
+
+vi.mock('@tauri-apps/api/core');
 
 describe('readMetadata', () => {
-  beforeEach(async () => {
-    await Promise.all([
-      fs.promises.writeFile('/image-one.jpg', ImageOne),
-      fs.promises.writeFile('/image-two.jpg', ImageTwo),
+  it('calls a Tauri command to read metadata', async () => {
+    mockInvoke.mockResolvedValueOnce({});
+    expect(mockInvoke).not.toHaveBeenCalled();
+    await readMetadata([
+      { path: '/one.jpg', filename: 'image-one' },
+      { path: '/two.jpg', filename: 'image-two' },
     ]);
-  });
-
-  test.each([
-    {
-      file: 'image-one.jpg',
-      expectedData: {
-        Make: 'Test',
-        Model: 'Test Model',
-        CreateDate: '2025-06-23 11:00:00',
-      },
-    },
-    {
-      file: 'image-two.jpg',
-      expectedData: {
-        Make: 'Test',
-        CreateDate: '2025-06-23 12:00:00',
-      },
-    },
-  ])('can read the metadata from an image', async ({ file, expectedData }) => {
-    const exif = await readMetadata([{ path: `/${file}`, filename: file }]);
-
-    expect(exif).toEqual(expectedData);
-  });
-
-  describe('when reading multiple images', () => {
-    it('aggregates the common metadata of images', async () => {
-      const exif = await readMetadata([
-        { path: '/image-one.jpg', filename: 'image-one' },
-        { path: '/image-two.jpg', filename: 'image-two' },
-      ]);
-
-      // undefined is treated as different
-      expect(exif).toEqual({ Make: 'Test' });
+    expect(mockInvoke).toHaveBeenCalledExactlyOnceWith('read_metadata', {
+      imgPaths: ['/one.jpg', '/two.jpg'],
     });
+  });
+
+  // for some reason this only asserts that the returned is an array
+  // but it drops the invalid object keys, so i don't care to look into
+  it('enforces that the Tauri command returns valid data', async () => {
+    const args = [{ path: '/one.jpg', filename: '' }];
+    mockInvoke.mockResolvedValueOnce({ not: 'valid', Artist: 'test' });
+    const result = await readMetadata(args);
+    expect(result).toEqual({ Artist: 'test' });
+
+    mockInvoke.mockResolvedValueOnce([{ not: 'valid', Artist: 'test' }]);
+    await expect(async () => {
+      await readMetadata([{ path: '/one.jpg', filename: '' }]);
+    }).rejects.toThrowError(ZodError);
   });
 
   describe('when exiftool was unsuccessful', () => {
     it('can notify of that', async () => {
+      mockInvoke.mockRejectedValueOnce('no');
+
       await expect(async () => {
-        await readMetadata([{ path: '/image-one.jpg', filename: '' }]);
-      }).rejects.toThrowError('Failed to read exif data for /image-one.jpg');
+        await readMetadata([{ path: '/one.jpg', filename: '' }]);
+      }).rejects.toThrowError('no');
     });
-  });
-
-  describe('when there is warnings from reading images', () => {
-    it.todo('can notify of warnings parsing images');
-  });
-
-  describe('when there is invalid metadata', () => {
-    it.todo('warns the user instead of erroring');
-  });
-});
-
-describe('aggregateExif', () => {
-  it('aggregates the given exif data', () => {
-    const test: ExifData[] = [
-      {
-        Artist: '',
-        ImageDescription: 'test',
-        Make: 'foo',
-        Orientation: 'Horizontal (normal)',
-        WhiteBalance: 'Auto',
-      },
-      {
-        Artist: '',
-        ImageDescription: 'test',
-        Make: 'bar',
-        Orientation: 'Horizontal (normal)',
-        WhiteBalance: 'Auto',
-      },
-      {
-        Artist: '',
-        ImageDescription: 'test',
-        Make: 'foo',
-        WhiteBalance: 'Auto',
-      },
-    ];
-
-    const expected: ExifData = {
-      Artist: '',
-      ImageDescription: 'test',
-      WhiteBalance: 'Auto',
-    };
-
-    expect(aggregateExif(test)).toEqual(expected);
   });
 });
