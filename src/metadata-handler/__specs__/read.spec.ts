@@ -26,7 +26,7 @@ describe('readMetadata', () => {
     const args = [{ path: '/one.jpg', filename: '' }];
     mockInvoke.mockResolvedValueOnce({ not: 'valid', Artist: 'test' });
     const result = await readMetadata(args);
-    expect(result).toEqual({ Artist: 'test' })
+    expect(result).toEqual({ Artist: 'test' });
 
     mockInvoke.mockResolvedValueOnce([{ not: 'valid', Artist: 'test' }]);
     await expect(async () => {
