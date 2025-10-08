@@ -27,14 +27,13 @@ impl fmt::Display for ExifValue {
     }
 }
 
-type ImageData = HashMap<String, ExifValue>;
+pub type ImageData = HashMap<String, ExifValue>;
 
 fn map_json(val: &Value) -> Result<ImageData, serde_json::Error> {
     Ok(serde_json::from_value(val.clone())?)
 }
 
-#[tauri::command]
-pub fn read_metadata(
+pub fn load_metadata(
     handle: tauri::AppHandle,
     img_paths: Vec<String>,
 ) -> Result<Vec<ImageData>, String> {
@@ -62,8 +61,7 @@ pub fn read_metadata(
     Ok(converted)
 }
 
-#[tauri::command]
-pub fn write_metadata(img_paths: Vec<String>, new_data: ImageData) -> Result<(), String> {
+pub fn save_metadata(img_paths: Vec<String>, new_data: ImageData) -> Result<(), String> {
     let Ok(mut exiftool) = ExifTool::new() else {
         return Err("Failed initiating exiftool".to_string());
     };
