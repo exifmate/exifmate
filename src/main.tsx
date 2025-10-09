@@ -2,6 +2,7 @@ import { createAppMenu } from '@app/platform/app-menu';
 import Shell from '@app/Shell/Shell';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import SettingsModal from './SettingsModal/SettingsModal';
 import ToastRegion from './Toasts/ToastRegion';
 
 const root = document.getElementById('root');
@@ -13,6 +14,7 @@ createRoot(root).render(
   <StrictMode>
     <Shell />
     <ToastRegion />
+    <SettingsModal />
   </StrictMode>,
 );
 
