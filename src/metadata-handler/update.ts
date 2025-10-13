@@ -1,6 +1,6 @@
 import type { ImageInfo } from '@app/platform/file-manager';
-import { Command } from '@tauri-apps/plugin-shell';
 import type { ExifData } from './exifdata';
+import { execute } from './exiftool';
 
 // TODO: should consider making empty values be nulled
 export async function updateMetadata(
@@ -18,18 +18,10 @@ export async function updateMetadata(
       return `-${key}=${newData[key as keyof ExifData]}`
     });
 
-  const res = await Command.create(
-    'exiftool',
-    [
-      '-q',
-      '-c',
-      '%+.9f',
-      ...tagArgs,
-      ...imgPaths,
-    ],
-  ).execute();
-
-  if (res.stderr || res.code !== 0) {
-    throw new Error(res.stderr);
-  }
+  await execute([
+    '-c',
+    '%+.9f',
+    ...tagArgs,
+    ...imgPaths,
+  ]);
 }
