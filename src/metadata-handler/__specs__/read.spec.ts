@@ -1,46 +1,75 @@
-import { invoke } from '@tauri-apps/api/core';
 import type { Mock } from 'vitest';
-import { ZodError } from 'zod/v4';
-import { readMetadata } from '../read';
+import type { ExifData } from '../exifdata';
+import { execute } from '../exiftool';
+import { aggregateData, readMetadata } from '../read';
 
-const mockInvoke = invoke as unknown as Mock<typeof invoke>;
-
-vi.mock('@tauri-apps/api/core');
+const mockExecute = execute as unknown as Mock<typeof execute>;
+vi.mock('../exiftool');
 
 describe('readMetadata', () => {
-  it('calls a Tauri command to read metadata', async () => {
-    mockInvoke.mockResolvedValueOnce({});
-    expect(mockInvoke).not.toHaveBeenCalled();
+  it('calls exiftool read metadata', async () => {
+    mockExecute.mockResolvedValueOnce('[{}]');
+    expect(mockExecute).not.toHaveBeenCalled();
     await readMetadata([
       { path: '/one.jpg', filename: 'image-one' },
       { path: '/two.jpg', filename: 'image-two' },
     ]);
-    expect(mockInvoke).toHaveBeenCalledExactlyOnceWith('read_metadata', {
-      imgPaths: ['/one.jpg', '/two.jpg'],
-    });
+
+    const expected = expect.arrayContaining(['/one.jpg', '/two.jpg']);
+    expect(mockExecute).toHaveBeenCalledExactlyOnceWith(expected);
   });
 
-  // for some reason this only asserts that the returned is an array
-  // but it drops the invalid object keys, so i don't care to look into
-  it('enforces that the Tauri command returns valid data', async () => {
+  it('enforces that the exiftool command returns valid data', async () => {
     const args = [{ path: '/one.jpg', filename: '' }];
-    mockInvoke.mockResolvedValueOnce({ not: 'valid', Artist: 'test' });
+    mockExecute.mockResolvedValueOnce(
+      JSON.stringify([{ not: 'valid', Artist: 'test' }])
+    );
     const result = await readMetadata(args);
     expect(result).toEqual({ Artist: 'test' });
-
-    mockInvoke.mockResolvedValueOnce([{ not: 'valid', Artist: 'test' }]);
-    await expect(async () => {
-      await readMetadata([{ path: '/one.jpg', filename: '' }]);
-    }).rejects.toThrowError(ZodError);
   });
 
   describe('when exiftool was unsuccessful', () => {
     it('can notify of that', async () => {
-      mockInvoke.mockRejectedValueOnce('no');
+      mockExecute.mockRejectedValueOnce('no');
 
       await expect(async () => {
         await readMetadata([{ path: '/one.jpg', filename: '' }]);
       }).rejects.toThrowError('no');
     });
+  });
+});
+
+describe('aggregateExif', () => {
+  it('aggregates the given exif data', () => {
+    const test: ExifData[] = [
+      {
+        Artist: '',
+        ImageDescription: 'test',
+        Make: 'foo',
+        Orientation: 'Horizontal (normal)',
+        WhiteBalance: 'Auto',
+      },
+      {
+        Artist: '',
+        ImageDescription: 'test',
+        Make: 'bar',
+        Orientation: 'Horizontal (normal)',
+        WhiteBalance: 'Auto',
+      },
+      {
+        Artist: '',
+        ImageDescription: 'test',
+        Make: 'foo',
+        WhiteBalance: 'Auto',
+      },
+    ];
+
+    const expected: ExifData = {
+      Artist: '',
+      ImageDescription: 'test',
+      WhiteBalance: 'Auto',
+    };
+
+    expect(aggregateData(test)).toEqual(expected);
   });
 });

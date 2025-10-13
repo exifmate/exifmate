@@ -14,24 +14,24 @@ export async function readMetadata(
   ]);
 
   const parsed = JSON.parse(output);
-  const allMetadata = aggregateExif(parsed);
+  const allMetadata = aggregateData(parsed);
 
   // TODO: should indicate if it fails to parse or fails at exiftool (at least log)
   return ExifData.parse(allMetadata);
 }
 
-export function aggregateExif(items: ExifData[]): ExifData {
-  const result: ExifData = {};
+export function aggregateData(items: Record<string, unknown>[]): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
 
   if (items.length === 0) {
     return result;
   }
 
-  const allKeys = new Set<keyof ExifData>();
+  const allKeys = new Set<string>();
 
   for (const item of items) {
     for (const key in item) {
-      allKeys.add(key as keyof ExifData);
+      allKeys.add(key);
     }
   }
 
@@ -44,7 +44,7 @@ export function aggregateExif(items: ExifData[]): ExifData {
     });
 
     if (allValuesAreSame) {
-      (result as Record<keyof ExifData, unknown>)[key] = commonValue;
+      result[key] = commonValue;
     }
   }
 
