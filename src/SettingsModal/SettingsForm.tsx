@@ -26,7 +26,6 @@ function SettingsForm({ onSubmit, children }: Props) {
 
   return (
     <form
-      id="settings-form"
       onSubmit={handleSubmit(async (newSettings) => {
         await saveSettings(newSettings);
         await showToast({
