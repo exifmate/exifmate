@@ -1,15 +1,20 @@
-import { invoke } from '@tauri-apps/api/core';
 import type { Mock } from 'vitest';
+import type { ExifData } from '../exifdata';
+import { execute } from '../exiftool';
 import { updateMetadata } from '../update';
 
-const mockInvoke = invoke as unknown as Mock<typeof invoke>;
-
-vi.mock('@tauri-apps/api/core');
+const mockExecute = execute as unknown as Mock<typeof execute>;
+vi.mock('../exiftool');
 
 describe('updateMetadata', () => {
-  it('calls a Tauri command to write metadata', async () => {
-    expect(mockInvoke).not.toHaveBeenCalled();
-    const newData = { Artist: 'Test' };
+  it('calls exiftool to write metadata', async () => {
+    expect(mockExecute).not.toHaveBeenCalled();
+
+    const newData: ExifData = {
+      Artist: 'Test',
+      GPSLatitude: 1,
+      GPSLongitude: 2,
+    };
     await updateMetadata(
       [
         { path: 'one.jpg', filename: 'one' },
@@ -17,15 +22,21 @@ describe('updateMetadata', () => {
       ],
       newData,
     );
-    expect(mockInvoke).toHaveBeenCalledExactlyOnceWith('write_metadata', {
-      newData,
-      imgPaths: ['one.jpg', 'two.jpg'],
-    });
+
+    expect(mockExecute).toHaveBeenCalledExactlyOnceWith(
+      expect.arrayContaining([
+        '-Artist=Test',
+        '-GPSLatitude*=1',
+        '-GPSLongitude*=2',
+        'one.jpg',
+        'two.jpg',
+      ]),
+    );
   });
 
   describe('when an image fails to save', () => {
     it('indicates the error', async () => {
-      mockInvoke.mockRejectedValueOnce('no');
+      mockExecute.mockRejectedValueOnce('no');
 
       await expect(async () => {
         await updateMetadata([{ path: 'one.jpg', filename: 'one' }], {});
