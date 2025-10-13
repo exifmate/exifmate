@@ -1,27 +1,19 @@
 import type { ImageInfo } from '@app/platform/file-manager';
-import { Command } from '@tauri-apps/plugin-shell';
 import { ExifData } from './exifdata';
+import { execute } from './exiftool';
 
 export async function readMetadata(
   images: ImageInfo[],
 ): Promise<ExifData | null> {
   const imgPaths = images.map((i) => i.path);
-  const res = await Command.create(
-    'exiftool',
-    [
-      '-q',
-      '-json',
-      '-c',
-      '%+.9f',
-      ...imgPaths,
-    ],
-  ).execute();
+  const output = await execute([
+    '-json',
+    '-c',
+    '%+.9f',
+    ...imgPaths,
+  ]);
 
-  if (res.stderr || res.code !== 0) {
-    throw new Error(res.stderr);
-  }
-
-  const parsed = JSON.parse(res.stdout);
+  const parsed = JSON.parse(output);
   const allMetadata = aggregateExif(parsed);
 
   // TODO: should indicate if it fails to parse or fails at exiftool (at least log)
