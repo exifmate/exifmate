@@ -7,10 +7,12 @@ import {
 } from '@tauri-apps/api/menu';
 import { findImages } from './file-manager';
 
+const OPEN_SETTINGS = 'open-settings';
 const SAVE_ACTION = 'save-form';
 const SAVE_MENU_ENABLED = 'save-enabled';
 const EDIT_MENU_ENABLED = 'edit-enabled';
 
+export const onOpenSettings = (cb: () => void) => listen(OPEN_SETTINGS, cb);
 export const onSaveAction = (cb: () => void) => listen(SAVE_ACTION, cb);
 
 export const setSaveMenuItemEnabled = (isEnabled: boolean) =>
@@ -22,6 +24,14 @@ export async function createAppMenu() {
   const appMenu = await Submenu.new({
     text: 'exifmate',
     items: [
+      {
+        text: 'Settings...',
+        accelerator: 'CmdOrCtrl+,',
+        async action() {
+          await emit(OPEN_SETTINGS);
+        },
+      },
+      await PredefinedMenuItem.new({ item: 'Separator' }),
       await PredefinedMenuItem.new({ item: 'Hide' }),
       await PredefinedMenuItem.new({ item: 'HideOthers' }),
       await PredefinedMenuItem.new({ item: 'ShowAll' }),
