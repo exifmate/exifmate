@@ -22,7 +22,7 @@ describe('readMetadata', () => {
   it('enforces that the exiftool command returns valid data', async () => {
     const args = [{ path: '/one.jpg', filename: '' }];
     mockExecute.mockResolvedValueOnce(
-      JSON.stringify([{ not: 'valid', Artist: 'test' }])
+      JSON.stringify([{ not: 'valid', Artist: 'test' }]),
     );
     const result = await readMetadata(args);
     expect(result).toEqual({ Artist: 'test' });

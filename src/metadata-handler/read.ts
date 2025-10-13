@@ -6,12 +6,7 @@ export async function readMetadata(
   images: ImageInfo[],
 ): Promise<ExifData | null> {
   const imgPaths = images.map((i) => i.path);
-  const output = await execute([
-    '-json',
-    '-c',
-    '%+.9f',
-    ...imgPaths,
-  ]);
+  const output = await execute(['-json', '-c', '%+.9f', ...imgPaths]);
 
   const parsed = JSON.parse(output);
   const allMetadata = aggregateData(parsed);
@@ -20,7 +15,9 @@ export async function readMetadata(
   return ExifData.parse(allMetadata);
 }
 
-export function aggregateData(items: Record<string, unknown>[]): Record<string, unknown> {
+export function aggregateData(
+  items: Record<string, unknown>[],
+): Record<string, unknown> {
   const result: Record<string, unknown> = {};
 
   if (items.length === 0) {

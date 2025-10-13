@@ -8,20 +8,14 @@ export async function updateMetadata(
   newData: Partial<ExifData>,
 ) {
   const imgPaths = images.map((i) => i.path);
-  const tagArgs = Object.keys(newData)
-    .map((key) => {
-      if (key === 'GPSLatitude') {
-        return `-GPSLatitude*=${newData[key]}`;
-      } else if (key === 'GPSLongitude') {
-        return `-GPSLongitude*=${newData[key]}`
-      }
-      return `-${key}=${newData[key as keyof ExifData]}`
-    });
+  const tagArgs = Object.keys(newData).map((key) => {
+    if (key === 'GPSLatitude') {
+      return `-GPSLatitude*=${newData[key]}`;
+    } else if (key === 'GPSLongitude') {
+      return `-GPSLongitude*=${newData[key]}`;
+    }
+    return `-${key}=${newData[key as keyof ExifData]}`;
+  });
 
-  await execute([
-    '-c',
-    '%+.9f',
-    ...tagArgs,
-    ...imgPaths,
-  ]);
+  await execute(['-c', '%+.9f', ...tagArgs, ...imgPaths]);
 }

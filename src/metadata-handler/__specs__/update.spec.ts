@@ -10,7 +10,11 @@ describe('updateMetadata', () => {
   it('calls exiftool to write metadata', async () => {
     expect(mockExecute).not.toHaveBeenCalled();
 
-    const newData: ExifData = { Artist: 'Test', GPSLatitude: 1, GPSLongitude: 2 };
+    const newData: ExifData = {
+      Artist: 'Test',
+      GPSLatitude: 1,
+      GPSLongitude: 2,
+    };
     await updateMetadata(
       [
         { path: 'one.jpg', filename: 'one' },
@@ -19,13 +23,15 @@ describe('updateMetadata', () => {
       newData,
     );
 
-    expect(mockExecute).toHaveBeenCalledExactlyOnceWith(expect.arrayContaining([
-      '-Artist=Test',
-      '-GPSLatitude*=1',
-      '-GPSLongitude*=2',
-      'one.jpg',
-      'two.jpg'
-    ]));
+    expect(mockExecute).toHaveBeenCalledExactlyOnceWith(
+      expect.arrayContaining([
+        '-Artist=Test',
+        '-GPSLatitude*=1',
+        '-GPSLongitude*=2',
+        'one.jpg',
+        'two.jpg',
+      ]),
+    );
   });
 
   describe('when an image fails to save', () => {
