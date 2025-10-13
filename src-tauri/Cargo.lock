@@ -528,10 +528,8 @@ checksum = "c469d952047f47f91b68d1cba3f10d63c11d73e4636f24f08daf0278abf01c4d"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
- "js-sys",
  "num-traits",
  "serde",
- "wasm-bindgen",
  "windows-link 0.1.3",
 ]
 
@@ -1011,7 +1009,6 @@ dependencies = [
 name = "exifmate"
 version = "0.1.0"
 dependencies = [
- "exiftool",
  "serde",
  "serde_json",
  "tauri",
@@ -1024,21 +1021,6 @@ dependencies = [
  "tauri-plugin-shell",
  "tauri-plugin-store",
  "tauri-plugin-window-state",
-]
-
-[[package]]
-name = "exiftool"
-version = "0.2.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9110f386a3755c161f4c585e5f5b98702dfd7fb8e4b9e92f71d61605ecdbc60"
-dependencies = [
- "chrono",
- "log",
- "serde",
- "serde_json",
- "serde_path_to_error",
- "tempfile",
- "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -3471,17 +3453,6 @@ dependencies = [
  "memchr",
  "ryu",
  "serde",
-]
-
-[[package]]
-name = "serde_path_to_error"
-version = "0.1.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10a9ff822e371bb5403e391ecd83e182e0e77ba7f6fe0160b795797109d1b457"
-dependencies = [
- "itoa",
- "serde",
- "serde_core",
 ]
 
 [[package]]
