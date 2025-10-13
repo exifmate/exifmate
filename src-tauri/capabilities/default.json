@@ -15,6 +15,16 @@
     "store:default",
     "clipboard-manager:allow-read-text",
     "core:window:default",
-    "core:window:allow-start-dragging"
+    "core:window:allow-start-dragging",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "exiftool",
+          "cmd": "$RESOURCE/resources/exiftool/exiftool",
+          "args": true
+        }
+      ]
+    }
   ]
 }
