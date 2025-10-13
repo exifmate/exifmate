@@ -29,7 +29,11 @@ function SettingsForm({ onSubmit, children }: Props) {
       id="settings-form"
       onSubmit={handleSubmit(async (newSettings) => {
         await saveSettings(newSettings);
-        await showToast({ message: 'Settings Saved', level: 'success' });
+        await showToast({
+          message: 'Settings Saved',
+          level: 'success',
+          timeout: 3_000,
+        });
         onSubmit();
       })}
     >
