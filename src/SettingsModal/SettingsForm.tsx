@@ -1,22 +1,9 @@
 import Fieldset from '@app/components/Fieldset';
+import { loadSettings, Settings, saveSettings } from '@app/platform/settings';
 import { showToast } from '@app/Toasts/toast-queue';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { load } from '@tauri-apps/plugin-store';
 import type { ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod/v4';
-
-const Settings = z.object({
-  originalFileBehavior: z
-    .enum([
-      'copy_original',
-      'overwrite_original',
-      'overwrite_original_in_place',
-    ])
-    .optional(),
-});
-
-type Settings = z.infer<typeof Settings>;
 
 interface Props {
   onSubmit: () => void;
@@ -28,9 +15,7 @@ function SettingsForm({ onSubmit, children }: Props) {
     resolver: zodResolver(Settings),
     async defaultValues() {
       try {
-        const store = await load('settings.json');
-        const savedSettings = Object.fromEntries(await store.entries());
-        return Settings.parseAsync(savedSettings);
+        return loadSettings();
       } catch (err) {
         console.error('Failed to load settings:', err);
         await showToast({ message: 'Failed to load settings', level: 'error' });
@@ -42,13 +27,8 @@ function SettingsForm({ onSubmit, children }: Props) {
   return (
     <form
       id="settings-form"
-      onSubmit={handleSubmit(async (newValue) => {
-        const store = await load('settings.json');
-
-        for (const setting in newValue) {
-          await store.set(setting, newValue[setting as keyof Settings]);
-        }
-
+      onSubmit={handleSubmit(async (newSettings) => {
+        await saveSettings(newSettings);
         await showToast({ message: 'Settings Saved', level: 'success' });
         onSubmit();
       })}
@@ -64,7 +44,6 @@ function SettingsForm({ onSubmit, children }: Props) {
 
           <div>
             <p className="font-bold">Copy Original File (default)</p>
-
             <p>
               Causes each <samp>FILE</samp> to be rewritten, and the original
               files are preserved with <samp>_original</samp> appended to their
