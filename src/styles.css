@@ -17,15 +17,11 @@
 }
 
 @layer components {
-  .fade-in-out {
+  .fade-in {
     animation-duration: 0.15s;
     animation-fill-mode: forwards;
     animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
     animation-name: fadeIn;
-
-    &:where([data-state="closed"]) {
-      animation-name: fadeOut;
-    }
   }
 
   @keyframes fadeIn {
@@ -37,18 +33,6 @@
     to {
       scale: none;
       opacity: 1;
-    }
-  }
-
-  @keyframes fadeOut {
-    from {
-      scale: none;
-      opacity: 1;
-    }
-
-    to {
-      scale: 80%;
-      opacity: 0;
     }
   }
 }
