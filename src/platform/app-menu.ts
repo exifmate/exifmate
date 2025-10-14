@@ -7,18 +7,19 @@ import {
 } from '@tauri-apps/api/menu';
 import { findImages } from './file-manager';
 
-const OPEN_SETTINGS = 'open-settings';
-const SAVE_ACTION = 'save-form';
-const SAVE_MENU_ENABLED = 'save-enabled';
-const EDIT_MENU_ENABLED = 'edit-enabled';
+const OPEN_SETTINGS_EVENT = 'app:open-settings';
+const SAVE_METADATA_EVENT = 'editor:save-form';
+const SAVE_MENU_ENABLED_EVENT = 'menu:save-enabled';
+const EDIT_MENU_ENABLED_EVENT = 'menu:edit-enabled';
 
-export const onOpenSettings = (cb: () => void) => listen(OPEN_SETTINGS, cb);
-export const onSaveAction = (cb: () => void) => listen(SAVE_ACTION, cb);
+export const onOpenSettings = (cb: () => void) =>
+  listen(OPEN_SETTINGS_EVENT, cb);
+export const onSaveAction = (cb: () => void) => listen(SAVE_METADATA_EVENT, cb);
 
 export const setSaveMenuItemEnabled = (isEnabled: boolean) =>
-  emit(SAVE_MENU_ENABLED, { isEnabled });
+  emit(SAVE_MENU_ENABLED_EVENT, { isEnabled });
 export const setEditMenuEnabled = (isEnabled: boolean) =>
-  emit(EDIT_MENU_ENABLED, { isEnabled });
+  emit(EDIT_MENU_ENABLED_EVENT, { isEnabled });
 
 export async function createAppMenu() {
   const appMenu = await Submenu.new({
@@ -28,7 +29,7 @@ export async function createAppMenu() {
         text: 'Settings...',
         accelerator: 'CmdOrCtrl+,',
         async action() {
-          await emit(OPEN_SETTINGS);
+          await emit(OPEN_SETTINGS_EVENT);
         },
       },
       await PredefinedMenuItem.new({ item: 'Separator' }),
@@ -45,12 +46,12 @@ export async function createAppMenu() {
     accelerator: 'CmdOrCtrl+s',
     enabled: false,
     async action() {
-      await emit(SAVE_ACTION);
+      await emit(SAVE_METADATA_EVENT);
     },
   });
 
   listen<{ isEnabled: boolean }>(
-    SAVE_MENU_ENABLED,
+    SAVE_MENU_ENABLED_EVENT,
     ({ payload: { isEnabled } }) => {
       saveMenuItem.setEnabled(isEnabled);
     },
@@ -86,7 +87,7 @@ export async function createAppMenu() {
   });
 
   listen<{ isEnabled: boolean }>(
-    EDIT_MENU_ENABLED,
+    EDIT_MENU_ENABLED_EVENT,
     ({ payload: { isEnabled } }) => {
       editMenu.setEnabled(isEnabled);
     },

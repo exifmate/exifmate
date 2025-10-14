@@ -11,10 +11,11 @@ export const _toastQueue = new ToastQueue<ToastContent>({
   maxVisibleToasts: 5,
 });
 
-const EVENT_NAME = 'toast-sent';
+const TOAST_SENT_EVENT = 'toast:sent';
 
-export const showToast = (toast: ToastContent) => emit(EVENT_NAME, { toast });
+export const showToast = (toast: ToastContent) =>
+  emit(TOAST_SENT_EVENT, { toast });
 
-listen<{ toast: ToastContent }>(EVENT_NAME, (res) => {
+listen<{ toast: ToastContent }>(TOAST_SENT_EVENT, (res) => {
   _toastQueue.add(res.payload.toast, { timeout: res.payload.toast.timeout });
 });
