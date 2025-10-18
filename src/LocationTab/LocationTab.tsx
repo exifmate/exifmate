@@ -1,5 +1,5 @@
 import Fieldset from '@app/components/Fieldset';
-import ExifInput from '@app/screens/Shell/MetadataEditor/ExifInput';
+import ExifInput from '@app/screens/Shell/MetadataEditorPanel/ExifInput';
 import LocationPasteButton from './LocationPasteButton';
 import TheMap from './TheMap';
 

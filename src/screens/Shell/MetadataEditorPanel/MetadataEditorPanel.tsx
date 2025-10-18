@@ -3,13 +3,13 @@ import { readMetadata } from '@app/metadata-handler/read';
 import type { ImageInfo } from '@app/platform/file-manager';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import ExifForm from './ExifForm';
+import MetadataForm from './MetadataForm';
 
 interface Props {
   selectedImages: ImageInfo[];
 }
 
-function MetadataEditor({ selectedImages }: Props) {
+function MetadataEditorPanel({ selectedImages }: Props) {
   if (selectedImages.length === 0) {
     return (
       <Center>
@@ -38,7 +38,7 @@ function MetadataEditor({ selectedImages }: Props) {
           </Center>
         }
       >
-        <ExifForm
+        <MetadataForm
           exifDataPromise={exifDataPromise}
           selectedImages={selectedImages}
         />
@@ -47,4 +47,4 @@ function MetadataEditor({ selectedImages }: Props) {
   );
 }
 
-export default MetadataEditor;
+export default MetadataEditorPanel;

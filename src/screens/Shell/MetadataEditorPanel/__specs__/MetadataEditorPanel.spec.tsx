@@ -11,7 +11,7 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
-import MetadataEditor from '../MetadataEditor';
+import MetadataEditorPanel from '../MetadataEditorPanel';
 
 const readMetadataMock = readMetadata as unknown as Mock<typeof readMetadata>;
 const updateMetadataMock = updateMetadata as unknown as Mock<
@@ -40,7 +40,7 @@ describe('MetadataEditor', () => {
   });
 
   it('indicates when no image is selected', () => {
-    render(<MetadataEditor selectedImages={[]} />);
+    render(<MetadataEditorPanel selectedImages={[]} />);
     expect(screen.getByText('No Image Selected')).toBeVisible();
     expect(screen.queryByText('Loading Metadata...')).toBeNull();
   });
@@ -51,7 +51,7 @@ describe('MetadataEditor', () => {
     ] as const;
 
     it('indicates when metadata is loading', async () => {
-      render(<MetadataEditor selectedImages={selectedImages} />);
+      render(<MetadataEditorPanel selectedImages={selectedImages} />);
 
       expect(screen.queryByText('No Image Selected')).toBeNull();
       expect(screen.queryByText('Error Loading Metadata')).toBeNull();
@@ -63,7 +63,7 @@ describe('MetadataEditor', () => {
     describe('when failing to open an image', () => {
       it('indicates failure with no form even with partial load error', async () => {
         readMetadataMock.mockRejectedValueOnce(new Error('No'));
-        render(<MetadataEditor selectedImages={selectedImages} />);
+        render(<MetadataEditorPanel selectedImages={selectedImages} />);
         await waitForElementToBeRemoved(
           screen.queryByText('Loading Metadata...'),
         );
@@ -75,7 +75,7 @@ describe('MetadataEditor', () => {
     describe('when finished loading metadata', () => {
       beforeEach(async () => {
         readMetadataMock.mockResolvedValueOnce({ Artist: 'test person' });
-        render(<MetadataEditor selectedImages={selectedImages} />);
+        render(<MetadataEditorPanel selectedImages={selectedImages} />);
         await waitForElementToBeRemoved(
           screen.queryByText('Loading Metadata...'),
         );
