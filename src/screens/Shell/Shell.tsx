@@ -1,8 +1,8 @@
-import MetadataEditor from '@app/Editor/MetadataEditor';
 import type { ImageInfo } from '@app/platform/file-manager';
 import { useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import ImageGrid from './ImageGrid/ImageGrid';
+import MetadataEditor from './MetadataEditor/MetadataEditor';
 import Toolbar from './Toolbar';
 
 function Shell() {
