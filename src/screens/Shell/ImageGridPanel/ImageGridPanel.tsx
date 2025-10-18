@@ -15,7 +15,7 @@ interface Props {
  * I think this'll go slow if the images are large; need to test.
  * May want to look into lazy loading the images or `Virtualizer` from react-aria.
  */
-function ImageGrid({ onImageSelection }: Props) {
+function ImageGridPanel({ onImageSelection }: Props) {
   const [images, setImages] = useState<ImageInfo[]>([]);
 
   useEffect(() => {
@@ -69,4 +69,4 @@ function ImageGrid({ onImageSelection }: Props) {
   );
 }
 
-export default ImageGrid;
+export default ImageGridPanel;
