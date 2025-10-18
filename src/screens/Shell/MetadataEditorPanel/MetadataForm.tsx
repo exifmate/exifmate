@@ -1,5 +1,4 @@
 import Tabs from '@app/components/Tabs';
-import LocationTab from '@app/LocationTab/LocationTab';
 import { ExifData } from '@app/metadata-handler/exifdata';
 import { readMetadata } from '@app/metadata-handler/read';
 import { updateMetadata } from '@app/metadata-handler/update';
@@ -16,6 +15,7 @@ import { use, useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Item } from 'react-stately';
 import ExifTab from './ExifTab';
+import LocationTab from './LocationTab';
 
 function usePlatformIntegration(badState: boolean, formDisabled: boolean) {
   const formRef = useRef<HTMLFormElement>(null);

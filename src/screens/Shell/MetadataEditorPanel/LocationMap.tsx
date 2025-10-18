@@ -15,7 +15,7 @@ const Loc = z.object({
 
 type Loc = z.infer<typeof Loc>;
 
-function TheMap() {
+function LocationMap() {
   const [initialLoc, setInitialLoc] = useState<Loc | undefined>();
   const {
     setValue,
@@ -90,4 +90,4 @@ function TheMap() {
   );
 }
 
-export default TheMap;
+export default LocationMap;
