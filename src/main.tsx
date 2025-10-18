@@ -1,5 +1,5 @@
 import { createAppMenu } from '@app/platform/app-menu';
-import Shell from '@app/Shell/Shell';
+import Shell from '@app/screens/Shell/Shell';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import SettingsModal from './SettingsModal/SettingsModal';
