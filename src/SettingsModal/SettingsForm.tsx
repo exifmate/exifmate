@@ -1,6 +1,6 @@
 import Fieldset from '@app/components/Fieldset';
 import { loadSettings, Settings, saveSettings } from '@app/platform/settings';
-import { showToast } from '@app/Toasts/toast-queue';
+import { showToast } from '@app/screens/Toasts/toast-queue';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { ReactNode } from 'react';
 import { useForm } from 'react-hook-form';

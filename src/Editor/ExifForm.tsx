@@ -9,7 +9,7 @@ import {
   setSaveMenuItemEnabled,
 } from '@app/platform/app-menu';
 import type { ImageInfo } from '@app/platform/file-manager';
-import { showToast } from '@app/Toasts/toast-queue';
+import { showToast } from '@app/screens/Toasts/toast-queue';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import { use, useEffect, useRef, useState } from 'react';

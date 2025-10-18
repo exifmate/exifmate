@@ -1,4 +1,4 @@
-import { showToast } from '@app/Toasts/toast-queue';
+import { showToast } from '@app/screens/Toasts/toast-queue';
 import { emit, listen } from '@tauri-apps/api/event';
 import { basename } from '@tauri-apps/api/path';
 import { open } from '@tauri-apps/plugin-dialog';

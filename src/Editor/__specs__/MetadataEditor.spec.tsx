@@ -1,7 +1,7 @@
 import { readMetadata } from '@app/metadata-handler/read';
 import { updateMetadata } from '@app/metadata-handler/update';
 import type { ImageInfo } from '@app/platform/file-manager';
-import { showToast } from '@app/Toasts/toast-queue';
+import { showToast } from '@app/screens/Toasts/toast-queue';
 import type { load } from '@tauri-apps/plugin-store';
 import {
   render,
