@@ -1,15 +1,15 @@
-import Tabs from '@app/components/Tabs';
-import { ExifData } from '@app/metadata-handler/exifdata';
-import { readMetadata } from '@app/metadata-handler/read';
-import { updateMetadata } from '@app/metadata-handler/update';
+import Tabs from '@components/Tabs';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ExifData } from '@metadata-handler/exifdata';
+import { readMetadata } from '@metadata-handler/read';
+import { updateMetadata } from '@metadata-handler/update';
 import {
   onSaveAction,
   setEditMenuEnabled,
   setSaveMenuItemEnabled,
-} from '@app/platform/app-menu';
-import type { ImageInfo } from '@app/platform/file-manager';
-import { showToast } from '@app/screens/Toasts/toast-queue';
-import { zodResolver } from '@hookform/resolvers/zod';
+} from '@platform/app-menu';
+import type { ImageInfo } from '@platform/file-manager';
+import { showToast } from '@screens/Toasts/toast-queue';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import { use, useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';

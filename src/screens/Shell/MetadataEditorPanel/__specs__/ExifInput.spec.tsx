@@ -1,5 +1,5 @@
-import { ExifData } from '@app/metadata-handler/exifdata';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ExifData } from '@metadata-handler/exifdata';
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormProvider, useForm } from 'react-hook-form';

@@ -1,4 +1,4 @@
-import type { ImageInfo } from '@app/platform/file-manager';
+import type { ImageInfo } from '@platform/file-manager';
 import type { ExifData } from './exifdata';
 import { execute } from './exiftool';
 

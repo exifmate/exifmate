@@ -1,7 +1,7 @@
-import { createAppMenu } from '@app/platform/app-menu';
-import SettingsModal from '@app/screens/SettingsModal/SettingsModal';
-import Shell from '@app/screens/Shell/Shell';
-import ToastRegion from '@app/screens/Toasts/ToastRegion';
+import { createAppMenu } from '@platform/app-menu';
+import SettingsModal from '@screens/SettingsModal/SettingsModal';
+import Shell from '@screens/Shell/Shell';
+import ToastRegion from '@screens/Toasts/ToastRegion';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 

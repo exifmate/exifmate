@@ -1,4 +1,4 @@
-import type { ImageInfo } from '@app/platform/file-manager';
+import type { ImageInfo } from '@platform/file-manager';
 import { readFile } from '@tauri-apps/plugin-fs';
 import { Suspense, use } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';

@@ -1,4 +1,4 @@
-import { ExifData } from '@app/metadata-handler/exifdata';
+import { ExifData } from '@metadata-handler/exifdata';
 import classNames from 'classnames';
 import type { HTMLAttributes } from 'react';
 import { useFormContext } from 'react-hook-form';

@@ -1,4 +1,4 @@
-import type { ImageInfo } from '@app/platform/file-manager';
+import type { ImageInfo } from '@platform/file-manager';
 import { useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import ImageGridPanel from './ImageGridPanel/ImageGridPanel';

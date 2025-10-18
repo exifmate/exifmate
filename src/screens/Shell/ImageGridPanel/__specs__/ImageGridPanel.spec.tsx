@@ -1,4 +1,4 @@
-import { onImagesOpened } from '@app/platform/file-manager';
+import { onImagesOpened } from '@platform/file-manager';
 import type { load } from '@tauri-apps/plugin-store';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -21,7 +21,7 @@ vi.stubGlobal('URL', {
   createObjectURL: vi.fn(),
 });
 
-vi.mock(import('@app/platform/file-manager'), async (importOriginal) => {
+vi.mock(import('@platform/file-manager'), async (importOriginal) => {
   const actual = await importOriginal();
 
   return {

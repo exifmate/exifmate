@@ -23,8 +23,10 @@
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "paths": {
       "test-support/*": ["./test-support/*"],
-      "@app/*": ["./src/*"],
-      "@vendor/*": ["./vendor/*"]
+      "@components/*": ["./src/components/*"],
+      "@metadata-handler/*": ["./src/metadata-handler/*"],
+      "@platform/*": ["./src/platform/*"],
+      "@screens/*": ["./src/screens/*"]
     }
   },
   "include": ["src", "./test-support/vitest-setup.ts"],

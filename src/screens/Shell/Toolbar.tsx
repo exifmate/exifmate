@@ -1,4 +1,4 @@
-import { findImages } from '@app/platform/file-manager';
+import { findImages } from '@platform/file-manager';
 import { MdAddPhotoAlternate } from 'react-icons/md';
 
 function Toolbar() {

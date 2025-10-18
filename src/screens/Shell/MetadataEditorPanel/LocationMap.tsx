@@ -1,4 +1,4 @@
-import { ExifData } from '@app/metadata-handler/exifdata';
+import { ExifData } from '@metadata-handler/exifdata';
 import { load } from '@tauri-apps/plugin-store';
 import type { MapLibreEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useState } from 'react';

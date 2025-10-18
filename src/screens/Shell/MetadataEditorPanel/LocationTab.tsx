@@ -1,4 +1,4 @@
-import Fieldset from '@app/components/Fieldset';
+import Fieldset from '@components/Fieldset';
 import ExifInput from './ExifInput';
 import LocationMap from './LocationMap';
 import LocationPasteButton from './LocationPasteButton';

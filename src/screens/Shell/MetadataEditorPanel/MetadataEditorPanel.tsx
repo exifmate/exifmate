@@ -1,6 +1,6 @@
-import Center from '@app/components/Center';
-import { readMetadata } from '@app/metadata-handler/read';
-import type { ImageInfo } from '@app/platform/file-manager';
+import Center from '@components/Center';
+import { readMetadata } from '@metadata-handler/read';
+import type { ImageInfo } from '@platform/file-manager';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import MetadataForm from './MetadataForm';

@@ -1,7 +1,7 @@
-import { readMetadata } from '@app/metadata-handler/read';
-import { updateMetadata } from '@app/metadata-handler/update';
-import type { ImageInfo } from '@app/platform/file-manager';
-import { showToast } from '@app/screens/Toasts/toast-queue';
+import { readMetadata } from '@metadata-handler/read';
+import { updateMetadata } from '@metadata-handler/update';
+import type { ImageInfo } from '@platform/file-manager';
+import { showToast } from '@screens/Toasts/toast-queue';
 import type { load } from '@tauri-apps/plugin-store';
 import {
   render,
@@ -28,13 +28,13 @@ vi.mock('@tauri-apps/plugin-store', () => ({
     ),
 }));
 
-vi.mock('@app/metadata-handler/read');
-vi.mock('@app/metadata-handler/update');
-vi.mock('@app/Toasts/toast-queue');
+vi.mock('@metadata-handler/read');
+vi.mock('@metadata-handler/update');
+vi.mock('@screens/Toasts/toast-queue');
 
 vi.mock('react-map-gl/maplibre');
 
-describe('MetadataEditor', () => {
+describe('MetadataEditorPanel', () => {
   afterEach(() => {
     updateMetadataMock.mockReset();
   });

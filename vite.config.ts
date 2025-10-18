@@ -38,8 +38,10 @@ export default defineConfig(async () => ({
   resolve: {
     alias: {
       'test-support': resolve(__dirname, 'test-support'),
-      '@app': resolve(__dirname, 'src'),
-      '@vendor': resolve(__dirname, 'vendor'),
+      '@components': resolve(__dirname, 'src', 'components'),
+      '@metadata-handler': resolve(__dirname, 'src', 'metadata-handler'),
+      '@platform': resolve(__dirname, 'src', 'platform'),
+      '@screens': resolve(__dirname, 'src', 'screens'),
     },
   },
 
