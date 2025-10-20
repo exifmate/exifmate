@@ -1,56 +1,55 @@
 import type { ImageInfo } from '@platform/file-manager';
 import { readFile } from '@tauri-apps/plugin-fs';
-import { Suspense, use } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { useEffect, useState } from 'react';
 import { MdWarning } from 'react-icons/md';
 
-async function loadThumbnail(path: string) {
-  try {
-    const data = await readFile(path);
-    const assetUrl = URL.createObjectURL(new Blob([data.buffer]));
-    return assetUrl;
-  } catch (err) {
-    console.error('Failed to load thumbnail:', err);
-    throw err;
-  }
-}
-
-interface ThumbnailProps {
-  loadThumbnailPromise: ReturnType<typeof loadThumbnail>;
-  filename: string;
-}
-
-function Thumbnail({ loadThumbnailPromise, filename }: ThumbnailProps) {
-  const thumbnailUrl = use(loadThumbnailPromise);
-
-  return (
-    <img
-      src={thumbnailUrl}
-      alt={`${filename} thumbnail`}
-      className="h-56 object-cover"
-      height={288}
-      width={288}
-    />
-  );
-}
+type ThumbnailState =
+  | {
+      state: 'loading' | 'failed';
+    }
+  | {
+      state: 'resolved';
+      assetUrl: string;
+    };
 
 function ImageCard({ path, filename }: ImageInfo) {
+  const [thumbnail, setThumbnail] = useState<ThumbnailState>({
+    state: 'loading',
+  });
+
+  useEffect(() => {
+    setThumbnail({ state: 'loading' });
+
+    readFile(path)
+      .then((data) => {
+        const assetUrl = URL.createObjectURL(new Blob([data.buffer]));
+        setThumbnail({ assetUrl, state: 'resolved' });
+      })
+      .catch((err) => {
+        setThumbnail({ state: 'failed' });
+        console.error('Failed to load thumbnail:', err);
+      });
+  }, [path]);
+
   return (
     <div className="card card-xs w-56 bg-neutral cursor-pointer">
-      <ErrorBoundary
-        fallback={
-          <div className="h-56 w-56 flex justify-center items-center">
+      {thumbnail.state === 'loading' ? (
+        <div className="skeleton h-56 w-56" />
+      ) : (
+        <figure className="h-56 w-56 flex justify-center items-center">
+          {thumbnail.state === 'resolved' ? (
+            <img
+              src={thumbnail.assetUrl}
+              alt={`${filename} thumbnail`}
+              className="h-56 object-cover"
+              height={288}
+              width={288}
+            />
+          ) : (
             <MdWarning size={40} title="Failed to load thumbnail" />
-          </div>
-        }
-      >
-        <Suspense fallback={<div className="skeleton h-56 w-56" />}>
-          <Thumbnail
-            filename={filename}
-            loadThumbnailPromise={loadThumbnail(path)}
-          />
-        </Suspense>
-      </ErrorBoundary>
+          )}
+        </figure>
+      )}
 
       <div className="card-body">
         <div className="card-title">{filename}</div>
