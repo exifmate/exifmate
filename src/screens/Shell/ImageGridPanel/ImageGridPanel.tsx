@@ -1,7 +1,7 @@
-import Center from '@app/components/Center';
-import GridList from '@app/components/GridList';
-import type { ImageInfo } from '@app/platform/file-manager';
-import { onImagesOpened } from '@app/platform/file-manager';
+import Center from '@components/Center';
+import GridList from '@components/GridList';
+import type { ImageInfo } from '@platform/file-manager';
+import { onImagesOpened } from '@platform/file-manager';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import { useEffect, useState } from 'react';
 import { Item } from 'react-stately';
@@ -15,7 +15,7 @@ interface Props {
  * I think this'll go slow if the images are large; need to test.
  * May want to look into lazy loading the images or `Virtualizer` from react-aria.
  */
-function ImageGrid({ onImageSelection }: Props) {
+function ImageGridPanel({ onImageSelection }: Props) {
   const [images, setImages] = useState<ImageInfo[]>([]);
 
   useEffect(() => {
@@ -69,4 +69,4 @@ function ImageGrid({ onImageSelection }: Props) {
   );
 }
 
-export default ImageGrid;
+export default ImageGridPanel;

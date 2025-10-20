@@ -1,11 +1,11 @@
-import { onImagesOpened } from '@app/platform/file-manager';
+import { onImagesOpened } from '@platform/file-manager';
 import type { load } from '@tauri-apps/plugin-store';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fs } from 'memfs';
 import { ImageOne, ImageTwo } from 'test-support/fake-images';
 import type { Mock } from 'vitest';
-import ImageGrid from '../ImageGrid';
+import ImageGridPanel from '../ImageGridPanel';
 
 const onImagesOpenedMock = onImagesOpened as unknown as Mock<
   typeof onImagesOpened
@@ -21,7 +21,7 @@ vi.stubGlobal('URL', {
   createObjectURL: vi.fn(),
 });
 
-vi.mock(import('@app/platform/file-manager'), async (importOriginal) => {
+vi.mock(import('@platform/file-manager'), async (importOriginal) => {
   const actual = await importOriginal();
 
   return {
@@ -30,7 +30,7 @@ vi.mock(import('@app/platform/file-manager'), async (importOriginal) => {
   };
 });
 
-describe('ImageGrid', () => {
+describe('ImageGridPanel', () => {
   beforeEach(async () => {
     await Promise.all([
       fs.promises.writeFile('/image1.jpg', ImageOne),
@@ -39,7 +39,7 @@ describe('ImageGrid', () => {
   });
 
   it('has a message when no images are opened', () => {
-    render(<ImageGrid onImageSelection={vi.fn()} />);
+    render(<ImageGridPanel onImageSelection={vi.fn()} />);
     expect(screen.getByText('No Images Loaded')).toBeVisible();
   });
 
@@ -61,7 +61,7 @@ describe('ImageGrid', () => {
     });
 
     it('lists the images', async () => {
-      render(<ImageGrid onImageSelection={vi.fn()} />);
+      render(<ImageGridPanel onImageSelection={vi.fn()} />);
       expect(screen.queryByText('No Images Loaded')).toBeNull();
 
       expect(await screen.findByAltText(`image1.jpg thumbnail`)).toBeVisible();
@@ -70,7 +70,7 @@ describe('ImageGrid', () => {
 
     it('can select an image', async () => {
       const imageSelection = vi.fn();
-      render(<ImageGrid onImageSelection={imageSelection} />);
+      render(<ImageGridPanel onImageSelection={imageSelection} />);
 
       const image = await screen.findByLabelText('image1.jpg');
       expect(image).toHaveAttribute('aria-selected', 'false');

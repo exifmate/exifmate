@@ -1,4 +1,4 @@
-import type { ExifData } from '@app/metadata-handler/exifdata';
+import type { ExifData } from '@metadata-handler/exifdata';
 import { readText } from '@tauri-apps/plugin-clipboard-manager';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';

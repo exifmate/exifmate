@@ -1,51 +1,32 @@
-import Tabs from '@app/components/Tabs';
-import LocationTab from '@app/LocationTab/LocationTab';
-import { ExifData } from '@app/metadata-handler/exifdata';
+import Tabs from '@components/Tabs';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ExifData } from '@metadata-handler/exifdata';
+import { readMetadata } from '@metadata-handler/read';
+import { updateMetadata } from '@metadata-handler/update';
 import {
   onSaveAction,
   setEditMenuEnabled,
   setSaveMenuItemEnabled,
-} from '@app/platform/app-menu';
-import type { ImageInfo } from '@app/platform/file-manager';
-import { zodResolver } from '@hookform/resolvers/zod';
+} from '@platform/app-menu';
+import type { ImageInfo } from '@platform/file-manager';
+import { showToast } from '@screens/Toasts/toast-queue';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Item } from 'react-stately';
-import Center from '../components/Center';
 import ExifTab from './ExifTab';
-import useExif from './useExif';
+import LocationTab from './LocationTab';
 
-interface Props {
-  selectedImages: ImageInfo[];
-}
-
-function MetadataEditor({ selectedImages }: Props) {
-  const [activeTab, setActiveTab] = useState<'EXIF' | 'Location'>('EXIF');
-  const { loadingStatus, exif, saveMetadata } = useExif(selectedImages);
-
-  const [isEditing, setIsEditing] = useState<boolean>(false);
+function usePlatformIntegration(badState: boolean, formDisabled: boolean) {
   const formRef = useRef<HTMLFormElement>(null);
-
-  const form = useForm({
-    disabled: !isEditing,
-    resolver: zodResolver(ExifData),
-    reValidateMode: 'onChange',
-  });
-
-  const badState =
-    !form.formState.isDirty ||
-    !form.formState.isValid ||
-    form.formState.disabled ||
-    form.formState.isSubmitting;
 
   useEffect(() => {
     setSaveMenuItemEnabled(!badState);
   }, [badState]);
 
   useEffect(() => {
-    setEditMenuEnabled(!form.formState.disabled);
-  }, [form.formState.disabled]);
+    setEditMenuEnabled(!formDisabled);
+  }, [formDisabled]);
 
   useEffect(() => {
     let unlisten: UnlistenFn | undefined;
@@ -63,12 +44,35 @@ function MetadataEditor({ selectedImages }: Props) {
     };
   }, []);
 
-  useEffect(() => {
-    if (exif) {
-      form.reset(exif);
-      form.trigger();
-    }
-  }, [exif, form.reset, form.trigger]);
+  return { formRef };
+}
+
+interface MetadataFormProps {
+  exifData: ExifData;
+  selectedImages: ImageInfo[];
+}
+
+function ExifForm({ exifData, selectedImages }: MetadataFormProps) {
+  const [activeTab, setActiveTab] = useState<'EXIF' | 'Location'>('EXIF');
+
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+
+  const form = useForm({
+    disabled: !isEditing,
+    resolver: zodResolver(ExifData),
+    reValidateMode: 'onChange',
+    async defaultValues() {
+      return exifData;
+    },
+  });
+
+  const badState =
+    !form.formState.isDirty ||
+    !form.formState.isValid ||
+    form.formState.disabled ||
+    form.formState.isSubmitting;
+
+  const { formRef } = usePlatformIntegration(badState, form.formState.disabled);
 
   useEffect(() => {
     if (selectedImages) {
@@ -76,42 +80,44 @@ function MetadataEditor({ selectedImages }: Props) {
     }
   }, [selectedImages]);
 
-  if (selectedImages.length === 0) {
-    return (
-      <Center>
-        <p className="text-lg">No Image Selected</p>
-      </Center>
-    );
-  }
+  const onSubmit = async (newExif: ExifData) => {
+    try {
+      await updateMetadata(selectedImages, newExif);
+    } catch (err) {
+      console.error('Failed saving:', err);
+      await showToast({
+        level: 'error',
+        message: 'Failed to save images',
+      });
 
-  if (loadingStatus === 'active') {
-    return (
-      <Center>
-        <div className="loading loading-xl text-accent motion-reduce:hidden"></div>
-        <p className="text-lg">Loading Metadata...</p>
-      </Center>
-    );
-  }
+      return;
+    }
 
-  if (loadingStatus === 'errored') {
-    return (
-      <Center>
-        <div role="alert" className="alert alert-error alert-soft">
-          Error Loading Metadata
-        </div>
-      </Center>
-    );
-  }
+    try {
+      const actualData = await readMetadata(selectedImages);
+      form.reset({ ...actualData });
+    } catch (err) {
+      console.error('Failed refreshing metadata:', err);
+      await showToast({
+        level: 'warning',
+        message: 'Failed refreshing metadata after saving',
+      });
+    }
+
+    setIsEditing(false);
+    await showToast({
+      level: 'success',
+      timeout: 3_000,
+      message: 'Saved Metadata!',
+    });
+  };
 
   return (
     <FormProvider {...form}>
       <form
         ref={formRef}
         className="grow flex flex-1 flex-col overflow-clip"
-        onSubmit={form.handleSubmit(async (newExif: ExifData) => {
-          await saveMetadata(newExif);
-          setIsEditing(false);
-        })}
+        onSubmit={form.handleSubmit(onSubmit)}
       >
         <Tabs
           aria-label="Editor Tabs"
@@ -168,4 +174,4 @@ function MetadataEditor({ selectedImages }: Props) {
   );
 }
 
-export default MetadataEditor;
+export default ExifForm;

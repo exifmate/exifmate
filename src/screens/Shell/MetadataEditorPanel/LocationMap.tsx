@@ -1,11 +1,11 @@
-import { ExifData } from '@app/metadata-handler/exifdata';
+import { ExifData } from '@metadata-handler/exifdata';
 import { load } from '@tauri-apps/plugin-store';
 import type { MapLibreEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { MdLocationPin } from 'react-icons/md';
 import MapGL, { Marker } from 'react-map-gl/maplibre';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 const Loc = z.object({
   lat: z.number(),
@@ -15,7 +15,7 @@ const Loc = z.object({
 
 type Loc = z.infer<typeof Loc>;
 
-function TheMap() {
+function LocationMap() {
   const [initialLoc, setInitialLoc] = useState<Loc | undefined>();
   const {
     setValue,
@@ -90,4 +90,4 @@ function TheMap() {
   );
 }
 
-export default TheMap;
+export default LocationMap;

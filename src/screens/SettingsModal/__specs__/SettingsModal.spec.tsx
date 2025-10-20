@@ -1,8 +1,4 @@
-import {
-  loadSettings,
-  type Settings,
-  saveSettings,
-} from '@app/platform/settings';
+import { loadSettings, type Settings, saveSettings } from '@platform/settings';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
@@ -12,7 +8,7 @@ import SettingsModal from '../SettingsModal';
 // vi.mock('@app/platform/app-menu');
 
 vi.mock('@tauri-apps/api/event');
-vi.mock('@app/platform/app-menu', () => ({
+vi.mock('@platform/app-menu', () => ({
   onOpenSettings: vi.fn((cb) => {
     cb();
     return Promise.resolve();
@@ -21,7 +17,7 @@ vi.mock('@app/platform/app-menu', () => ({
 
 const mockLoadSettings = loadSettings as unknown as Mock<typeof loadSettings>;
 const mockSaveSettings = saveSettings as unknown as Mock<typeof saveSettings>;
-vi.mock(import('@app/platform/settings'), async (importOriginal) => {
+vi.mock(import('@platform/settings'), async (importOriginal) => {
   const actual = await importOriginal();
 
   return {

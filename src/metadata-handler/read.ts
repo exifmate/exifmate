@@ -1,10 +1,8 @@
-import type { ImageInfo } from '@app/platform/file-manager';
+import type { ImageInfo } from '@platform/file-manager';
 import { ExifData } from './exifdata';
 import { execute } from './exiftool';
 
-export async function readMetadata(
-  images: ImageInfo[],
-): Promise<ExifData | null> {
+export async function readMetadata(images: ImageInfo[]): Promise<ExifData> {
   const imgPaths = images.map((i) => i.path);
   const output = await execute(['-json', '-c', '%+.9f', ...imgPaths]);
 

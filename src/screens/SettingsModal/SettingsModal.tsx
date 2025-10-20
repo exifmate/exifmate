@@ -1,6 +1,6 @@
-import Dialog from '@app/components/Dialog';
-import Modal from '@app/components/Modal';
-import { onOpenSettings } from '@app/platform/app-menu';
+import Dialog from '@components/Dialog';
+import Modal from '@components/Modal';
+import { onOpenSettings } from '@platform/app-menu';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import { useEffect } from 'react';
 import { useOverlayTriggerState } from 'react-stately';

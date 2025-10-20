@@ -1,4 +1,4 @@
-import { loadSettings } from '@app/platform/settings';
+import { loadSettings } from '@platform/settings';
 import { Command } from '@tauri-apps/plugin-shell';
 
 async function additionalFlags() {

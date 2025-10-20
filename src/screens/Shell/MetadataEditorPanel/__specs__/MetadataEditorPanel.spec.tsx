@@ -1,7 +1,7 @@
-import { readMetadata } from '@app/metadata-handler/read';
-import { updateMetadata } from '@app/metadata-handler/update';
-import type { ImageInfo } from '@app/platform/file-manager';
-import { showToast } from '@app/Toasts/toast-queue';
+import { readMetadata } from '@metadata-handler/read';
+import { updateMetadata } from '@metadata-handler/update';
+import type { ImageInfo } from '@platform/file-manager';
+import { showToast } from '@screens/Toasts/toast-queue';
 import type { load } from '@tauri-apps/plugin-store';
 import {
   render,
@@ -11,7 +11,7 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
-import MetadataEditor from '../MetadataEditor';
+import MetadataEditorPanel from '../MetadataEditorPanel';
 
 const readMetadataMock = readMetadata as unknown as Mock<typeof readMetadata>;
 const updateMetadataMock = updateMetadata as unknown as Mock<
@@ -28,19 +28,19 @@ vi.mock('@tauri-apps/plugin-store', () => ({
     ),
 }));
 
-vi.mock('@app/metadata-handler/read');
-vi.mock('@app/metadata-handler/update');
-vi.mock('@app/Toasts/toast-queue');
+vi.mock('@metadata-handler/read');
+vi.mock('@metadata-handler/update');
+vi.mock('@screens/Toasts/toast-queue');
 
 vi.mock('react-map-gl/maplibre');
 
-describe('MetadataEditor', () => {
+describe('MetadataEditorPanel', () => {
   afterEach(() => {
     updateMetadataMock.mockReset();
   });
 
   it('indicates when no image is selected', () => {
-    render(<MetadataEditor selectedImages={[]} />);
+    render(<MetadataEditorPanel selectedImages={[]} />);
     expect(screen.getByText('No Image Selected')).toBeVisible();
     expect(screen.queryByText('Loading Metadata...')).toBeNull();
   });
@@ -51,7 +51,8 @@ describe('MetadataEditor', () => {
     ] as const;
 
     it('indicates when metadata is loading', async () => {
-      render(<MetadataEditor selectedImages={selectedImages} />);
+      readMetadataMock.mockResolvedValueOnce({});
+      render(<MetadataEditorPanel selectedImages={selectedImages} />);
 
       expect(screen.queryByText('No Image Selected')).toBeNull();
       expect(screen.queryByText('Error Loading Metadata')).toBeNull();
@@ -63,7 +64,7 @@ describe('MetadataEditor', () => {
     describe('when failing to open an image', () => {
       it('indicates failure with no form even with partial load error', async () => {
         readMetadataMock.mockRejectedValueOnce(new Error('No'));
-        render(<MetadataEditor selectedImages={selectedImages} />);
+        render(<MetadataEditorPanel selectedImages={selectedImages} />);
         await waitForElementToBeRemoved(
           screen.queryByText('Loading Metadata...'),
         );
@@ -75,7 +76,7 @@ describe('MetadataEditor', () => {
     describe('when finished loading metadata', () => {
       beforeEach(async () => {
         readMetadataMock.mockResolvedValueOnce({ Artist: 'test person' });
-        render(<MetadataEditor selectedImages={selectedImages} />);
+        render(<MetadataEditorPanel selectedImages={selectedImages} />);
         await waitForElementToBeRemoved(
           screen.queryByText('Loading Metadata...'),
         );

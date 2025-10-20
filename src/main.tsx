@@ -1,9 +1,9 @@
-import { createAppMenu } from '@app/platform/app-menu';
-import Shell from '@app/Shell/Shell';
+import { createAppMenu } from '@platform/app-menu';
+import SettingsModal from '@screens/SettingsModal/SettingsModal';
+import Shell from '@screens/Shell/Shell';
+import ToastRegion from '@screens/Toasts/ToastRegion';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import SettingsModal from './SettingsModal/SettingsModal';
-import ToastRegion from './Toasts/ToastRegion';
 
 const root = document.getElementById('root');
 if (!root) {

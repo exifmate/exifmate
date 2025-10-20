@@ -1,4 +1,4 @@
-import type { ImageInfo } from '@app/platform/file-manager';
+import type { ImageInfo } from '@platform/file-manager';
 import { readFile } from '@tauri-apps/plugin-fs';
 import { useEffect, useState } from 'react';
 import { MdWarning } from 'react-icons/md';
@@ -34,9 +34,9 @@ function ImageCard({ path, filename }: ImageInfo) {
   return (
     <div className="card card-xs w-56 bg-neutral cursor-pointer">
       {thumbnail.state === 'loading' ? (
-        <div className="skeleton h-56 w-56"></div>
+        <div className="skeleton h-56 w-56" />
       ) : (
-        <figure className="h-56 bg-base-200">
+        <figure className="h-56 w-56 flex justify-center items-center">
           {thumbnail.state === 'resolved' ? (
             <img
               src={thumbnail.assetUrl}
