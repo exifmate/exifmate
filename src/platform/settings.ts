@@ -1,5 +1,5 @@
 import { load } from '@tauri-apps/plugin-store';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 export const Settings = z.object({
   originalFileBehavior: z

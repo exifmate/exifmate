@@ -38,7 +38,7 @@
     "react-resizable-panels": "^3.0.3",
     "react-stately": "^3.41.0",
     "tailwindcss": "^4.1.12",
-    "zod": "^3.25.65"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.4",

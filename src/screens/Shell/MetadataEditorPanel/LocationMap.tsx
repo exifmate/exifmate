@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { MdLocationPin } from 'react-icons/md';
 import MapGL, { Marker } from 'react-map-gl/maplibre';
-import { z } from 'zod/v4';
+import { z } from 'zod';
 
 const Loc = z.object({
   lat: z.number(),

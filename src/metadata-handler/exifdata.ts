@@ -1,4 +1,4 @@
-import { z } from 'zod/v4';
+import { z } from 'zod';
 import dayjs from './dayjs';
 
 // TODO: maybe better handle when datetime-local typed in
