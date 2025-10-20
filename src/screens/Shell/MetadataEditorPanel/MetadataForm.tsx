@@ -11,7 +11,7 @@ import {
 import type { ImageInfo } from '@platform/file-manager';
 import { showToast } from '@screens/Toasts/toast-queue';
 import type { UnlistenFn } from '@tauri-apps/api/event';
-import { use, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Item } from 'react-stately';
 import ExifTab from './ExifTab';
@@ -48,12 +48,11 @@ function usePlatformIntegration(badState: boolean, formDisabled: boolean) {
 }
 
 interface MetadataFormProps {
-  exifDataPromise: ReturnType<typeof readMetadata>;
+  exifData: ExifData;
   selectedImages: ImageInfo[];
 }
 
-function ExifForm({ exifDataPromise, selectedImages }: MetadataFormProps) {
-  const exifData = use(exifDataPromise);
+function ExifForm({ exifData, selectedImages }: MetadataFormProps) {
   const [activeTab, setActiveTab] = useState<'EXIF' | 'Location'>('EXIF');
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
