@@ -51,6 +51,7 @@ describe('MetadataEditorPanel', () => {
     ] as const;
 
     it('indicates when metadata is loading', async () => {
+      readMetadataMock.mockResolvedValueOnce({});
       render(<MetadataEditorPanel selectedImages={selectedImages} />);
 
       expect(screen.queryByText('No Image Selected')).toBeNull();
