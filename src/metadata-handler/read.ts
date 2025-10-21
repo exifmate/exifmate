@@ -4,7 +4,14 @@ import { execute } from './exiftool';
 
 export async function readMetadata(images: ImageInfo[]): Promise<ExifData> {
   const imgPaths = images.map((i) => i.path);
-  const output = await execute(['-json', '-c', '%+.9f', ...imgPaths]);
+  const output = await execute([
+    '-json',
+    '-c',
+    '%+.9f',
+    '-dateformat',
+    '%FT%T',
+    ...imgPaths,
+  ]);
 
   const parsed = JSON.parse(output);
   const allMetadata = aggregateData(parsed);
