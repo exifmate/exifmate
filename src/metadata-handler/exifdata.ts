@@ -8,14 +8,14 @@ export const ExifData = z.object({
   Copyright: z.coerce.string().optional(),
   Software: z.coerce.string().optional(),
   UserComment: z.string().optional(),
-  DateTimeOriginal: z.iso.datetime({ local: true }).optional(),
-  CreateDate: z.iso
-    .datetime({ local: true })
+  DateTimeOriginal: z.string().optional(),
+  CreateDate: z
+    .string()
     .meta({
       description: 'also called DateTimeDigitized',
     })
     .optional(),
-  ModifyDate: z.iso.datetime({ local: true }).optional(),
+  ModifyDate: z.string().optional(),
   Make: z.coerce.string().optional(),
   Model: z.coerce.string().optional(),
   SerialNumber: z.coerce
