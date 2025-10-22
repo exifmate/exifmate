@@ -16,6 +16,7 @@ function ExifTab() {
         <ExifInput tagName="ImageDescription" />
         <ExifInput tagName="Copyright" />
         <ExifInput tagName="Software" />
+        <ExifInput tagName="UserComment" />
       </Fieldset>
 
       <Fieldset legend="Camera">

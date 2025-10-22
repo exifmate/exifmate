@@ -94,7 +94,7 @@ describe('ExifInput', () => {
       await userEvent.click(screen.getByText('Go'));
 
       expect(cb).toHaveBeenCalledExactlyOnceWith({
-        [tagName]: '2025-07-15 12:30:10',
+        [tagName]: '2025-07-15T12:30:10.000',
       });
     });
 

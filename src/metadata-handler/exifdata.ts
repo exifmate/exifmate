@@ -1,19 +1,4 @@
 import { z } from 'zod';
-import dayjs from './dayjs';
-
-// TODO: maybe better handle when datetime-local typed in
-// gives ex. 2024-12-26T15:10 which is said to be invalid.
-//
-// For some reason the `-dateFormat` flag wasn't getting respected.
-const exifdatetime = z.string().transform((val) => {
-  const date = dayjs.utc(val, 'YYYY:MM:DD HH:mm:ss');
-  if (date.isValid()) {
-    return date.format('YYYY-MM-DD HH:mm:ss');
-  }
-
-  // returning the raw value lets exiftool handle the format from the datetime-local input
-  return val;
-});
 
 // Need to think about how to handle if an enum gains an option,
 // specifically how to futureproof without needing to update if I stop maintaining
@@ -22,14 +7,15 @@ export const ExifData = z.object({
   ImageDescription: z.coerce.string().optional(),
   Copyright: z.coerce.string().optional(),
   Software: z.coerce.string().optional(),
-  // UserComment: z.string(), // undef
-  DateTimeOriginal: exifdatetime.optional(),
-  CreateDate: exifdatetime
+  UserComment: z.string().optional(),
+  DateTimeOriginal: z.iso.datetime({ local: true }).optional(),
+  CreateDate: z.iso
+    .datetime({ local: true })
     .meta({
       description: 'also called DateTimeDigitized',
     })
     .optional(),
-  ModifyDate: exifdatetime.optional(),
+  ModifyDate: z.iso.datetime({ local: true }).optional(),
   Make: z.coerce.string().optional(),
   Model: z.coerce.string().optional(),
   SerialNumber: z.coerce
