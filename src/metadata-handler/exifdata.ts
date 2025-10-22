@@ -7,7 +7,7 @@ export const ExifData = z.object({
   ImageDescription: z.coerce.string().optional(),
   Copyright: z.coerce.string().optional(),
   Software: z.coerce.string().optional(),
-  // UserComment: z.string(), // undef
+  UserComment: z.string().optional(),
   DateTimeOriginal: z.iso.datetime({ local: true }).optional(),
   CreateDate: z.iso
     .datetime({ local: true })
