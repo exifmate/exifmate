@@ -9,12 +9,17 @@ export async function updateMetadata(
 ) {
   const imgPaths = images.map((i) => i.path);
   const tagArgs = Object.keys(newData).map((key) => {
-    if (key === 'GPSLatitude') {
-      return `-GPSLatitude*=${newData[key]}`;
-    } else if (key === 'GPSLongitude') {
-      return `-GPSLongitude*=${newData[key]}`;
+    let value = newData[key as keyof ExifData];
+    if (typeof value === 'string') {
+      value = value.trim();
     }
-    return `-${key}=${newData[key as keyof ExifData]}`;
+
+    if (key === 'GPSLatitude') {
+      return `-GPSLatitude*=${value}`;
+    } else if (key === 'GPSLongitude') {
+      return `-GPSLongitude*=${value}`;
+    }
+    return `-${key}=${value}`;
   });
 
   await execute(['-c', '%+.9f', ...tagArgs, ...imgPaths]);
