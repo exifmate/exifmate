@@ -9,17 +9,27 @@ import { findImages } from './file-manager';
 
 const OPEN_SETTINGS_EVENT = 'app:open-settings';
 const SAVE_METADATA_EVENT = 'editor:save-form';
+const ENTER_METADATA_EDIT_EVENT = 'editor:enter-metadata-edit';
+
 const SAVE_MENU_ENABLED_EVENT = 'menu:save-enabled';
 const EDIT_MENU_ENABLED_EVENT = 'menu:edit-enabled';
+const TOOLS_MENU_ENABLED_EVENT = 'menu:tools-enabled';
+const EDIT_IMAGES_PLURALIZE_EVENT = 'menu:edit-images-pluralize';
 
 export const onOpenSettings = (cb: () => void) =>
   listen(OPEN_SETTINGS_EVENT, cb);
 export const onSaveAction = (cb: () => void) => listen(SAVE_METADATA_EVENT, cb);
+export const onEnterMetadataEdit = (cb: () => void) =>
+  listen(ENTER_METADATA_EDIT_EVENT, cb);
 
 export const setSaveMenuItemEnabled = (isEnabled: boolean) =>
   emit(SAVE_MENU_ENABLED_EVENT, { isEnabled });
 export const setEditMenuEnabled = (isEnabled: boolean) =>
   emit(EDIT_MENU_ENABLED_EVENT, { isEnabled });
+export const setToolsMenuEnabled = (isEnabled: boolean) =>
+  emit(TOOLS_MENU_ENABLED_EVENT, { isEnabled });
+export const setEditMenuImagesPluralize = (pluralize: boolean) =>
+  emit(EDIT_IMAGES_PLURALIZE_EVENT, { pluralize });
 
 export async function createAppMenu() {
   const appMenu = await Submenu.new({
@@ -93,6 +103,40 @@ export async function createAppMenu() {
     },
   );
 
+  const EDIT_IMAGES_SINGULAR_LABEL = 'Edit Selected Image';
+  const EDIT_IMAGES_PLURAL_LABEL = 'Edit Selected Images';
+  const editImagesMenuItem = await MenuItem.new({
+    text: EDIT_IMAGES_SINGULAR_LABEL,
+    accelerator: 'CmdOrCtrl+e',
+    async action() {
+      await emit(ENTER_METADATA_EDIT_EVENT);
+    },
+  });
+
+  listen<{ pluralize: boolean }>(
+    EDIT_IMAGES_PLURALIZE_EVENT,
+    async ({ payload: { pluralize } }) => {
+      if (pluralize) {
+        await editImagesMenuItem.setText(EDIT_IMAGES_PLURAL_LABEL);
+      } else {
+        await editImagesMenuItem.setText(EDIT_IMAGES_SINGULAR_LABEL);
+      }
+    },
+  );
+
+  const toolsMenu = await Submenu.new({
+    text: 'Tools',
+    enabled: false,
+    items: [editImagesMenuItem],
+  });
+
+  listen<{ isEnabled: boolean }>(
+    TOOLS_MENU_ENABLED_EVENT,
+    ({ payload: { isEnabled } }) => {
+      toolsMenu.setEnabled(isEnabled);
+    },
+  );
+
   const viewMenu = await Submenu.new({
     text: 'View',
     items: [await PredefinedMenuItem.new({ item: 'Fullscreen' })],
@@ -104,7 +148,7 @@ export async function createAppMenu() {
   });
 
   const menu = await Menu.new({
-    items: [appMenu, fileMenu, editMenu, viewMenu, windowMenu],
+    items: [appMenu, fileMenu, editMenu, toolsMenu, viewMenu, windowMenu],
   });
 
   menu.setAsAppMenu();

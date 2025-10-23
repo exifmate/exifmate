@@ -5,9 +5,12 @@ import { ExifData } from '@metadata-handler/exifdata';
 import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
 import {
+  onEnterMetadataEdit,
   onSaveAction,
   setEditMenuEnabled,
+  setEditMenuImagesPluralize,
   setSaveMenuItemEnabled,
+  setToolsMenuEnabled,
 } from '@platform/app-menu';
 import type { ImageInfo } from '@platform/file-manager';
 import { showToast } from '@screens/Toasts/toast-queue';
@@ -50,12 +53,12 @@ function usePlatformIntegration(badState: boolean, formDisabled: boolean) {
 
 type ExifDataRes =
   | {
-      state: 'loading' | 'failed';
-    }
+    state: 'loading' | 'failed';
+  }
   | {
-      state: 'resolved';
-      data: ExifData;
-    };
+    state: 'resolved';
+    data: ExifData;
+  };
 
 interface Props {
   selectedImages: ImageInfo[];
@@ -104,6 +107,30 @@ function MetadataEditorPanel({ selectedImages }: Props) {
       setIsEditing(false);
     }
   }, [selectedImages]);
+
+  useEffect(() => {
+    if (selectedImages.length) {
+      setToolsMenuEnabled(true);
+    } else {
+      setToolsMenuEnabled(false);
+    }
+
+    setEditMenuImagesPluralize(selectedImages.length !== 1)
+  }, [selectedImages.length]);
+
+  useEffect(() => {
+    let unlisten: UnlistenFn | undefined;
+
+    onEnterMetadataEdit(() => {
+      setIsEditing(true);
+    }).then((u) => {
+      unlisten = u;
+    });
+
+    return () => {
+      unlisten?.();
+    };
+  }, []);
 
   const onSubmit = async (newExif: ExifData) => {
     try {
