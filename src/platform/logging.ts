@@ -1,14 +1,8 @@
-import {
-  debug,
-  error,
-  info,
-  trace,
-  warn,
-} from '@tauri-apps/plugin-log';
+import { debug, error, info, trace, warn } from '@tauri-apps/plugin-log';
 
 function forwardConsole(
   fnName: 'debug' | 'error' | 'info' | 'log' | 'warn',
-  logger: (message: string) => Promise<void>
+  logger: (message: string) => Promise<void>,
 ) {
   const original = console[fnName];
   console[fnName] = (message) => {
