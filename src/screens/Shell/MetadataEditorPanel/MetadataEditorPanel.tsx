@@ -72,7 +72,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
   const form = useForm({
     disabled: !isEditing,
     resolver: zodResolver(ExifData),
-    reValidateMode: 'onChange',
+    mode: 'onChange',
     values: exifDataRes.state === 'resolved' ? exifDataRes.data : {},
   });
 
