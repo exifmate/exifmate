@@ -1,4 +1,4 @@
-import { ExifData } from '@metadata-handler/exifdata';
+import type { ExifData } from '@metadata-handler/exifdata';
 import { load } from '@tauri-apps/plugin-store';
 import type { MapLibreEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useState } from 'react';
@@ -51,10 +51,7 @@ function LocationMap() {
     return <div className="skeleton h-full w-full" title="Loading Map"></div>;
   }
 
-  const getLoc = (part: 'GPSLatitude' | 'GPSLongitude'): number => {
-    const val = watch(part);
-    return ExifData.shape[part].safeParse(val).data ?? 0;
-  };
+  const pinLoc = { lat: watch('GPSLatitude'), lon: watch('GPSLongitude') };
 
   return (
     <MapGL
@@ -79,13 +76,11 @@ function LocationMap() {
       }}
       onIdle={onMapIdle}
     >
-      <Marker
-        latitude={getLoc('GPSLatitude')}
-        longitude={getLoc('GPSLongitude')}
-        anchor="bottom"
-      >
-        <MdLocationPin color="red" size={36} />
-      </Marker>
+      {pinLoc.lat !== undefined && pinLoc.lon !== undefined && (
+        <Marker latitude={pinLoc.lat} longitude={pinLoc.lon} anchor="bottom">
+          <MdLocationPin color="red" size={36} />
+        </Marker>
+      )}
     </MapGL>
   );
 }
