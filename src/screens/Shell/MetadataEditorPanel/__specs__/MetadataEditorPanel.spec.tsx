@@ -66,6 +66,10 @@ describe('MetadataEditorPanel', () => {
     });
 
     describe('when failing to open an image', () => {
+      beforeEach(() => {
+        vi.stubGlobal('console', { error: () => {} });
+      });
+
       it('indicates failure with no form even with partial load error', async () => {
         readMetadataMock.mockRejectedValueOnce(new Error('No'));
         render(<MetadataEditorPanel selectedImages={selectedImages} />);
