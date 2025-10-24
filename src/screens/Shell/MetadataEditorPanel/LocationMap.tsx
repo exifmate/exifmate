@@ -1,10 +1,12 @@
+import useTauriListener from '@hooks/useTauriListener';
 import type { ExifData } from '@metadata-handler/exifdata';
+import { FOCUS_ON_LOCATION_EVENT } from '@platform/app-menu';
 import { load } from '@tauri-apps/plugin-store';
 import type { MapLibreEvent } from 'maplibre-gl';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { MdLocationPin } from 'react-icons/md';
-import MapGL, { Marker } from 'react-map-gl/maplibre';
+import MapGL, { type MapRef, Marker } from 'react-map-gl/maplibre';
 import { z } from 'zod';
 
 const Loc = z.object({
@@ -16,10 +18,12 @@ const Loc = z.object({
 type Loc = z.infer<typeof Loc>;
 
 function LocationMap() {
+  const mapRef = useRef<MapRef>(null);
   const [initialLoc, setInitialLoc] = useState<Loc | undefined>();
   const {
     setValue,
     watch,
+    getValues,
     formState: { disabled },
   } = useFormContext<ExifData>();
 
@@ -32,6 +36,17 @@ function LocationMap() {
         setInitialLoc(savedInitialLoc.data ?? DEFAULT_LOC);
       });
   }, []);
+
+  useTauriListener(FOCUS_ON_LOCATION_EVENT, () => {
+    if (!mapRef.current) {
+      return;
+    }
+
+    const [lat, lon] = getValues(['GPSLatitude', 'GPSLongitude']);
+    if (lat && lon) {
+      mapRef.current.setCenter([lon, lat]);
+    }
+  });
 
   const onMapIdle = useCallback((e: MapLibreEvent) => {
     load('state.json')
@@ -55,6 +70,7 @@ function LocationMap() {
 
   return (
     <MapGL
+      ref={mapRef}
       reuseMaps
       initialViewState={{
         latitude: initialLoc.lat,
