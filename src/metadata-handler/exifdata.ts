@@ -35,7 +35,7 @@ export const ExifData = z.object({
     })
     .optional(),
   ExposureCompensation: z.coerce
-    .number()
+    .string()
     .meta({
       description: 'also called ExposureBiasValue',
     })
