@@ -7,20 +7,14 @@ import {
 } from '@tauri-apps/api/menu';
 import { findImages } from './file-manager';
 
-const OPEN_SETTINGS_EVENT = 'app:open-settings';
-const SAVE_METADATA_EVENT = 'editor:save-form';
-const ENTER_METADATA_EDIT_EVENT = 'editor:enter-metadata-edit';
+export const OPEN_SETTINGS_EVENT = 'app:open-settings';
+export const SAVE_METADATA_EVENT = 'editor:save-form';
+export const ENTER_METADATA_EDIT_EVENT = 'editor:enter-metadata-edit';
 
 const SAVE_MENU_ENABLED_EVENT = 'menu:save-enabled';
 const EDIT_MENU_ENABLED_EVENT = 'menu:edit-enabled';
 const TOOLS_MENU_ENABLED_EVENT = 'menu:tools-enabled';
 const EDIT_IMAGES_PLURALIZE_EVENT = 'menu:edit-images-pluralize';
-
-export const onOpenSettings = (cb: () => void) =>
-  listen(OPEN_SETTINGS_EVENT, cb);
-export const onSaveAction = (cb: () => void) => listen(SAVE_METADATA_EVENT, cb);
-export const onEnterMetadataEdit = (cb: () => void) =>
-  listen(ENTER_METADATA_EDIT_EVENT, cb);
 
 export const setSaveMenuItemEnabled = (isEnabled: boolean) =>
   emit(SAVE_MENU_ENABLED_EVENT, { isEnabled });

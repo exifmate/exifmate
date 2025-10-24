@@ -1,27 +1,16 @@
 import Dialog from '@components/Dialog';
 import Modal from '@components/Modal';
-import { onOpenSettings } from '@platform/app-menu';
-import type { UnlistenFn } from '@tauri-apps/api/event';
-import { useEffect } from 'react';
+import useTauriListener from '@hooks/useTauriListener';
+import { OPEN_SETTINGS_EVENT } from '@platform/app-menu';
 import { useOverlayTriggerState } from 'react-stately';
 import SettingsForm from './SettingsForm';
 
 function SettingsModal() {
   const modalState = useOverlayTriggerState({ defaultOpen: false });
 
-  useEffect(() => {
-    let unlisten: UnlistenFn | undefined;
-
-    onOpenSettings(() => {
-      modalState.open();
-    }).then((u) => {
-      unlisten = u;
-    });
-
-    return () => {
-      unlisten?.();
-    };
-  }, [modalState.open]);
+  useTauriListener(OPEN_SETTINGS_EVENT, () => {
+    modalState.open();
+  });
 
   return (
     <Modal state={modalState} isDismissable>

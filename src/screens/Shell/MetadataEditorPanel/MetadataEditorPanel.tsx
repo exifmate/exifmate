@@ -1,12 +1,13 @@
 import Center from '@components/Center';
 import Tabs from '@components/Tabs';
 import { zodResolver } from '@hookform/resolvers/zod';
+import useTauriListener from '@hooks/useTauriListener';
 import { ExifData } from '@metadata-handler/exifdata';
 import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
 import {
-  onEnterMetadataEdit,
-  onSaveAction,
+  ENTER_METADATA_EDIT_EVENT,
+  SAVE_METADATA_EVENT,
   setEditMenuEnabled,
   setEditMenuImagesPluralize,
   setSaveMenuItemEnabled,
@@ -14,7 +15,6 @@ import {
 } from '@platform/app-menu';
 import type { ImageInfo } from '@platform/file-manager';
 import { showToast } from '@screens/Toasts/toast-queue';
-import type { UnlistenFn } from '@tauri-apps/api/event';
 import { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Item } from 'react-stately';
@@ -32,33 +32,23 @@ function usePlatformIntegration(badState: boolean, formDisabled: boolean) {
     setEditMenuEnabled(!formDisabled);
   }, [formDisabled]);
 
-  useEffect(() => {
-    let unlisten: UnlistenFn | undefined;
-
-    onSaveAction(() => {
-      formRef.current?.dispatchEvent(
-        new Event('submit', { cancelable: true, bubbles: true }),
-      );
-    }).then((u) => {
-      unlisten = u;
-    });
-
-    return () => {
-      unlisten?.();
-    };
-  }, []);
+  useTauriListener(SAVE_METADATA_EVENT, () => {
+    formRef.current?.dispatchEvent(
+      new Event('submit', { cancelable: true, bubbles: true }),
+    );
+  });
 
   return { formRef };
 }
 
 type ExifDataRes =
   | {
-    state: 'loading' | 'failed';
-  }
+      state: 'loading' | 'failed';
+    }
   | {
-    state: 'resolved';
-    data: ExifData;
-  };
+      state: 'resolved';
+      data: ExifData;
+    };
 
 interface Props {
   selectedImages: ImageInfo[];
@@ -115,29 +105,19 @@ function MetadataEditorPanel({ selectedImages }: Props) {
       setToolsMenuEnabled(false);
     }
 
-    setEditMenuImagesPluralize(selectedImages.length !== 1)
+    setEditMenuImagesPluralize(selectedImages.length !== 1);
   }, [selectedImages.length]);
 
-  useEffect(() => {
-    let unlisten: UnlistenFn | undefined;
-
-    onEnterMetadataEdit(() => {
-      setIsEditing(true);
-    }).then((u) => {
-      unlisten = u;
-    });
-
-    return () => {
-      unlisten?.();
-    };
-  }, []);
+  useTauriListener(ENTER_METADATA_EDIT_EVENT, () => {
+    setIsEditing(true);
+  });
 
   const onSubmit = async (newExif: ExifData) => {
     try {
       await updateMetadata(selectedImages, newExif);
     } catch (err) {
       console.error('Failed saving:', err);
-      await showToast({
+      showToast({
         level: 'error',
         message: 'Failed to save images',
       });
@@ -150,14 +130,14 @@ function MetadataEditorPanel({ selectedImages }: Props) {
       form.reset({ ...actualData });
     } catch (err) {
       console.error('Failed refreshing metadata:', err);
-      await showToast({
+      showToast({
         level: 'warning',
         message: 'Failed refreshing metadata after saving',
       });
     }
 
     setIsEditing(false);
-    await showToast({
+    showToast({
       level: 'success',
       timeout: 3_000,
       message: 'Saved Metadata!',

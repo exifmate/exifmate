@@ -1,37 +1,21 @@
-import { onImagesOpened } from '@platform/file-manager';
-import type { load } from '@tauri-apps/plugin-store';
-import { render, screen } from '@testing-library/react';
+import { IMAGES_OPENED_EVENT } from '@platform/file-manager';
+import { emit } from '@tauri-apps/api/event';
+import { mockIPC } from '@tauri-apps/api/mocks';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { fs } from 'memfs';
 import { ImageOne, ImageTwo } from 'test-support/fake-images';
-import type { Mock } from 'vitest';
 import ImageGridPanel from '../ImageGridPanel';
 
-const onImagesOpenedMock = onImagesOpened as unknown as Mock<
-  typeof onImagesOpened
->;
-
-vi.mock('@tauri-apps/api/event');
 vi.mock('@tauri-apps/plugin-fs');
-vi.mock('@tauri-apps/plugin-store', () => ({
-  load: vi.fn<typeof load>(() => new Promise(() => {})),
-}));
-
 vi.stubGlobal('URL', {
   createObjectURL: vi.fn(),
 });
 
-vi.mock(import('@platform/file-manager'), async (importOriginal) => {
-  const actual = await importOriginal();
-
-  return {
-    ...actual,
-    onImagesOpened: vi.fn<typeof onImagesOpened>().mockResolvedValue(() => {}),
-  };
-});
-
 describe('ImageGridPanel', () => {
   beforeEach(async () => {
+    mockIPC(() => {}, { shouldMockEvents: true });
+
     await Promise.all([
       fs.promises.writeFile('/image1.jpg', ImageOne),
       fs.promises.writeFile('/image2.jpg', ImageTwo),
@@ -44,24 +28,24 @@ describe('ImageGridPanel', () => {
   });
 
   describe('when there are opened images', () => {
-    beforeEach(() => {
-      onImagesOpenedMock.mockImplementationOnce((cb) => {
-        cb([
-          {
-            filename: 'image1.jpg',
-            path: '/image1.jpg',
-          },
-          {
-            filename: 'image2.jpg',
-            path: '/image2.jpg',
-          },
-        ]);
-        return Promise.resolve(() => {});
-      });
-    });
-
     it('lists the images', async () => {
       render(<ImageGridPanel onImageSelection={vi.fn()} />);
+
+      await act(async () => {
+        await emit(IMAGES_OPENED_EVENT, {
+          images: [
+            {
+              filename: 'image1.jpg',
+              path: '/image1.jpg',
+            },
+            {
+              filename: 'image2.jpg',
+              path: '/image2.jpg',
+            },
+          ],
+        });
+      });
+
       expect(screen.queryByText('No Images Loaded')).toBeNull();
 
       expect(await screen.findByAltText(`image1.jpg thumbnail`)).toBeVisible();
@@ -71,6 +55,21 @@ describe('ImageGridPanel', () => {
     it('can select an image', async () => {
       const imageSelection = vi.fn();
       render(<ImageGridPanel onImageSelection={imageSelection} />);
+
+      await act(async () => {
+        await emit(IMAGES_OPENED_EVENT, {
+          images: [
+            {
+              filename: 'image1.jpg',
+              path: '/image1.jpg',
+            },
+            {
+              filename: 'image2.jpg',
+              path: '/image2.jpg',
+            },
+          ],
+        });
+      });
 
       const image = await screen.findByLabelText('image1.jpg');
       expect(image).toHaveAttribute('aria-selected', 'false');

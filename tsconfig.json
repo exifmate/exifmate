@@ -24,6 +24,7 @@
     "paths": {
       "test-support/*": ["./test-support/*"],
       "@components/*": ["./src/components/*"],
+      "@hooks/*": ["./src/hooks/*"],
       "@metadata-handler/*": ["./src/metadata-handler/*"],
       "@platform/*": ["./src/platform/*"],
       "@screens/*": ["./src/screens/*"]

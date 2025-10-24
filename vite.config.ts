@@ -39,6 +39,7 @@ export default defineConfig(async () => ({
     alias: {
       'test-support': resolve(__dirname, 'test-support'),
       '@components': resolve(__dirname, 'src', 'components'),
+      '@hooks': resolve(__dirname, 'src', 'hooks'),
       '@metadata-handler': resolve(__dirname, 'src', 'metadata-handler'),
       '@platform': resolve(__dirname, 'src', 'platform'),
       '@screens': resolve(__dirname, 'src', 'screens'),

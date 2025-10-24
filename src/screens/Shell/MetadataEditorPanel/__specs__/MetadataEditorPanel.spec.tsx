@@ -2,6 +2,7 @@ import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
 import type { ImageInfo } from '@platform/file-manager';
 import { showToast } from '@screens/Toasts/toast-queue';
+import { mockIPC } from '@tauri-apps/api/mocks';
 import type { load } from '@tauri-apps/plugin-store';
 import {
   render,
@@ -19,7 +20,6 @@ const updateMetadataMock = updateMetadata as unknown as Mock<
 >;
 const showToastMock = showToast as unknown as Mock<typeof showToast>;
 
-vi.mock('@tauri-apps/api/event');
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi
     .fn<typeof load>()
@@ -35,6 +35,10 @@ vi.mock('@screens/Toasts/toast-queue');
 vi.mock('react-map-gl/maplibre');
 
 describe('MetadataEditorPanel', () => {
+  beforeEach(() => {
+    mockIPC(() => {}, { shouldMockEvents: true });
+  });
+
   afterEach(() => {
     updateMetadataMock.mockReset();
   });

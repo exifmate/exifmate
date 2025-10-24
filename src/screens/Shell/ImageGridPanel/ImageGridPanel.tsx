@@ -1,9 +1,9 @@
 import Center from '@components/Center';
 import GridList from '@components/GridList';
+import useTauriListener from '@hooks/useTauriListener';
 import type { ImageInfo } from '@platform/file-manager';
-import { onImagesOpened } from '@platform/file-manager';
-import type { UnlistenFn } from '@tauri-apps/api/event';
-import { useEffect, useState } from 'react';
+import { IMAGES_OPENED_EVENT } from '@platform/file-manager';
+import { useState } from 'react';
 import { Item } from 'react-stately';
 import ImageCard from './ImageCard';
 
@@ -18,19 +18,12 @@ interface Props {
 function ImageGridPanel({ onImageSelection }: Props) {
   const [images, setImages] = useState<ImageInfo[]>([]);
 
-  useEffect(() => {
-    let unlisten: UnlistenFn | null = null;
-
-    onImagesOpened((newImages) => {
-      setImages(newImages);
-    }).then((clean) => {
-      unlisten = clean;
-    });
-
-    return () => {
-      unlisten?.();
-    };
-  }, []);
+  useTauriListener(
+    IMAGES_OPENED_EVENT,
+    ({ images }: { images: ImageInfo[] }) => {
+      setImages(images);
+    },
+  );
 
   if (images.length === 0) {
     return (
