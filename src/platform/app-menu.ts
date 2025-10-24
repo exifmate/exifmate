@@ -25,8 +25,24 @@ export const setToolsMenuEnabled = (isEnabled: boolean) =>
 export const setEditMenuImagesPluralize = (pluralize: boolean) =>
   emit(EDIT_IMAGES_PLURALIZE_EVENT, { pluralize });
 
-export async function createAppMenu() {
-  const appMenu = await Submenu.new({
+async function attachEnableListener(
+  eventName: string,
+  menuItem: MenuItem | Submenu,
+) {
+  try {
+    await listen<{ isEnabled: boolean }>(
+      eventName,
+      ({ payload: { isEnabled } }) => {
+        menuItem.setEnabled(isEnabled);
+      },
+    );
+  } catch (err) {
+    console.error(`Failed to add enable listener for ${eventName}:`, err);
+  }
+}
+
+async function appMenu() {
+  return Submenu.new({
     text: 'exifmate',
     items: [
       {
@@ -44,7 +60,9 @@ export async function createAppMenu() {
       await PredefinedMenuItem.new({ item: 'Quit' }),
     ],
   });
+}
 
+async function fileMenu() {
   const saveMenuItem = await MenuItem.new({
     text: 'Save',
     accelerator: 'CmdOrCtrl+s',
@@ -54,14 +72,9 @@ export async function createAppMenu() {
     },
   });
 
-  listen<{ isEnabled: boolean }>(
-    SAVE_MENU_ENABLED_EVENT,
-    ({ payload: { isEnabled } }) => {
-      saveMenuItem.setEnabled(isEnabled);
-    },
-  );
+  await attachEnableListener(SAVE_MENU_ENABLED_EVENT, saveMenuItem);
 
-  const fileMenu = await Submenu.new({
+  return await Submenu.new({
     text: 'File',
     items: [
       {
@@ -74,7 +87,9 @@ export async function createAppMenu() {
       saveMenuItem,
     ],
   });
+}
 
+async function editMenu() {
   const editMenu = await Submenu.new({
     text: 'Edit',
     enabled: false,
@@ -90,13 +105,12 @@ export async function createAppMenu() {
     ],
   });
 
-  listen<{ isEnabled: boolean }>(
-    EDIT_MENU_ENABLED_EVENT,
-    ({ payload: { isEnabled } }) => {
-      editMenu.setEnabled(isEnabled);
-    },
-  );
+  await attachEnableListener(EDIT_MENU_ENABLED_EVENT, editMenu);
 
+  return editMenu;
+}
+
+async function toolsMenu() {
   const EDIT_IMAGES_SINGULAR_LABEL = 'Edit Selected Image';
   const EDIT_IMAGES_PLURAL_LABEL = 'Edit Selected Images';
   const editImagesMenuItem = await MenuItem.new({
@@ -124,13 +138,12 @@ export async function createAppMenu() {
     items: [editImagesMenuItem],
   });
 
-  listen<{ isEnabled: boolean }>(
-    TOOLS_MENU_ENABLED_EVENT,
-    ({ payload: { isEnabled } }) => {
-      toolsMenu.setEnabled(isEnabled);
-    },
-  );
+  await attachEnableListener(TOOLS_MENU_ENABLED_EVENT, toolsMenu);
 
+  return toolsMenu;
+}
+
+export async function createAppMenu() {
   const viewMenu = await Submenu.new({
     text: 'View',
     items: [await PredefinedMenuItem.new({ item: 'Fullscreen' })],
@@ -142,7 +155,14 @@ export async function createAppMenu() {
   });
 
   const menu = await Menu.new({
-    items: [appMenu, fileMenu, editMenu, toolsMenu, viewMenu, windowMenu],
+    items: [
+      await appMenu(),
+      await fileMenu(),
+      await editMenu(),
+      await toolsMenu(),
+      viewMenu,
+      windowMenu,
+    ],
   });
 
   menu.setAsAppMenu();
