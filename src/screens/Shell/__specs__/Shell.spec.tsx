@@ -46,6 +46,8 @@ describe('Shell', () => {
     expect(await screen.findByLabelText('Artist')).toBeVisible();
   });
 
+  it.todo('handles the reveal in dir event');
+
   describe.skip('when selected image is changed', () => {
     beforeEach(async () => {
       await selectRow('image-one.jpg');
@@ -87,5 +89,7 @@ describe('Shell', () => {
     });
 
     it.todo('blanks out inputs for fields that now have no value');
+
+    it.todo('enables the reveal in dir menu item');
   });
 });

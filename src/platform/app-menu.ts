@@ -5,17 +5,20 @@ import {
   PredefinedMenuItem,
   Submenu,
 } from '@tauri-apps/api/menu';
+import { platform } from '@tauri-apps/plugin-os';
 import { findImages } from './file-manager';
 
 export const OPEN_SETTINGS_EVENT = 'app:open-settings';
 export const SAVE_METADATA_EVENT = 'editor:save-form';
 export const ENTER_METADATA_EDIT_EVENT = 'editor:enter-metadata-edit';
 export const FOCUS_ON_LOCATION_EVENT = 'editor:focus-on-location';
+export const REVEAL_IN_DIR_EVENT = 'app:reveal-in-dir';
 
 const SAVE_MENU_ENABLED_EVENT = 'menu:save-enabled';
 const EDIT_MENU_ENABLED_EVENT = 'menu:edit-enabled';
 const TOOLS_MENU_ENABLED_EVENT = 'menu:tools-enabled';
 const EDIT_IMAGES_PLURALIZE_EVENT = 'menu:edit-images-pluralize';
+const REVEAL_IN_DIR_ENABLED_EVENT = 'menu:reveal-in-dir-enabled';
 
 export const setSaveMenuItemEnabled = (isEnabled: boolean) =>
   emit(SAVE_MENU_ENABLED_EVENT, { isEnabled });
@@ -25,6 +28,8 @@ export const setToolsMenuEnabled = (isEnabled: boolean) =>
   emit(TOOLS_MENU_ENABLED_EVENT, { isEnabled });
 export const setEditMenuImagesPluralize = (pluralize: boolean) =>
   emit(EDIT_IMAGES_PLURALIZE_EVENT, { pluralize });
+export const setRevealInDirMenuItemEnabled = (isEnabled: boolean) =>
+  emit(REVEAL_IN_DIR_ENABLED_EVENT, { isEnabled });
 
 async function attachEnableListener(
   eventName: string,
@@ -75,6 +80,29 @@ async function fileMenu() {
 
   await attachEnableListener(SAVE_MENU_ENABLED_EVENT, saveMenuItem);
 
+  let fileManager: string;
+  switch (platform()) {
+    case 'macos':
+      fileManager = 'Finder';
+      break;
+    case 'windows':
+      fileManager = 'Explorer';
+      break;
+    default:
+      fileManager = 'File Browser';
+      break;
+  }
+
+  const revealMenuItem = await MenuItem.new({
+    text: `Reveal in ${fileManager}`,
+    enabled: false,
+    async action() {
+      await emit(REVEAL_IN_DIR_EVENT);
+    },
+  });
+
+  await attachEnableListener(REVEAL_IN_DIR_ENABLED_EVENT, revealMenuItem);
+
   return await Submenu.new({
     text: 'File',
     items: [
@@ -86,6 +114,8 @@ async function fileMenu() {
         },
       },
       saveMenuItem,
+      await PredefinedMenuItem.new({ item: 'Separator' }),
+      revealMenuItem,
     ],
   });
 }
