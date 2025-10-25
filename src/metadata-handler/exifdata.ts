@@ -12,7 +12,7 @@ export const ExifData = z.object({
   CreateDate: z
     .string()
     .meta({
-      description: 'also called DateTimeDigitized',
+      description: 'DateTimeDigitized',
     })
     .optional(),
   ModifyDate: z.string().optional(),
@@ -21,7 +21,7 @@ export const ExifData = z.object({
   SerialNumber: z.coerce
     .string()
     .meta({
-      description: 'also called BodySerialNumber',
+      description: 'BodySerialNumber',
     })
     .optional(),
   ISO: z.coerce.number().optional(),
@@ -31,13 +31,13 @@ export const ExifData = z.object({
   FocalLengthIn35mmFormat: z.coerce
     .string()
     .meta({
-      description: 'also called FocalLengthIn35mmFilm',
+      description: 'FocalLengthIn35mmFilm',
     })
     .optional(),
   ExposureCompensation: z.coerce
     .string()
     .meta({
-      description: 'also called ExposureBiasValue',
+      description: 'ExposureBiasValue',
     })
     .optional(),
   Flash: z
@@ -122,11 +122,11 @@ export const ExifData = z.object({
     .optional(),
   ExifImageWidth: z.coerce
     .number()
-    .meta({ description: 'also called PixelXDimension' })
+    .meta({ description: 'PixelXDimension' })
     .optional(),
   ExifImageHeight: z.coerce
     .number()
-    .meta({ description: 'also called PixelYDimension' })
+    .meta({ description: 'PixelYDimension' })
     .optional(),
   XResolution: z.coerce.number().optional(),
   YResolution: z.coerce.number().optional(),
