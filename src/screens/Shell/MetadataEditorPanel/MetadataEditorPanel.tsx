@@ -18,6 +18,7 @@ import { showToast } from '@screens/Toasts/toast-queue';
 import { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Item } from 'react-stately';
+import useSWR from 'swr';
 import ExifTab from './ExifTab';
 import LocationTab from './LocationTab';
 
@@ -41,15 +42,6 @@ function usePlatformIntegration(badState: boolean, formDisabled: boolean) {
   return { formRef };
 }
 
-type ExifDataRes =
-  | {
-      state: 'loading' | 'failed';
-    }
-  | {
-      state: 'resolved';
-      data: ExifData;
-    };
-
 interface Props {
   selectedImages: ImageInfo[];
 }
@@ -58,15 +50,18 @@ function MetadataEditorPanel({ selectedImages }: Props) {
   const [activeTab, setActiveTab] = useState<'EXIF' | 'Location'>('EXIF');
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const [exifDataRes, setExifDataRes] = useState<ExifDataRes>({
-    state: 'loading',
+  const exifDataRes = useSWR(selectedImages, readMetadata, {
+    revalidateOnFocus: false,
+    onError(err) {
+      console.error('Failed reading metadata for selection:', err);
+    },
   });
 
   const form = useForm({
     disabled: !isEditing,
     resolver: zodResolver(ExifData),
     mode: 'onChange',
-    values: exifDataRes.state === 'resolved' ? exifDataRes.data : {},
+    values: exifDataRes.data,
   });
 
   const badState =
@@ -76,21 +71,6 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     form.formState.isSubmitting;
 
   const { formRef } = usePlatformIntegration(badState, form.formState.disabled);
-
-  useEffect(() => {
-    if (selectedImages.length === 0) {
-      return;
-    }
-
-    setExifDataRes({ state: 'loading' });
-
-    readMetadata(selectedImages)
-      .then((data) => setExifDataRes({ data, state: 'resolved' }))
-      .catch((err) => {
-        console.error('Failed reading metadata for selection:', err);
-        setExifDataRes({ state: 'failed' });
-      });
-  }, [selectedImages]);
 
   useEffect(() => {
     if (selectedImages) {
@@ -125,16 +105,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
       return;
     }
 
-    try {
-      const actualData = await readMetadata(selectedImages);
-      form.reset({ ...actualData });
-    } catch (err) {
-      console.error('Failed refreshing metadata:', err);
-      showToast({
-        level: 'warning',
-        message: 'Failed refreshing metadata after saving',
-      });
-    }
+    await exifDataRes.mutate();
 
     setIsEditing(false);
     showToast({
@@ -152,7 +123,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     );
   }
 
-  if (exifDataRes.state === 'loading') {
+  if (exifDataRes.isLoading) {
     return (
       <Center>
         <div className="loading loading-xl text-accent motion-reduce:hidden"></div>
@@ -161,7 +132,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     );
   }
 
-  if (exifDataRes.state === 'failed') {
+  if (exifDataRes.error) {
     return (
       <Center>
         <div role="alert" className="alert alert-error alert-soft">

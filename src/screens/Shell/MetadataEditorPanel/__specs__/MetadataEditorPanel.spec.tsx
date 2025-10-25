@@ -5,12 +5,15 @@ import { showToast } from '@screens/Toasts/toast-queue';
 import { mockIPC } from '@tauri-apps/api/mocks';
 import type { load } from '@tauri-apps/plugin-store';
 import {
-  render,
+  render as originalRender,
+  type RenderOptions,
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactElement, ReactNode } from 'react';
+import { SWRConfig } from 'swr';
 import type { Mock } from 'vitest';
 import MetadataEditorPanel from '../MetadataEditorPanel';
 
@@ -33,6 +36,13 @@ vi.mock('@metadata-handler/update');
 vi.mock('@screens/Toasts/toast-queue');
 
 vi.mock('react-map-gl/maplibre');
+
+const Wrapper = ({ children }: { children: ReactNode }) => (
+  <SWRConfig value={{ provider: () => new Map() }}>{children}</SWRConfig>
+);
+
+const render = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
+  originalRender(ui, { wrapper: Wrapper, ...options });
 
 describe('MetadataEditorPanel', () => {
   beforeEach(() => {
@@ -85,8 +95,8 @@ describe('MetadataEditorPanel', () => {
       beforeEach(async () => {
         readMetadataMock.mockResolvedValueOnce({ Artist: 'test person' });
         render(<MetadataEditorPanel selectedImages={selectedImages} />);
-        await waitForElementToBeRemoved(
-          screen.queryByText('Loading Metadata...'),
+        await waitFor(() =>
+          expect(screen.queryByText('Loading Metadata...')).toBeNull(),
         );
       });
 
