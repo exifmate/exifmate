@@ -7,7 +7,9 @@ function forwardConsole(
   const original = console[fnName];
   console[fnName] = (...message) => {
     original(...message);
-    logger(JSON.stringify(message));
+    logger(JSON.stringify(message)).catch((err) => {
+      console.error('Failed to log to Tauri:', err);
+    });
   };
 }
 

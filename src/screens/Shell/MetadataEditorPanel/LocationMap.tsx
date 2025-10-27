@@ -34,6 +34,9 @@ function LocationMap() {
       .then((savedInitialLoc) => {
         const DEFAULT_LOC: Loc = { lat: 0, lng: 0, zoom: 0 } as const;
         setInitialLoc(savedInitialLoc.data ?? DEFAULT_LOC);
+      })
+      .catch((err) => {
+        console.error('Failed to load map state:', err);
       });
   }, []);
 

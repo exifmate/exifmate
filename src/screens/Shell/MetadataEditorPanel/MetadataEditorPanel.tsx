@@ -26,11 +26,21 @@ function usePlatformIntegration(badState: boolean, formDisabled: boolean) {
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    setSaveMenuItemEnabled(!badState);
+    setSaveMenuItemEnabled(!badState).catch((err) => {
+      console.error(
+        `Failed ${badState ? 'disabling' : 'enabling'} save menu:`,
+        err,
+      );
+    });
   }, [badState]);
 
   useEffect(() => {
-    setEditMenuEnabled(!formDisabled);
+    setEditMenuEnabled(!formDisabled).catch((err) => {
+      console.error(
+        `Failed ${formDisabled ? 'disabling' : 'enabling'} edit menu:`,
+        err,
+      );
+    });
   }, [formDisabled]);
 
   useTauriListener(SAVE_METADATA_EVENT, () => {
@@ -79,13 +89,21 @@ function MetadataEditorPanel({ selectedImages }: Props) {
   }, [selectedImages]);
 
   useEffect(() => {
-    if (selectedImages.length) {
-      setToolsMenuEnabled(true);
-    } else {
-      setToolsMenuEnabled(false);
-    }
+    const toolsMenuEnabled = selectedImages.length !== 0;
+    setToolsMenuEnabled(toolsMenuEnabled).catch((err) => {
+      console.error(
+        `Failed ${toolsMenuEnabled ? 'enabling' : 'disabling'} tools menu:`,
+        err,
+      );
+    });
 
-    setEditMenuImagesPluralize(selectedImages.length !== 1);
+    const pluralizeImages = selectedImages.length !== 1;
+    setEditMenuImagesPluralize(pluralizeImages).catch((err) => {
+      console.error(
+        `Failed to ${pluralizeImages ? 'pluralize' : 'singularize'} menu item label:`,
+        err,
+      );
+    });
   }, [selectedImages.length]);
 
   useTauriListener(ENTER_METADATA_EDIT_EVENT, () => {

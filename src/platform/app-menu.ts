@@ -152,7 +152,7 @@ async function toolsMenu() {
     },
   });
 
-  listen<{ pluralize: boolean }>(
+  await listen<{ pluralize: boolean }>(
     EDIT_IMAGES_PLURALIZE_EVENT,
     async ({ payload: { pluralize } }) => {
       if (pluralize) {

@@ -15,11 +15,13 @@ function Shell() {
   const [selectedImages, setSelectedImages] = useState<ImageInfo[]>([]);
 
   useEffect(() => {
-    if (selectedImages.length === 1) {
-      setRevealInDirMenuItemEnabled(true);
-    } else {
-      setRevealInDirMenuItemEnabled(false);
-    }
+    const enableReveal = selectedImages.length === 1;
+    setRevealInDirMenuItemEnabled(enableReveal).catch((err) => {
+      console.error(
+        `Failed to ${enableReveal ? 'enable' : 'disable'} reveal in dir menu item:`,
+        err,
+      );
+    });
   }, [selectedImages.length]);
 
   useTauriListener(REVEAL_IN_DIR_EVENT, async () => {
