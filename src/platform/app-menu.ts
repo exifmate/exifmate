@@ -26,7 +26,7 @@ export const setEditMenuEnabled = (isEnabled: boolean) =>
   emit(EDIT_MENU_ENABLED_EVENT, { isEnabled });
 export const setToolsMenuEnabled = (isEnabled: boolean) =>
   emit(TOOLS_MENU_ENABLED_EVENT, { isEnabled });
-export const setEditMenuImagesPluralize = (pluralize: boolean) =>
+export const setEditImagesMenuItemPluralize = (pluralize: boolean) =>
   emit(EDIT_IMAGES_PLURALIZE_EVENT, { pluralize });
 export const setRevealInDirMenuItemEnabled = (isEnabled: boolean) =>
   emit(REVEAL_IN_DIR_ENABLED_EVENT, { isEnabled });

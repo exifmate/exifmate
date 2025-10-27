@@ -8,8 +8,8 @@ import { updateMetadata } from '@metadata-handler/update';
 import {
   ENTER_METADATA_EDIT_EVENT,
   SAVE_METADATA_EVENT,
+  setEditImagesMenuItemPluralize,
   setEditMenuEnabled,
-  setEditMenuImagesPluralize,
   setSaveMenuItemEnabled,
   setToolsMenuEnabled,
 } from '@platform/app-menu';
@@ -98,7 +98,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     });
 
     const pluralizeImages = selectedImages.length !== 1;
-    setEditMenuImagesPluralize(pluralizeImages).catch((err) => {
+    setEditImagesMenuItemPluralize(pluralizeImages).catch((err) => {
       console.error(
         `Failed to ${pluralizeImages ? 'pluralize' : 'singularize'} menu item label:`,
         err,
