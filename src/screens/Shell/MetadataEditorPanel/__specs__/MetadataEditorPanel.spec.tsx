@@ -46,7 +46,7 @@ const render = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
 
 describe('MetadataEditorPanel', () => {
   beforeEach(() => {
-    mockIPC(() => { }, { shouldMockEvents: true });
+    mockIPC(() => {}, { shouldMockEvents: true });
   });
 
   afterEach(() => {
@@ -77,7 +77,7 @@ describe('MetadataEditorPanel', () => {
 
     describe('when failing to open an image', () => {
       beforeEach(() => {
-        vi.stubGlobal('console', { error: () => { } });
+        vi.stubGlobal('console', { error: () => {} });
       });
 
       it('indicates failure with no form even with partial load error', async () => {

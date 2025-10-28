@@ -46,8 +46,9 @@ describe('ExifInput', () => {
     it('shows the description', () => {
       render(<TestContainer tagName="ExposureCompensation" />);
 
-      expect(screen.getByLabelText(/ExposureCompensation/))
-        .toEqual(screen.getByLabelText(/\(ExposureBiasValue\)/));
+      expect(screen.getByLabelText(/ExposureCompensation/)).toEqual(
+        screen.getByLabelText(/\(ExposureBiasValue\)/),
+      );
 
       render(<TestContainer tagName="Artist" />);
       expect(screen.getByLabelText('Artist')).not.toHaveAccessibleDescription();
