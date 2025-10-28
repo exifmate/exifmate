@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ExifData } from '@metadata-handler/exifdata';
+import { mockIPC } from '@tauri-apps/api/mocks';
 import { load } from '@tauri-apps/plugin-store';
 import { render, screen } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -26,6 +27,10 @@ function TestContainer() {
 }
 
 describe('LocationTab', () => {
+  beforeEach(() => {
+    mockIPC(() => {}, { shouldMockEvents: true });
+  });
+
   it('has location inputs', () => {
     render(<TestContainer />);
     expect(screen.getByLabelText('GPSLatitude')).toBeVisible();

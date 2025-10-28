@@ -1,10 +1,12 @@
-import { ExifData } from '@metadata-handler/exifdata';
+import useTauriListener from '@hooks/useTauriListener';
+import type { ExifData } from '@metadata-handler/exifdata';
+import { FOCUS_ON_LOCATION_EVENT } from '@platform/app-menu';
 import { load } from '@tauri-apps/plugin-store';
 import type { MapLibreEvent } from 'maplibre-gl';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { MdLocationPin } from 'react-icons/md';
-import MapGL, { Marker } from 'react-map-gl/maplibre';
+import MapGL, { type MapRef, Marker } from 'react-map-gl/maplibre';
 import { z } from 'zod';
 
 const Loc = z.object({
@@ -16,10 +18,12 @@ const Loc = z.object({
 type Loc = z.infer<typeof Loc>;
 
 function LocationMap() {
+  const mapRef = useRef<MapRef>(null);
   const [initialLoc, setInitialLoc] = useState<Loc | undefined>();
   const {
     setValue,
     watch,
+    getValues,
     formState: { disabled },
   } = useFormContext<ExifData>();
 
@@ -30,8 +34,22 @@ function LocationMap() {
       .then((savedInitialLoc) => {
         const DEFAULT_LOC: Loc = { lat: 0, lng: 0, zoom: 0 } as const;
         setInitialLoc(savedInitialLoc.data ?? DEFAULT_LOC);
+      })
+      .catch((err) => {
+        console.error('Failed to load map state:', err);
       });
   }, []);
+
+  useTauriListener(FOCUS_ON_LOCATION_EVENT, () => {
+    if (!mapRef.current) {
+      return;
+    }
+
+    const [lat, lon] = getValues(['GPSLatitude', 'GPSLongitude']);
+    if (lat && lon) {
+      mapRef.current.setCenter([lon, lat]);
+    }
+  });
 
   const onMapIdle = useCallback((e: MapLibreEvent) => {
     load('state.json')
@@ -51,13 +69,11 @@ function LocationMap() {
     return <div className="skeleton h-full w-full" title="Loading Map"></div>;
   }
 
-  const getLoc = (part: 'GPSLatitude' | 'GPSLongitude'): number => {
-    const val = watch(part);
-    return ExifData.shape[part].safeParse(val).data ?? 0;
-  };
+  const pinLoc = { lat: watch('GPSLatitude'), lon: watch('GPSLongitude') };
 
   return (
     <MapGL
+      ref={mapRef}
       reuseMaps
       initialViewState={{
         latitude: initialLoc.lat,
@@ -79,13 +95,11 @@ function LocationMap() {
       }}
       onIdle={onMapIdle}
     >
-      <Marker
-        latitude={getLoc('GPSLatitude')}
-        longitude={getLoc('GPSLongitude')}
-        anchor="bottom"
-      >
-        <MdLocationPin color="red" size={36} />
-      </Marker>
+      {pinLoc.lat !== undefined && pinLoc.lon !== undefined && (
+        <Marker latitude={pinLoc.lat} longitude={pinLoc.lon} anchor="bottom">
+          <MdLocationPin color="red" size={36} />
+        </Marker>
+      )}
     </MapGL>
   );
 }

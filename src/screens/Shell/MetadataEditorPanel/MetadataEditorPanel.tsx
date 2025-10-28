@@ -1,103 +1,54 @@
 import Center from '@components/Center';
 import Tabs from '@components/Tabs';
 import { zodResolver } from '@hookform/resolvers/zod';
+import useTauriListener from '@hooks/useTauriListener';
 import { ExifData } from '@metadata-handler/exifdata';
 import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
 import {
-  onSaveAction,
+  ENTER_METADATA_EDIT_EVENT,
+  SAVE_METADATA_EVENT,
+  setEditImagesMenuItemPluralize,
   setEditMenuEnabled,
   setSaveMenuItemEnabled,
+  setToolsMenuEnabled,
 } from '@platform/app-menu';
 import type { ImageInfo } from '@platform/file-manager';
 import { showToast } from '@screens/Toasts/toast-queue';
-import type { UnlistenFn } from '@tauri-apps/api/event';
 import { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Item } from 'react-stately';
+import useSWR from 'swr';
 import ExifTab from './ExifTab';
 import LocationTab from './LocationTab';
-
-function usePlatformIntegration(badState: boolean, formDisabled: boolean) {
-  const formRef = useRef<HTMLFormElement>(null);
-
-  useEffect(() => {
-    setSaveMenuItemEnabled(!badState);
-  }, [badState]);
-
-  useEffect(() => {
-    setEditMenuEnabled(!formDisabled);
-  }, [formDisabled]);
-
-  useEffect(() => {
-    let unlisten: UnlistenFn | undefined;
-
-    onSaveAction(() => {
-      formRef.current?.dispatchEvent(
-        new Event('submit', { cancelable: true, bubbles: true }),
-      );
-    }).then((u) => {
-      unlisten = u;
-    });
-
-    return () => {
-      unlisten?.();
-    };
-  }, []);
-
-  return { formRef };
-}
-
-type ExifDataRes =
-  | {
-      state: 'loading' | 'failed';
-    }
-  | {
-      state: 'resolved';
-      data: ExifData;
-    };
 
 interface Props {
   selectedImages: ImageInfo[];
 }
 
 function MetadataEditorPanel({ selectedImages }: Props) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [activeTab, setActiveTab] = useState<'EXIF' | 'Location'>('EXIF');
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const [exifDataRes, setExifDataRes] = useState<ExifDataRes>({
-    state: 'loading',
+  const exifDataRes = useSWR(selectedImages, readMetadata, {
+    revalidateOnFocus: false,
+    onError(err) {
+      console.error('Failed reading metadata for selection:', err);
+    },
   });
 
   const form = useForm({
     disabled: !isEditing,
     resolver: zodResolver(ExifData),
     mode: 'onChange',
-    values: exifDataRes.state === 'resolved' ? exifDataRes.data : {},
+    values: exifDataRes.data,
   });
 
-  const badState =
-    !form.formState.isDirty ||
-    !form.formState.isValid ||
-    form.formState.disabled ||
-    form.formState.isSubmitting;
-
-  const { formRef } = usePlatformIntegration(badState, form.formState.disabled);
-
-  useEffect(() => {
-    if (selectedImages.length === 0) {
-      return;
-    }
-
-    setExifDataRes({ state: 'loading' });
-
-    readMetadata(selectedImages)
-      .then((data) => setExifDataRes({ data, state: 'resolved' }))
-      .catch((err) => {
-        console.error('Failed reading metadata for selection:', err);
-        setExifDataRes({ state: 'failed' });
-      });
-  }, [selectedImages]);
+  // `isValid` needs to be evaluated early or else `badState` can have a false positive
+  // (selecting an image for the first time needs 3+ changes before being valid otherwise)
+  const { isDirty, isValid, isSubmitting, disabled } = form.formState;
+  const badState = !isDirty || !isValid || disabled || isSubmitting;
 
   useEffect(() => {
     if (selectedImages) {
@@ -105,12 +56,58 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     }
   }, [selectedImages]);
 
+  useEffect(() => {
+    const toolsMenuEnabled = selectedImages.length !== 0;
+    setToolsMenuEnabled(toolsMenuEnabled).catch((err) => {
+      console.error(
+        `Failed ${toolsMenuEnabled ? 'enabling' : 'disabling'} tools menu:`,
+        err,
+      );
+    });
+
+    const pluralizeImages = selectedImages.length !== 1;
+    setEditImagesMenuItemPluralize(pluralizeImages).catch((err) => {
+      console.error(
+        `Failed to ${pluralizeImages ? 'pluralize' : 'singularize'} menu item label:`,
+        err,
+      );
+    });
+  }, [selectedImages.length]);
+
+  useTauriListener(ENTER_METADATA_EDIT_EVENT, () => {
+    setIsEditing(true);
+  });
+
+  useEffect(() => {
+    setSaveMenuItemEnabled(!badState).catch((err) => {
+      console.error(
+        `Failed to ${!badState ? 'disable' : 'enable'} save menu:`,
+        err,
+      );
+    });
+  }, [badState]);
+
+  useEffect(() => {
+    setEditMenuEnabled(!disabled).catch((err) => {
+      console.error(
+        `Failed to ${!disabled ? 'disable' : 'enable'} edit menu:`,
+        err,
+      );
+    });
+  }, [disabled]);
+
+  useTauriListener(SAVE_METADATA_EVENT, () => {
+    formRef.current?.dispatchEvent(
+      new Event('submit', { cancelable: true, bubbles: true }),
+    );
+  });
+
   const onSubmit = async (newExif: ExifData) => {
     try {
       await updateMetadata(selectedImages, newExif);
     } catch (err) {
       console.error('Failed saving:', err);
-      await showToast({
+      showToast({
         level: 'error',
         message: 'Failed to save images',
       });
@@ -118,19 +115,10 @@ function MetadataEditorPanel({ selectedImages }: Props) {
       return;
     }
 
-    try {
-      const actualData = await readMetadata(selectedImages);
-      form.reset({ ...actualData });
-    } catch (err) {
-      console.error('Failed refreshing metadata:', err);
-      await showToast({
-        level: 'warning',
-        message: 'Failed refreshing metadata after saving',
-      });
-    }
+    await exifDataRes.mutate();
 
     setIsEditing(false);
-    await showToast({
+    showToast({
       level: 'success',
       timeout: 3_000,
       message: 'Saved Metadata!',
@@ -145,7 +133,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     );
   }
 
-  if (exifDataRes.state === 'loading') {
+  if (exifDataRes.isLoading) {
     return (
       <Center>
         <div className="loading loading-xl text-accent motion-reduce:hidden"></div>
@@ -154,7 +142,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     );
   }
 
-  if (exifDataRes.state === 'failed') {
+  if (exifDataRes.error) {
     return (
       <Center>
         <div role="alert" className="alert alert-error alert-soft">
@@ -189,7 +177,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
             <button
               type="button"
               className="btn btn-soft btn-sm btn-accent"
-              disabled={form.formState.isSubmitting}
+              disabled={isSubmitting}
               onClick={() => setIsEditing(true)}
             >
               Edit
@@ -199,7 +187,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
               <button
                 type="button"
                 className="btn btn-soft btn-sm btn-secondary"
-                disabled={form.formState.isSubmitting}
+                disabled={isSubmitting}
                 onClick={() => {
                   setIsEditing(false);
                   form.reset();
@@ -213,7 +201,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
                 className="btn btn-soft btn-sm btn-primary"
                 disabled={badState}
               >
-                {form.formState.isSubmitting && (
+                {isSubmitting && (
                   <span className="loading loading-spinner loading-sm"></span>
                 )}
                 Save

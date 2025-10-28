@@ -18,7 +18,7 @@ function SettingsForm({ onSubmit, children }: Props) {
         return loadSettings();
       } catch (err) {
         console.error('Failed to load settings:', err);
-        await showToast({ message: 'Failed to load settings', level: 'error' });
+        showToast({ message: 'Failed to load settings', level: 'error' });
         throw err;
       }
     },
@@ -28,7 +28,7 @@ function SettingsForm({ onSubmit, children }: Props) {
     <form
       onSubmit={handleSubmit(async (newSettings) => {
         await saveSettings(newSettings);
-        await showToast({
+        showToast({
           message: 'Settings Saved',
           level: 'success',
           timeout: 3_000,

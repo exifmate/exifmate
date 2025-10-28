@@ -22,26 +22,18 @@ function ExifInput({ tagName }: Props) {
   const registration = register(tagName);
   registration.disabled = registration.disabled || formState.isSubmitting;
 
-  const describedBy = [];
-  if (errorMessage) {
-    describedBy.push(`${tagName}-error`);
-  }
-  if (description) {
-    describedBy.push(`${tagName}-description`);
-  }
-
   const commonProps: HTMLAttributes<HTMLSelectElement | HTMLInputElement> = {
     id: tagName,
     'aria-invalid': !!errorMessage,
-    'aria-describedby': describedBy.join(' '),
+    'aria-describedby': errorMessage ? `${tagName}-error` : undefined,
   };
 
   return (
     <div className="flex flex-col gap-1">
       <label className="label" htmlFor={tagName}>
         {tagName}
+        {description && <span>({description})</span>}
       </label>
-      {description && <p id={`${tagName}-description`}>{description}</p>}
 
       {tag instanceof ZodEnum ? (
         <select {...registration} {...commonProps} className="select w-full">

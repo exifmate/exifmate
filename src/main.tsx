@@ -20,4 +20,6 @@ createRoot(root).render(
   </StrictMode>,
 );
 
-createAppMenu();
+createAppMenu().catch((err) => {
+  console.error('Failed to create app menu:', err);
+});

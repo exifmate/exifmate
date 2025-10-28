@@ -9,6 +9,7 @@ function Toolbar() {
     >
       <button
         type="button"
+        title="Add Image"
         className="btn btn-ghost btn-sm"
         onClick={() => findImages()}
       >

@@ -2,14 +2,18 @@ import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
 import type { ImageInfo } from '@platform/file-manager';
 import { showToast } from '@screens/Toasts/toast-queue';
+import { mockIPC } from '@tauri-apps/api/mocks';
 import type { load } from '@tauri-apps/plugin-store';
 import {
-  render,
+  render as originalRender,
+  type RenderOptions,
   screen,
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactElement, ReactNode } from 'react';
+import { SWRConfig } from 'swr';
 import type { Mock } from 'vitest';
 import MetadataEditorPanel from '../MetadataEditorPanel';
 
@@ -19,7 +23,6 @@ const updateMetadataMock = updateMetadata as unknown as Mock<
 >;
 const showToastMock = showToast as unknown as Mock<typeof showToast>;
 
-vi.mock('@tauri-apps/api/event');
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi
     .fn<typeof load>()
@@ -34,7 +37,18 @@ vi.mock('@screens/Toasts/toast-queue');
 
 vi.mock('react-map-gl/maplibre');
 
+const Wrapper = ({ children }: { children: ReactNode }) => (
+  <SWRConfig value={{ provider: () => new Map() }}>{children}</SWRConfig>
+);
+
+const render = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
+  originalRender(ui, { wrapper: Wrapper, ...options });
+
 describe('MetadataEditorPanel', () => {
+  beforeEach(() => {
+    mockIPC(() => {}, { shouldMockEvents: true });
+  });
+
   afterEach(() => {
     updateMetadataMock.mockReset();
   });
@@ -62,6 +76,10 @@ describe('MetadataEditorPanel', () => {
     });
 
     describe('when failing to open an image', () => {
+      beforeEach(() => {
+        vi.stubGlobal('console', { error: () => {} });
+      });
+
       it('indicates failure with no form even with partial load error', async () => {
         readMetadataMock.mockRejectedValueOnce(new Error('No'));
         render(<MetadataEditorPanel selectedImages={selectedImages} />);
@@ -77,8 +95,8 @@ describe('MetadataEditorPanel', () => {
       beforeEach(async () => {
         readMetadataMock.mockResolvedValueOnce({ Artist: 'test person' });
         render(<MetadataEditorPanel selectedImages={selectedImages} />);
-        await waitForElementToBeRemoved(
-          screen.queryByText('Loading Metadata...'),
+        await waitFor(() =>
+          expect(screen.queryByText('Loading Metadata...')).toBeNull(),
         );
       });
 
@@ -157,9 +175,11 @@ describe('MetadataEditorPanel', () => {
           const artistInput = screen.getByLabelText('Artist');
           expect(artistInput).toBeEnabled();
 
-          await userEvent.type(artistInput, 'Test');
+          await userEvent.type(artistInput, 'T');
           expect(showToastMock).not.toHaveBeenCalled();
-          await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+          const saveButton = screen.getByRole('button', { name: 'Save' });
+          expect(saveButton).toBeEnabled();
+          await userEvent.click(saveButton);
 
           expect(screen.getByLabelText('Artist')).toBeDisabled();
           expect(showToastMock).toHaveBeenCalledExactlyOnceWith(

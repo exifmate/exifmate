@@ -1,4 +1,3 @@
-import type { onImagesOpened } from '@platform/file-manager';
 import { User } from '@react-aria/test-utils';
 import type { load } from '@tauri-apps/plugin-store';
 import {
@@ -9,7 +8,6 @@ import {
 import userEvent from '@testing-library/user-event';
 import Shell from '../Shell';
 
-vi.mock('@tauri-apps/api/event');
 vi.mock('@tauri-apps/plugin-fs');
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi.fn<typeof load>(() => new Promise(() => {})),
@@ -17,27 +15,6 @@ vi.mock('@tauri-apps/plugin-store', () => ({
 
 vi.stubGlobal('URL', {
   createObjectURL: vi.fn(),
-});
-
-vi.mock(import('@platform/file-manager'), async (importOriginal) => {
-  const actual = await importOriginal();
-
-  return {
-    ...actual,
-    onImagesOpened: vi.fn<typeof onImagesOpened>((cb) => {
-      cb([
-        {
-          filename: 'image-one.jpg',
-          path: '/image-one.jpg',
-        },
-        {
-          filename: 'image-two.jpg',
-          path: '/image-two.jpg',
-        },
-      ]);
-      return Promise.resolve(() => {});
-    }),
-  };
 });
 
 const selectRow = async (rowText: string) => {
@@ -68,6 +45,8 @@ describe('Shell', () => {
     await selectRow('image-one.jpg');
     expect(await screen.findByLabelText('Artist')).toBeVisible();
   });
+
+  it.todo('handles the reveal in dir event');
 
   describe.skip('when selected image is changed', () => {
     beforeEach(async () => {
@@ -110,5 +89,7 @@ describe('Shell', () => {
     });
 
     it.todo('blanks out inputs for fields that now have no value');
+
+    it.todo('enables the reveal in dir menu item');
   });
 });

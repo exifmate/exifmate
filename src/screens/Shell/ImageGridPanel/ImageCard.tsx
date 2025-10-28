@@ -1,45 +1,30 @@
 import type { ImageInfo } from '@platform/file-manager';
 import { readFile } from '@tauri-apps/plugin-fs';
-import { useEffect, useState } from 'react';
 import { MdWarning } from 'react-icons/md';
-
-type ThumbnailState =
-  | {
-      state: 'loading' | 'failed';
-    }
-  | {
-      state: 'resolved';
-      assetUrl: string;
-    };
+import useSWR from 'swr';
 
 function ImageCard({ path, filename }: ImageInfo) {
-  const [thumbnail, setThumbnail] = useState<ThumbnailState>({
-    state: 'loading',
-  });
-
-  useEffect(() => {
-    setThumbnail({ state: 'loading' });
-
-    readFile(path)
-      .then((data) => {
-        const assetUrl = URL.createObjectURL(new Blob([data.buffer]));
-        setThumbnail({ assetUrl, state: 'resolved' });
-      })
-      .catch((err) => {
-        setThumbnail({ state: 'failed' });
+  const { data, isLoading } = useSWR(
+    path,
+    (p) =>
+      readFile(p).then((data) => URL.createObjectURL(new Blob([data.buffer]))),
+    {
+      revalidateOnFocus: false,
+      onError(err) {
         console.error('Failed to load thumbnail:', err);
-      });
-  }, [path]);
+      },
+    },
+  );
 
   return (
     <div className="card card-xs w-56 bg-neutral cursor-pointer">
-      {thumbnail.state === 'loading' ? (
+      {isLoading ? (
         <div className="skeleton h-56 w-56" />
       ) : (
         <figure className="h-56 w-56 flex justify-center items-center">
-          {thumbnail.state === 'resolved' ? (
+          {data ? (
             <img
-              src={thumbnail.assetUrl}
+              src={data}
               alt={`${filename} thumbnail`}
               className="h-56 object-cover"
               height={288}

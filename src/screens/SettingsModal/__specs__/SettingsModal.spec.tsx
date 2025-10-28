@@ -1,19 +1,13 @@
+import { OPEN_SETTINGS_EVENT } from '@platform/app-menu';
 import { loadSettings, type Settings, saveSettings } from '@platform/settings';
-import { render, screen } from '@testing-library/react';
+import { emit } from '@tauri-apps/api/event';
+import { mockIPC } from '@tauri-apps/api/mocks';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
 import SettingsModal from '../SettingsModal';
 
-// const mockOnOpenSettings = onOpenSettings as unknown as Mock<typeof onOpenSettings>;
-// vi.mock('@app/platform/app-menu');
-
-vi.mock('@tauri-apps/api/event');
-vi.mock('@platform/app-menu', () => ({
-  onOpenSettings: vi.fn((cb) => {
-    cb();
-    return Promise.resolve();
-  }),
-}));
+vi.mock('@app/platform/app-menu');
 
 const mockLoadSettings = loadSettings as unknown as Mock<typeof loadSettings>;
 const mockSaveSettings = saveSettings as unknown as Mock<typeof saveSettings>;
@@ -29,6 +23,8 @@ vi.mock(import('@platform/settings'), async (importOriginal) => {
 
 describe('SettingsModal', () => {
   beforeEach(() => {
+    mockIPC(() => {}, { shouldMockEvents: true });
+
     const fakeSettings: Settings = {
       originalFileBehavior: 'overwrite_original_in_place',
     };
@@ -37,6 +33,10 @@ describe('SettingsModal', () => {
 
   it('has a form for settings', async () => {
     render(<SettingsModal />);
+    await act(async () => {
+      await emit(OPEN_SETTINGS_EVENT);
+    });
+
     expect(await screen.findByText('Settings')).toBeVisible();
     expect(
       screen.getByLabelText(/Overwrite Original File In Place/),

@@ -37,6 +37,7 @@
     "react-map-gl": "^8.0.4",
     "react-resizable-panels": "^3.0.3",
     "react-stately": "^3.41.0",
+    "swr": "^2.3.6",
     "tailwindcss": "^4.1.12",
     "zod": "^4.1.12"
   },
