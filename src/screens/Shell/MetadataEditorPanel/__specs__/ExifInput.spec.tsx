@@ -46,9 +46,8 @@ describe('ExifInput', () => {
     it('shows the description', () => {
       render(<TestContainer tagName="ExposureCompensation" />);
 
-      expect(
-        screen.getByLabelText('ExposureCompensation'),
-      ).toHaveAccessibleDescription('also called ExposureBiasValue');
+      expect(screen.getByLabelText(/ExposureCompensation/))
+        .toEqual(screen.getByLabelText(/\(ExposureBiasValue\)/));
 
       render(<TestContainer tagName="Artist" />);
       expect(screen.getByLabelText('Artist')).not.toHaveAccessibleDescription();
@@ -84,7 +83,7 @@ describe('ExifInput', () => {
       const cb = vi.fn();
       render(<TestContainer tagName={tagName} cb={cb} />);
 
-      const input = screen.getByLabelText(tagName);
+      const input = screen.getByLabelText(new RegExp(tagName));
       expect(input).toBeInstanceOf(HTMLInputElement);
       expect((input as HTMLInputElement).type).toEqual('datetime-local');
       expect(input).toHaveAttribute('step', '1');
