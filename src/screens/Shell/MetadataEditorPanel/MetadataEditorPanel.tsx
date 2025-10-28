@@ -22,42 +22,12 @@ import useSWR from 'swr';
 import ExifTab from './ExifTab';
 import LocationTab from './LocationTab';
 
-// TODO: remove this hook
-function usePlatformIntegration(badState: boolean, formDisabled: boolean) {
-  const formRef = useRef<HTMLFormElement>(null);
-
-  useEffect(() => {
-    setSaveMenuItemEnabled(!badState).catch((err) => {
-      console.error(
-        `Failed ${badState ? 'disabling' : 'enabling'} save menu:`,
-        err,
-      );
-    });
-  }, [badState]);
-
-  useEffect(() => {
-    setEditMenuEnabled(!formDisabled).catch((err) => {
-      console.error(
-        `Failed ${formDisabled ? 'disabling' : 'enabling'} edit menu:`,
-        err,
-      );
-    });
-  }, [formDisabled]);
-
-  useTauriListener(SAVE_METADATA_EVENT, () => {
-    formRef.current?.dispatchEvent(
-      new Event('submit', { cancelable: true, bubbles: true }),
-    );
-  });
-
-  return { formRef };
-}
-
 interface Props {
   selectedImages: ImageInfo[];
 }
 
 function MetadataEditorPanel({ selectedImages }: Props) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [activeTab, setActiveTab] = useState<'EXIF' | 'Location'>('EXIF');
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -79,8 +49,6 @@ function MetadataEditorPanel({ selectedImages }: Props) {
   // (selecting an image for the first time needs 3+ changes before being valid otherwise)
   const { isDirty, isValid, isSubmitting, disabled } = form.formState;
   const badState = !isDirty || !isValid || disabled || isSubmitting;
-
-  const { formRef } = usePlatformIntegration(badState, disabled);
 
   useEffect(() => {
     if (selectedImages) {
@@ -108,6 +76,30 @@ function MetadataEditorPanel({ selectedImages }: Props) {
 
   useTauriListener(ENTER_METADATA_EDIT_EVENT, () => {
     setIsEditing(true);
+  });
+
+  useEffect(() => {
+    setSaveMenuItemEnabled(!badState).catch((err) => {
+      console.error(
+        `Failed to ${!badState ? 'disable' : 'enable'} save menu:`,
+        err,
+      );
+    });
+  }, [badState]);
+
+  useEffect(() => {
+    setEditMenuEnabled(!disabled).catch((err) => {
+      console.error(
+        `Failed to ${!disabled ? 'disable' : 'enable'} edit menu:`,
+        err,
+      );
+    });
+  }, [disabled]);
+
+  useTauriListener(SAVE_METADATA_EVENT, () => {
+    formRef.current?.dispatchEvent(
+      new Event('submit', { cancelable: true, bubbles: true }),
+    );
   });
 
   const onSubmit = async (newExif: ExifData) => {
