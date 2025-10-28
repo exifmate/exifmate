@@ -22,6 +22,7 @@ import useSWR from 'swr';
 import ExifTab from './ExifTab';
 import LocationTab from './LocationTab';
 
+// TODO: remove this hook
 function usePlatformIntegration(badState: boolean, formDisabled: boolean) {
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -74,13 +75,12 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     values: exifDataRes.data,
   });
 
-  const badState =
-    !form.formState.isDirty ||
-    !form.formState.isValid ||
-    form.formState.disabled ||
-    form.formState.isSubmitting;
+  // `isValid` needs to be evaluated early or else `badState` can have a false positive
+  // (selecting an image for the first time needs 3+ changes before being valid otherwise)
+  const { isDirty, isValid, isSubmitting, disabled } = form.formState;
+  const badState = !isDirty || !isValid || disabled || isSubmitting;
 
-  const { formRef } = usePlatformIntegration(badState, form.formState.disabled);
+  const { formRef } = usePlatformIntegration(badState, disabled);
 
   useEffect(() => {
     if (selectedImages) {
@@ -185,7 +185,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
             <button
               type="button"
               className="btn btn-soft btn-sm btn-accent"
-              disabled={form.formState.isSubmitting}
+              disabled={isSubmitting}
               onClick={() => setIsEditing(true)}
             >
               Edit
@@ -195,7 +195,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
               <button
                 type="button"
                 className="btn btn-soft btn-sm btn-secondary"
-                disabled={form.formState.isSubmitting}
+                disabled={isSubmitting}
                 onClick={() => {
                   setIsEditing(false);
                   form.reset();
@@ -209,7 +209,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
                 className="btn btn-soft btn-sm btn-primary"
                 disabled={badState}
               >
-                {form.formState.isSubmitting && (
+                {isSubmitting && (
                   <span className="loading loading-spinner loading-sm"></span>
                 )}
                 Save

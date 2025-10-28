@@ -46,7 +46,7 @@ const render = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
 
 describe('MetadataEditorPanel', () => {
   beforeEach(() => {
-    mockIPC(() => {}, { shouldMockEvents: true });
+    mockIPC(() => { }, { shouldMockEvents: true });
   });
 
   afterEach(() => {
@@ -77,7 +77,7 @@ describe('MetadataEditorPanel', () => {
 
     describe('when failing to open an image', () => {
       beforeEach(() => {
-        vi.stubGlobal('console', { error: () => {} });
+        vi.stubGlobal('console', { error: () => { } });
       });
 
       it('indicates failure with no form even with partial load error', async () => {
@@ -175,9 +175,11 @@ describe('MetadataEditorPanel', () => {
           const artistInput = screen.getByLabelText('Artist');
           expect(artistInput).toBeEnabled();
 
-          await userEvent.type(artistInput, 'Test');
+          await userEvent.type(artistInput, 'T');
           expect(showToastMock).not.toHaveBeenCalled();
-          await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+          const saveButton = screen.getByRole('button', { name: 'Save' });
+          expect(saveButton).toBeEnabled();
+          await userEvent.click(saveButton);
 
           expect(screen.getByLabelText('Artist')).toBeDisabled();
           expect(showToastMock).toHaveBeenCalledExactlyOnceWith(
