@@ -10,7 +10,10 @@ interface Props {
 
 function ExifInput({ tagName }: Props) {
   const { register, formState } = useFormContext<ExifData>();
-  const tag = ExifData.shape[tagName].unwrap();
+
+  const zodItem = ExifData.shape[tagName].unwrap();
+  const tag = zodItem.type === 'pipe' ? zodItem.out : zodItem;
+
   const description = tag.meta()?.description;
   const errorMessage = formState.errors[tagName]?.message;
 

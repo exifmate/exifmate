@@ -66,7 +66,7 @@ describe('ExifInput', () => {
 
       const inputOptions = (input as HTMLSelectElement).options;
       const values = Array.from(inputOptions).map((a) => a.value);
-      const expectedOptions = ExifData.shape.Flash.unwrap().options;
+      const expectedOptions = ExifData.shape.Flash.unwrap().out.options;
       expect(values).toEqual([''].concat(expectedOptions));
 
       await userEvent.selectOptions(input, 'Fired');
