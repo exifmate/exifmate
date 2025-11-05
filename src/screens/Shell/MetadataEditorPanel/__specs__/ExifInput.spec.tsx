@@ -5,12 +5,11 @@ import userEvent from '@testing-library/user-event';
 import { FormProvider, useForm } from 'react-hook-form';
 import ExifInput from '../ExifInput';
 
-interface TestContainerProps {
+type TestContainerProps = Parameters<typeof ExifInput>[0] & {
   cb?: (v: unknown) => void;
-  tagName: keyof typeof ExifData.shape;
-}
+};
 
-function TestContainer({ cb, tagName }: TestContainerProps) {
+function TestContainer({ cb, tagName, ...props }: TestContainerProps) {
   const form = useForm({
     resolver: zodResolver(ExifData),
   });
@@ -18,7 +17,7 @@ function TestContainer({ cb, tagName }: TestContainerProps) {
   return (
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit((val) => cb?.(val))}>
-        <ExifInput tagName={tagName} />
+        <ExifInput tagName={tagName} {...props} />
         <button type="submit">Go</button>
       </form>
     </FormProvider>
@@ -42,63 +41,71 @@ describe('ExifInput', () => {
     expect(cb).toHaveBeenCalledExactlyOnceWith({ Artist: 'Test Artist' });
   });
 
-  describe('when the exif tag has description set', () => {
-    it('shows the description', () => {
-      render(<TestContainer tagName="ExposureCompensation" />);
+  it('can show a desription', () => {
+    render(
+      <TestContainer
+        tagName="ExposureCompensation"
+        description="Test Description"
+      />,
+    );
 
-      expect(screen.getByLabelText(/ExposureCompensation/)).toEqual(
-        screen.getByLabelText(/\(ExposureBiasValue\)/),
-      );
+    expect(screen.getByLabelText(/ExposureCompensation/)).toEqual(
+      screen.getByLabelText(/Test Description/),
+    );
 
-      render(<TestContainer tagName="Artist" />);
-      expect(screen.getByLabelText('Artist')).not.toHaveAccessibleDescription();
+    render(<TestContainer tagName="Artist" />);
+    expect(screen.getByLabelText('Artist')).not.toHaveAccessibleDescription();
+  });
+
+  it('can be a select input', async () => {
+    const cb = vi.fn();
+    render(
+      <TestContainer
+        tagName="Flash"
+        type="select"
+        options={FLASH_OPTIONS}
+        cb={cb}
+      />,
+    );
+
+    const input = screen.getByLabelText('Flash');
+    expect(input).toBeVisible();
+    expect(input).toBeInstanceOf(HTMLSelectElement);
+
+    const inputOptions = (input as HTMLSelectElement).options;
+    const values = Array.from(inputOptions).map((a) => a.value);
+    expect(values).toEqual([''].concat(FLASH_OPTIONS));
+
+    await userEvent.selectOptions(input, 'Fired');
+    await userEvent.click(screen.getByText('Go'));
+    expect(cb).toHaveBeenCalledExactlyOnceWith({ Flash: 'Fired' });
+  });
+
+  it('can be a date input with seconds', async () => {
+    const cb = vi.fn();
+    render(
+      <TestContainer
+        tagName="DateTimeOriginal"
+        type="datetime-local"
+        cb={cb}
+      />,
+    );
+
+    const input = screen.getByLabelText('DateTimeOriginal');
+    expect(input).toBeInstanceOf(HTMLInputElement);
+    expect((input as HTMLInputElement).type).toEqual('datetime-local');
+    expect(input).toHaveAttribute('step', '1');
+
+    // datetime-local doesn't (currently) work with userEvent.type
+    fireEvent.change(input, { target: { value: '2025-07-15 12:30:10' } });
+    await userEvent.click(screen.getByText('Go'));
+
+    expect(cb).toHaveBeenCalledExactlyOnceWith({
+      DateTimeOriginal: '2025-07-15T12:30:10.000',
     });
   });
 
-  describe('when the exif tag is an enum', () => {
-    it('is a select input', async () => {
-      const cb = vi.fn();
-      render(<TestContainer tagName="Flash" cb={cb} />);
-
-      const input = screen.getByLabelText('Flash');
-      expect(input).toBeVisible();
-      expect(input).toBeInstanceOf(HTMLSelectElement);
-
-      const inputOptions = (input as HTMLSelectElement).options;
-      const values = Array.from(inputOptions).map((a) => a.value);
-      expect(values).toEqual([''].concat(FLASH_OPTIONS));
-
-      await userEvent.selectOptions(input, 'Fired');
-      await userEvent.click(screen.getByText('Go'));
-      expect(cb).toHaveBeenCalledExactlyOnceWith({ Flash: 'Fired' });
-    });
-  });
-
-  describe('when the exif tag is a date input', () => {
-    test.each<TestContainerProps['tagName']>([
-      'DateTimeOriginal',
-      'CreateDate',
-      'ModifyDate',
-    ])('has a date input with seconds', async (tagName) => {
-      const cb = vi.fn();
-      render(<TestContainer tagName={tagName} cb={cb} />);
-
-      const input = screen.getByLabelText(new RegExp(tagName));
-      expect(input).toBeInstanceOf(HTMLInputElement);
-      expect((input as HTMLInputElement).type).toEqual('datetime-local');
-      expect(input).toHaveAttribute('step', '1');
-
-      // datetime-local doesn't (currently) work with userEvent.type
-      fireEvent.change(input, { target: { value: '2025-07-15 12:30:10' } });
-      await userEvent.click(screen.getByText('Go'));
-
-      expect(cb).toHaveBeenCalledExactlyOnceWith({
-        [tagName]: '2025-07-15T12:30:10.000',
-      });
-    });
-
-    it.todo('is valid if the date is typed or selected');
-  });
+  it.todo('is valid if the date is typed or selected');
 
   describe('when the input is invalid', () => {
     it('indicates to the user', async () => {
