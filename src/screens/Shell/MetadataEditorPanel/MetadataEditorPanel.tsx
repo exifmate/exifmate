@@ -106,7 +106,8 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     try {
       await updateMetadata(selectedImages, newExif);
     } catch (err) {
-      console.error('Failed saving:', err);
+      console.error('Failed saving:', newExif);
+      console.error(err);
       showToast({
         level: 'error',
         message: 'Failed to save images',

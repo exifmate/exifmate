@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const FLASH_OPTIONS = [
+export const FLASH_OPTIONS = [
   'No Flash',
   'Fired',
   'Fired, Return not detected',
@@ -30,9 +30,13 @@ const FLASH_OPTIONS = [
   'Auto, Fired, Red-eye reduction, Return detected',
 ] as const;
 
-const EXPOSURE_MODE_OPTIONS = ['Auto', 'Manual', 'Auto bracket'] as const;
+export const EXPOSURE_MODE_OPTIONS = [
+  'Auto',
+  'Manual',
+  'Auto bracket',
+] as const;
 
-const EXPOSURE_PROGRAM_OPTIONS = [
+export const EXPOSURE_PROGRAM_OPTIONS = [
   'Not Defined',
   'Manual',
   'Program AE',
@@ -45,7 +49,7 @@ const EXPOSURE_PROGRAM_OPTIONS = [
   'Bulb', // should I note this is non-standard?
 ] as const;
 
-const METERING_MODE_OPTIONS = [
+export const METERING_MODE_OPTIONS = [
   'Unknown',
   'Average',
   'Center-weighted average',
@@ -56,13 +60,13 @@ const METERING_MODE_OPTIONS = [
   'Other',
 ] as const;
 
-const WHITE_BALANCE_OPTIONS = ['Auto', 'Manual'] as const;
+export const WHITE_BALANCE_OPTIONS = ['Auto', 'Manual'] as const;
 
-const SATURATION_OPTIONS = ['Normal', 'Low', 'High'] as const;
+export const SATURATION_OPTIONS = ['Normal', 'Low', 'High'] as const;
 
-const SHARPNESS_OPTIONS = ['Normal', 'Soft', 'Hard'] as const;
+export const SHARPNESS_OPTIONS = ['Normal', 'Soft', 'Hard'] as const;
 
-const ORIENTATION_OPTIONS = [
+export const ORIENTATION_OPTIONS = [
   'Horizontal (normal)',
   'Mirror horizontal',
   'Rotate 180',
@@ -85,37 +89,17 @@ export const ExifData = z.object({
   Software: z.coerce.string().optional(),
   UserComment: z.string().optional(),
   DateTimeOriginal: z.string().optional(),
-  CreateDate: z
-    .string()
-    .meta({
-      description: 'DateTimeDigitized',
-    })
-    .optional(),
+  CreateDate: z.string().optional(),
   ModifyDate: z.string().optional(),
   Make: z.coerce.string().optional(),
   Model: z.coerce.string().optional(),
-  SerialNumber: z.coerce
-    .string()
-    .meta({
-      description: 'BodySerialNumber',
-    })
-    .optional(),
+  SerialNumber: z.coerce.string().optional(),
   ISO: z.coerce.number().optional(),
   FNumber: z.coerce.string().optional(),
   // ShutterSpeed: z.number().optional(), // doesn't seem to want value at end // TODO: need to not save this
   FocalLength: z.coerce.string().optional(),
-  FocalLengthIn35mmFormat: z.coerce
-    .string()
-    .meta({
-      description: 'FocalLengthIn35mmFilm',
-    })
-    .optional(),
-  ExposureCompensation: z.coerce
-    .string()
-    .meta({
-      description: 'ExposureBiasValue',
-    })
-    .optional(),
+  FocalLengthIn35mmFormat: z.coerce.string().optional(),
+  ExposureCompensation: z.coerce.string().optional(),
   Flash: coercedEnum(FLASH_OPTIONS).optional(),
   // ColorSpace: z.string(),
   MaxApertureValue: z.coerce.number().optional(),
@@ -131,14 +115,8 @@ export const ExifData = z.object({
   Lens: z.coerce.string().optional(),
   LensSerialNumber: z.coerce.string().optional(),
   Orientation: coercedEnum(ORIENTATION_OPTIONS).optional(),
-  ExifImageWidth: z.coerce
-    .number()
-    .meta({ description: 'PixelXDimension' })
-    .optional(),
-  ExifImageHeight: z.coerce
-    .number()
-    .meta({ description: 'PixelYDimension' })
-    .optional(),
+  ExifImageWidth: z.coerce.number().optional(),
+  ExifImageHeight: z.coerce.number().optional(),
   XResolution: z.coerce.number().optional(),
   YResolution: z.coerce.number().optional(),
   GPSLatitude: z.coerce.number().min(-90).max(90).optional(),
