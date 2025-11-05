@@ -1,28 +1,30 @@
-import { ExifData } from '@metadata-handler/exifdata';
+import type { ExifData } from '@metadata-handler/exifdata';
 import classNames from 'classnames';
 import type { HTMLAttributes } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { ZodEnum } from 'zod';
 
-interface Props {
+type Props = {
   tagName: keyof ExifData;
-}
+  description?: string;
+} & (
+  | {
+      type?: 'datetime-local' | 'text';
+    }
+  | {
+      type: 'select';
+      options: readonly string[];
+    }
+);
 
-function ExifInput({ tagName }: Props) {
+function ExifInput({ tagName, description, ...props }: Props) {
   const { register, formState } = useFormContext<ExifData>();
-  const tag = ExifData.shape[tagName].unwrap();
-  const description = tag.meta()?.description;
   const errorMessage = formState.errors[tagName]?.message;
-
-  const isDateInput =
-    tagName === 'DateTimeOriginal' ||
-    tagName === 'CreateDate' ||
-    tagName === 'ModifyDate';
 
   const registration = register(tagName);
   registration.disabled = registration.disabled || formState.isSubmitting;
 
   const commonProps: HTMLAttributes<HTMLSelectElement | HTMLInputElement> = {
+    ...registration,
     id: tagName,
     'aria-invalid': !!errorMessage,
     'aria-describedby': errorMessage ? `${tagName}-error` : undefined,
@@ -32,13 +34,19 @@ function ExifInput({ tagName }: Props) {
     <div className="flex flex-col gap-1">
       <label className="label" htmlFor={tagName}>
         {tagName}
-        {description && <span>({description})</span>}
+        {description && <span>{description}</span>}
       </label>
 
-      {tag instanceof ZodEnum ? (
-        <select {...registration} {...commonProps} className="select w-full">
-          <option value="" disabled></option>
-          {tag.options.map((option) => (
+      {props.type === 'select' ? (
+        <select
+          {...registration}
+          {...commonProps}
+          className={classNames('select w-full', {
+            'select-error': errorMessage,
+          })}
+        >
+          <option value="" />
+          {props.options.map((option) => (
             <option key={option}>{option}</option>
           ))}
         </select>
@@ -50,10 +58,11 @@ function ExifInput({ tagName }: Props) {
             'input-error': errorMessage,
           })}
           placeholder={tagName}
-          type={isDateInput ? 'datetime-local' : 'text'}
-          step={isDateInput ? 1 : undefined}
+          type={props.type}
+          step={props.type === 'datetime-local' ? 1 : undefined}
         />
       )}
+
       {errorMessage && (
         <p id={`${tagName}-error`} className="mt-1 text-error" role="alert">
           {errorMessage}
