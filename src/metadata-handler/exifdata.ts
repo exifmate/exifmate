@@ -78,7 +78,16 @@ export const ORIENTATION_OPTIONS = [
 ] as const;
 
 const coercedEnum = (OPTS: readonly string[]) =>
-  z.preprocess((v) => (typeof v === 'number' ? OPTS[v] : v), z.enum(OPTS));
+  z.preprocess((v) => {
+    if (typeof v === 'number') {
+      return OPTS[v];
+    }
+    if (v === '') {
+      return undefined;
+    }
+
+    return v;
+  }, z.enum(OPTS).optional());
 
 // Need to think about how to handle if an enum gains an option,
 // specifically how to futureproof without needing to update if I stop maintaining

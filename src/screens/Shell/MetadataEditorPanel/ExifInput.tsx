@@ -45,7 +45,7 @@ function ExifInput({ tagName, description, ...props }: Props) {
             'select-error': errorMessage,
           })}
         >
-          <option value="" disabled></option>
+          <option value="" />
           {props.options.map((option) => (
             <option key={option}>{option}</option>
           ))}

@@ -10,7 +10,9 @@ export async function updateMetadata(
   const imgPaths = images.map((i) => i.path);
   const tagArgs = Object.keys(newData).map((key) => {
     let value = newData[key as keyof ExifData];
-    if (typeof value === 'string') {
+    if (value === undefined) {
+      value = '';
+    } else if (typeof value === 'string') {
       value = value.trim();
     }
 

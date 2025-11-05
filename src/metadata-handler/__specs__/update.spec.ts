@@ -14,6 +14,7 @@ describe('updateMetadata', () => {
       Artist: 'Test',
       GPSLatitude: 1,
       GPSLongitude: 2,
+      Flash: undefined,
     };
     await updateMetadata(
       [
@@ -28,6 +29,7 @@ describe('updateMetadata', () => {
         '-Artist=Test',
         '-GPSLatitude*=1',
         '-GPSLongitude*=2',
+        '-Flash=',
         'one.jpg',
         'two.jpg',
       ]),

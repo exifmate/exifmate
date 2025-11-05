@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ExifData } from '@metadata-handler/exifdata';
+import { ExifData, FLASH_OPTIONS } from '@metadata-handler/exifdata';
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -66,8 +66,7 @@ describe('ExifInput', () => {
 
       const inputOptions = (input as HTMLSelectElement).options;
       const values = Array.from(inputOptions).map((a) => a.value);
-      const expectedOptions = ExifData.shape.Flash.unwrap().out.options;
-      expect(values).toEqual([''].concat(expectedOptions));
+      expect(values).toEqual([''].concat(FLASH_OPTIONS));
 
       await userEvent.selectOptions(input, 'Fired');
       await userEvent.click(screen.getByText('Go'));
