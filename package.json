@@ -50,14 +50,14 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
-    "@vitejs/plugin-react": "^4.5.1",
-    "@vitejs/plugin-react-swc": "^3.9.0",
+    "@vitejs/plugin-react": "^5.1.1",
+    "@vitejs/plugin-react-swc": "^4.2.2",
     "globals": "^16.0.0",
     "jsdom": "^27.2.0",
     "memfs": "^4.17.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5",
+    "vite": "^7.2.2",
     "vitest": "^3.2.4"
   },
   "optionalDependencies": {
