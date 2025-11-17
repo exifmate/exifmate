@@ -1,5 +1,5 @@
 import Center from '@components/Center';
-import Tabs from '@components/Tabs';
+import { Alert, Button, Spinner, Tab, Tabs } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useTauriListener from '@hooks/useTauriListener';
 import { ExifData } from '@metadata-handler/exifdata';
@@ -17,7 +17,6 @@ import type { ImageInfo } from '@platform/file-manager';
 import { showToast } from '@screens/Toasts/toast-queue';
 import { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { Item } from 'react-stately';
 import useSWR from 'swr';
 import ExifTab from './ExifTab';
 import LocationTab from './LocationTab';
@@ -129,7 +128,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
   if (selectedImages.length === 0) {
     return (
       <Center>
-        <p className="text-lg">No Image Selected</p>
+        <p className="text-large">No Image Selected</p>
       </Center>
     );
   }
@@ -137,8 +136,8 @@ function MetadataEditorPanel({ selectedImages }: Props) {
   if (exifDataRes.isLoading) {
     return (
       <Center>
-        <div className="loading loading-xl text-accent motion-reduce:hidden"></div>
-        <p className="text-lg">Loading Metadata...</p>
+        <Spinner color="secondary" />
+        <p className="text-large">Loading Metadata...</p>
       </Center>
     );
   }
@@ -146,8 +145,8 @@ function MetadataEditorPanel({ selectedImages }: Props) {
   if (exifDataRes.error) {
     return (
       <Center>
-        <div role="alert" className="alert alert-error alert-soft">
-          Error Loading Metadata
+        <div>
+          <Alert color="danger" title="Error Loading Metadata" />
         </div>
       </Center>
     );
@@ -164,49 +163,54 @@ function MetadataEditorPanel({ selectedImages }: Props) {
           aria-label="Editor Tabs"
           selectedKey={activeTab}
           onSelectionChange={(k) => setActiveTab(k as 'EXIF' | 'Location')}
+          variant="solid"
+          classNames={{
+            base: 'px-2 pt-2',
+            tabList: 'w-full',
+            panel: 'overflow-auto grow px-3',
+          }}
         >
-          <Item key="EXIF" title="EXIF">
+          <Tab key="EXIF" title="EXIF">
             <ExifTab />
-          </Item>
-          <Item key="Location" title="Location">
+          </Tab>
+          <Tab key="Location" title="Location">
             <LocationTab />
-          </Item>
+          </Tab>
         </Tabs>
 
-        <div className="bg-base-200 z-10 px-4 py-2 flex justify-between">
+        <div className="flex px-4 py-2 justify-between">
           {!isEditing ? (
-            <button
-              type="button"
-              className="btn btn-soft btn-sm btn-accent"
-              disabled={isSubmitting}
-              onClick={() => setIsEditing(true)}
+            <Button
+              color="secondary"
+              variant="flat"
+              isDisabled={isSubmitting}
+              onPress={() => setIsEditing(true)}
             >
               Edit
-            </button>
+            </Button>
           ) : (
             <>
-              <button
-                type="button"
-                className="btn btn-soft btn-sm btn-secondary"
-                disabled={isSubmitting}
-                onClick={() => {
+              <Button
+                color="danger"
+                variant="flat"
+                isDisabled={isSubmitting}
+                onPress={() => {
                   setIsEditing(false);
                   form.reset();
                 }}
               >
                 Cancel
-              </button>
+              </Button>
 
-              <button
+              <Button
                 type="submit"
-                className="btn btn-soft btn-sm btn-primary"
-                disabled={badState}
+                color="primary"
+                variant="flat"
+                isDisabled={badState}
+                isLoading={isSubmitting}
               >
-                {isSubmitting && (
-                  <span className="loading loading-spinner loading-sm"></span>
-                )}
                 Save
-              </button>
+              </Button>
             </>
           )}
         </div>
