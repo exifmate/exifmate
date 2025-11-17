@@ -1,10 +1,10 @@
 import Center from '@components/Center';
-import GridList from '@components/GridList';
+import { Chip, Listbox, ListboxItem } from '@heroui/react';
 import useTauriListener from '@hooks/useTauriListener';
 import type { ImageInfo } from '@platform/file-manager';
 import { IMAGES_OPENED_EVENT } from '@platform/file-manager';
 import { useState } from 'react';
-import { Item } from 'react-stately';
+import { HiCheck } from 'react-icons/hi2';
 import ImageCard from './ImageCard';
 
 interface Props {
@@ -28,19 +28,19 @@ function ImageGridPanel({ onImageSelection }: Props) {
   if (images.length === 0) {
     return (
       <Center>
-        <p className="text-lg">No Images Loaded</p>
+        <p className="text-large">No Images Loaded</p>
       </Center>
     );
   }
 
   return (
-    <div className="p-4">
-      <GridList
+    <div className="p-2">
+      <Listbox
         items={images}
         aria-label="Image Grid"
         selectionMode="multiple"
         selectionBehavior="replace"
-        data-testid="test-gridlist"
+        variant="solid"
         onSelectionChange={(selection) => {
           if (selection instanceof Set) {
             const newSelectedImages = images.filter((i) =>
@@ -51,13 +51,37 @@ function ImageGridPanel({ onImageSelection }: Props) {
             onImageSelection(images);
           }
         }}
+        classNames={{
+          list: 'flex flex-wrap flex-row',
+        }}
       >
         {(image) => (
-          <Item key={image.path} textValue={image.filename}>
-            <ImageCard path={image.path} filename={image.filename} />
-          </Item>
+          <ListboxItem
+            key={image.path}
+            textValue={image.path}
+            variant="bordered"
+            selectedIcon={(p) => {
+              if (!p.isSelected) {
+                return null;
+              }
+
+              return (
+                <Chip color="primary" size="md" classNames={{ base: 'p-0' }}>
+                  <HiCheck />
+                </Chip>
+              );
+            }}
+            classNames={{
+              selectedIcon: 'absolute top-2 left-2 z-10',
+              base: 'w-fit data-selected:bg-default group',
+            }}
+          >
+            <div className="group-data-selected:scale-93 motion-safe:transition-transform">
+              <ImageCard path={image.path} filename={image.filename} />
+            </div>
+          </ListboxItem>
         )}
-      </GridList>
+      </Listbox>
     </div>
   );
 }
