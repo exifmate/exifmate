@@ -1,8 +1,9 @@
+import { Button, Tooltip } from '@heroui/react';
 import type { ExifData } from '@metadata-handler/exifdata';
 import { readText } from '@tauri-apps/plugin-clipboard-manager';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { MdContentPaste } from 'react-icons/md';
+import { HiClipboardDocument } from 'react-icons/hi2';
 
 const PASTE_LABEL = 'Paste Location';
 const PASTED_LABEL = 'Location Pasted!';
@@ -15,50 +16,45 @@ function LocationPasteButton() {
 
   const [labelText, setLabelText] = useState<string>(PASTE_LABEL);
 
+  const pasteLocation = async () => {
+    const text = await readText();
+    const [lat, lon] = text.split(',').map((l) => parseFloat(l));
+
+    if (lat) {
+      setValue('GPSLatitude', lat, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+    if (lon) {
+      setValue('GPSLongitude', lon, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+
+    setLabelText(PASTED_LABEL);
+    setTimeout(() => {
+      setLabelText(PASTE_LABEL);
+    }, 2_000);
+  };
+
   return (
-    <div className="tooltip tooltip-info tooltip-left">
-      <div
-        id="location-paste-tooltip"
-        className="tooltip-content"
-        aria-controls="location-paste-button"
-        aria-hidden
-        aria-live="polite"
+    <Tooltip
+      content={labelText}
+      color="secondary"
+      placement="top-end"
+      showArrow
+    >
+      <Button
+        color="primary"
+        isIconOnly
+        isDisabled={disabled}
+        onPress={pasteLocation}
       >
-        {labelText}
-      </div>
-
-      <button
-        type="button"
-        id="location-paste-button"
-        className="btn btn-sm btn-soft btn-info"
-        aria-labelledby="location-paste-tooltip"
-        disabled={disabled}
-        onClick={async () => {
-          const text = await readText();
-          const [lat, lon] = text.split(',').map((l) => parseFloat(l));
-
-          if (lat) {
-            setValue('GPSLatitude', lat, {
-              shouldDirty: true,
-              shouldValidate: true,
-            });
-          }
-          if (lon) {
-            setValue('GPSLongitude', lon, {
-              shouldDirty: true,
-              shouldValidate: true,
-            });
-          }
-
-          setLabelText(PASTED_LABEL);
-          setTimeout(() => {
-            setLabelText(PASTE_LABEL);
-          }, 2_000);
-        }}
-      >
-        <MdContentPaste />
-      </button>
-    </div>
+        <HiClipboardDocument />
+      </Button>
+    </Tooltip>
   );
 }
 

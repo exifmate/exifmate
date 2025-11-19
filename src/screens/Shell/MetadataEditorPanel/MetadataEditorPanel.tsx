@@ -2,7 +2,7 @@ import Center from '@components/Center';
 import { Alert, Button, Spinner, Tab, Tabs } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useTauriListener from '@hooks/useTauriListener';
-import { ExifData } from '@metadata-handler/exifdata';
+import { defaultExifData, ExifData } from '@metadata-handler/exifdata';
 import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
 import {
@@ -41,7 +41,10 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     disabled: !isEditing,
     resolver: zodResolver(ExifData),
     mode: 'onChange',
-    values: exifDataRes.data,
+    defaultValues: defaultExifData,
+    // Need to spread a default with null values because if they're `undefined`
+    // react-hook-form doesn't actually clear the values.
+    values: { ...defaultExifData, ...exifDataRes.data },
   });
 
   // `isValid` needs to be evaluated early or else `badState` can have a false positive
@@ -101,7 +104,21 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     );
   });
 
-  const onSubmit = async (newExif: ExifData) => {
+  const onSubmit = async (formValue: ExifData) => {
+    const newExif: ExifData = {};
+
+    // Prevent `null` values for clean fields getting saved.
+    // Which is to say this makes it so when editing multiple files, unchanged
+    // but different fields don't get removed.
+    // However, this doesn't cover if a field is empty (different values across files)
+    // and the user adds a value but removes it.
+    for (const [key, value] of Object.entries(formValue)) {
+      if (form.formState.dirtyFields[key as keyof ExifData]) {
+        // @ts-expect-error
+        newExif[key as keyof ExifData] = value;
+      }
+    }
+
     try {
       await updateMetadata(selectedImages, newExif);
     } catch (err) {
