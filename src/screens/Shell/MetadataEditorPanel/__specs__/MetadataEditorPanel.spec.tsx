@@ -1,7 +1,7 @@
+import { addToast } from '@heroui/react';
 import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
 import type { ImageInfo } from '@platform/file-manager';
-import { showToast } from '@screens/Toasts/toast-queue';
 import { mockIPC } from '@tauri-apps/api/mocks';
 import type { load } from '@tauri-apps/plugin-store';
 import {
@@ -21,7 +21,7 @@ const readMetadataMock = readMetadata as unknown as Mock<typeof readMetadata>;
 const updateMetadataMock = updateMetadata as unknown as Mock<
   typeof updateMetadata
 >;
-const showToastMock = showToast as unknown as Mock<typeof showToast>;
+const addToastMock = addToast as unknown as Mock<typeof addToast>;
 
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi
@@ -33,7 +33,7 @@ vi.mock('@tauri-apps/plugin-store', () => ({
 
 vi.mock('@metadata-handler/read');
 vi.mock('@metadata-handler/update');
-vi.mock('@screens/Toasts/toast-queue');
+vi.mock('@hheroui/react');
 
 vi.mock('react-map-gl/maplibre');
 
@@ -176,14 +176,14 @@ describe('MetadataEditorPanel', () => {
           expect(artistInput).toBeEnabled();
 
           await userEvent.type(artistInput, 'T');
-          expect(showToastMock).not.toHaveBeenCalled();
+          expect(addToastMock).not.toHaveBeenCalled();
           const saveButton = screen.getByRole('button', { name: 'Save' });
           expect(saveButton).toBeEnabled();
           await userEvent.click(saveButton);
 
           expect(screen.getByLabelText('Artist')).toBeDisabled();
-          expect(showToastMock).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ level: 'success' }),
+          expect(addToastMock).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({ color: 'success' }),
           );
         });
 

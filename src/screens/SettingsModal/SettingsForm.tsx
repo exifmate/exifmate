@@ -1,7 +1,7 @@
 import Fieldset from '@components/Fieldset';
+import { addToast } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loadSettings, Settings, saveSettings } from '@platform/settings';
-import { showToast } from '@screens/Toasts/toast-queue';
 import type { ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -18,7 +18,7 @@ function SettingsForm({ onSubmit, children }: Props) {
         return loadSettings();
       } catch (err) {
         console.error('Failed to load settings:', err);
-        showToast({ message: 'Failed to load settings', level: 'error' });
+        addToast({ color: 'danger', title: 'Failed to load settings' });
         throw err;
       }
     },
@@ -28,10 +28,10 @@ function SettingsForm({ onSubmit, children }: Props) {
     <form
       onSubmit={handleSubmit(async (newSettings) => {
         await saveSettings(newSettings);
-        showToast({
-          message: 'Settings Saved',
-          level: 'success',
+        addToast({
+          color: 'success',
           timeout: 3_000,
+          title: 'Settings Saved',
         });
         onSubmit();
       })}

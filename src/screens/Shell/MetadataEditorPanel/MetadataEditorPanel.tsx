@@ -1,5 +1,5 @@
 import Center from '@components/Center';
-import { Alert, Button, Spinner, Tab, Tabs } from '@heroui/react';
+import { Alert, addToast, Button, Spinner, Tab, Tabs } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useTauriListener from '@hooks/useTauriListener';
 import { defaultExifData, ExifData } from '@metadata-handler/exifdata';
@@ -14,7 +14,6 @@ import {
   setToolsMenuEnabled,
 } from '@platform/app-menu';
 import type { ImageInfo } from '@platform/file-manager';
-import { showToast } from '@screens/Toasts/toast-queue';
 import { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import useSWR from 'swr';
@@ -124,9 +123,9 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     } catch (err) {
       console.error('Failed saving:', newExif);
       console.error(err);
-      showToast({
-        level: 'error',
-        message: 'Failed to save images',
+      addToast({
+        color: 'danger',
+        title: 'Failed to save images',
       });
 
       return;
@@ -135,10 +134,10 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     await exifDataRes.mutate();
 
     setIsEditing(false);
-    showToast({
-      level: 'success',
+    addToast({
+      color: 'success',
       timeout: 3_000,
-      message: 'Saved Metadata!',
+      title: 'Saved Metadata!',
     });
   };
 
