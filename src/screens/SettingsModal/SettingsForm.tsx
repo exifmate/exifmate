@@ -13,18 +13,18 @@ import { Controller, useForm } from 'react-hook-form';
 import useSWR from 'swr';
 
 const copyOriginal =
-  'Saves to a copy of the FILE,\
-with the original file having `_original` appended to the file name\
-(if there is already a `{FILE}_original` file, it is not replaced).';
+  'Saves to a copy of the FILE, \
+with the original file having `_original` appended to the file name \
+(if there is already a `{FILE}_original` file, that file is not replaced).';
 
 const overwriteOriginal =
-  'Overwrite the original FILE (instead of\
+  'Overwrite the original FILE (instead of \
 preserving it by adding `_original` to the file name) when writing information to an image';
 
 const overwriteOriginalInPlace =
-  'Similar to `Overwrite Original` except that the\
-original file attributes to be preserved. For example, on a Mac this causes the original\
-file creation date, ownership, type, creator, label color and icon to be preserved.\
+  'Similar to `Overwrite Original` except that the \
+original file attributes to be preserved. For example, on a Mac this causes the original \
+file creation date, ownership, type, creator, label color and icon to be preserved. \
 Has slightly slower performance.';
 
 interface Props {
