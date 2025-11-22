@@ -6,10 +6,9 @@ interface Props {
 }
 
 function Fieldset({ legend, children }: Props) {
-  // TODO: migrate
   return (
     <fieldset className="flex flex-col gap-3">
-      <legend className="">{legend}</legend>
+      <legend className="mb-2">{legend}</legend>
       {children}
     </fieldset>
   );
