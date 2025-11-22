@@ -4,7 +4,6 @@ import { execute } from './exiftool';
 
 let isSaving = false;
 
-// TODO: should consider making empty values be nulled
 export async function updateMetadata(
   images: ImageInfo[],
   newData: Partial<ExifData>,
