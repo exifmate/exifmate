@@ -19,14 +19,17 @@ function ImageCard({ path, filename }: ImageInfo) {
   // TODO: Need to get a fallback icon again
   return (
     <Tooltip content={filename} placement="bottom" color="secondary" showArrow>
-      <Image
-        src={data}
-        isLoading={isLoading}
-        alt={`${filename} thumbnail`}
-        className="h-56 object-cover"
-        height={224}
-        width={224}
-      />
+      <figure>
+        <Image
+          src={data}
+          isLoading={isLoading}
+          alt={`${filename} thumbnail`}
+          className="h-56 object-cover"
+          height={224}
+          width={224}
+        />
+        <figcaption className="sr-only">{filename}</figcaption>
+      </figure>
     </Tooltip>
   );
 }

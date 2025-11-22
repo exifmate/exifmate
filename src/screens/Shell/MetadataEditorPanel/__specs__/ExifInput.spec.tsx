@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ExifData, FLASH_OPTIONS } from '@metadata-handler/exifdata';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormProvider, useForm } from 'react-hook-form';
 import ExifInput from '../ExifInput';
@@ -49,10 +49,7 @@ describe('ExifInput', () => {
       />,
     );
 
-    expect(screen.getByLabelText(/ExposureCompensation/)).toEqual(
-      screen.getByLabelText(/Test Description/),
-    );
-
+    expect(screen.getByLabelText('ExposureCompensation Test Description'));
     render(<TestContainer tagName="Artist" />);
     expect(screen.getByLabelText('Artist')).not.toHaveAccessibleDescription();
   });
@@ -68,15 +65,20 @@ describe('ExifInput', () => {
       />,
     );
 
-    const input = screen.getByLabelText('Flash');
-    expect(input).toBeVisible();
-    expect(input).toBeInstanceOf(HTMLSelectElement);
+    const selectBtn = screen.getByRole('button', { name: 'Flash' });
+    expect(selectBtn).toBeVisible();
 
-    const inputOptions = (input as HTMLSelectElement).options;
-    const values = Array.from(inputOptions).map((a) => a.value);
-    expect(values).toEqual([''].concat(FLASH_OPTIONS));
+    expect(screen.queryByRole('listbox', { name: 'Flash' })).toBeNull();
+    await userEvent.click(selectBtn);
+    const input = screen.getByRole('listbox', { name: 'Flash' });
+    await waitFor(() => expect(input).toBeVisible());
 
-    await userEvent.selectOptions(input, 'Fired');
+    const options = within(input)
+      .getAllByRole('option')
+      .map((o) => o.textContent);
+    expect(options).toEqual(FLASH_OPTIONS);
+
+    await userEvent.click(within(input).getByRole('option', { name: 'Fired' }));
     await userEvent.click(screen.getByText('Go'));
     expect(cb).toHaveBeenCalledExactlyOnceWith({ Flash: 'Fired' });
   });
@@ -91,17 +93,32 @@ describe('ExifInput', () => {
       />,
     );
 
-    const input = screen.getByLabelText('DateTimeOriginal');
-    expect(input).toBeInstanceOf(HTMLInputElement);
-    expect((input as HTMLInputElement).type).toEqual('datetime-local');
-    expect(input).toHaveAttribute('step', '1');
+    const dateField = screen.getByRole('group', { name: 'DateTimeOriginal' });
+    expect(dateField).toBeVisible();
 
-    // datetime-local doesn't (currently) work with userEvent.type
-    fireEvent.change(input, { target: { value: '2025-07-15 12:30:10' } });
+    await userEvent.type(within(dateField).getByLabelText('month,'), '7');
+    await userEvent.type(within(dateField).getByLabelText('day,'), '15', {
+      skipClick: true,
+    });
+    await userEvent.type(within(dateField).getByLabelText('year,'), '2025', {
+      skipClick: true,
+    });
+    await userEvent.type(within(dateField).getByLabelText('hour,'), '12', {
+      skipClick: true,
+    });
+    await userEvent.type(within(dateField).getByLabelText('minute,'), '30', {
+      skipClick: true,
+    });
+    await userEvent.type(within(dateField).getByLabelText('second,'), '10', {
+      skipClick: true,
+    });
+    await userEvent.type(within(dateField).getByLabelText('AM/PM,'), 'p', {
+      skipClick: true,
+    });
+
     await userEvent.click(screen.getByText('Go'));
-
     expect(cb).toHaveBeenCalledExactlyOnceWith({
-      DateTimeOriginal: '2025-07-15T12:30:10.000',
+      DateTimeOriginal: '2025-07-15T12:30:10',
     });
   });
 
