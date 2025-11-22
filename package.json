@@ -26,7 +26,6 @@
     "@tauri-apps/plugin-shell": "^2.3.1",
     "@tauri-apps/plugin-store": "~2",
     "@tauri-apps/plugin-window-state": "~2",
-    "daisyui": "^5.0.51",
     "framer-motion": "^12.23.24",
     "maplibre-gl": "^5.6.0",
     "react": "^19.1.0",

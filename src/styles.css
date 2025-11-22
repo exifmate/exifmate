@@ -1,41 +1,9 @@
 @import "tailwindcss";
 
-/* @source inline("alert-error"); */
-/* @source inline("alert-success"); */
-/* @source inline("alert-warning"); */
-/* @source inline("btn-error"); */
-/* @source inline("btn-success"); */
-/* @source inline("btn-warning"); */
-
 @plugin "./heroui.ts";
 @source "../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
 @custom-variant dark (&:is(.dark *));
-/* @plugin "daisyui" { */
-/*   /* biome-ignore lint/correctness/noUnknownProperty: `themes` comes from DaisyUI */
-/*   themes: dim --default; */
-/* } */
 
 :root {
   --root-bg: var(--color-neutral);
 }
-
-/* @layer components { */
-/*   .fade-in { */
-/*     animation-duration: 0.15s; */
-/*     animation-fill-mode: forwards; */
-/*     animation-timing-function: cubic-bezier(0.2, 0, 0, 1); */
-/*     animation-name: fadeIn; */
-/*   } */
-/**/
-/*   @keyframes fadeIn { */
-/*     from { */
-/*       scale: 80%; */
-/*       opacity: 0; */
-/*     } */
-/**/
-/*     to { */
-/*       scale: none; */
-/*       opacity: 1; */
-/*     } */
-/*   } */
-/* } */
