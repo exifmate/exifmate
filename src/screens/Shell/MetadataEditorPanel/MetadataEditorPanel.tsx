@@ -179,7 +179,6 @@ function MetadataEditorPanel({ selectedImages }: Props) {
           aria-label="Editor Tabs"
           selectedKey={activeTab}
           onSelectionChange={(k) => setActiveTab(k as 'EXIF' | 'Location')}
-          variant="solid"
           classNames={{
             base: 'px-2 pt-2',
             tabList: 'w-full',

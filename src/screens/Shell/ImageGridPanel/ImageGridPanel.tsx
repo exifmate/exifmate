@@ -40,7 +40,6 @@ function ImageGridPanel({ onImageSelection }: Props) {
         aria-label="Image Grid"
         selectionMode="multiple"
         selectionBehavior="replace"
-        variant="solid"
         onSelectionChange={(selection) => {
           if (selection instanceof Set) {
             const newSelectedImages = images.filter((i) =>
