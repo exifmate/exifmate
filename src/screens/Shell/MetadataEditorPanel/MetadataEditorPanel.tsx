@@ -198,7 +198,6 @@ function MetadataEditorPanel({ selectedImages }: Props) {
           {!isEditing ? (
             <Button
               color="secondary"
-              variant="flat"
               isDisabled={isSubmitting}
               onPress={() => setIsEditing(true)}
             >
@@ -207,8 +206,6 @@ function MetadataEditorPanel({ selectedImages }: Props) {
           ) : (
             <>
               <Button
-                color="danger"
-                variant="flat"
                 isDisabled={isSubmitting}
                 onPress={() => {
                   setIsEditing(false);
@@ -221,7 +218,6 @@ function MetadataEditorPanel({ selectedImages }: Props) {
               <Button
                 type="submit"
                 color="primary"
-                variant="flat"
                 isDisabled={badState}
                 isLoading={isSubmitting}
               >

@@ -106,14 +106,11 @@ function SettingsForm({ onClose }: Props) {
       </ModalBody>
 
       <ModalFooter>
-        <Button onPress={onClose} variant="flat">
-          Cancel
-        </Button>
+        <Button onPress={onClose}>Cancel</Button>
         <Button
           form="settings-form"
           type="submit"
           color="primary"
-          variant="flat"
           isLoading={isSubmitting || res.isLoading}
           isDisabled={disabled}
         >
