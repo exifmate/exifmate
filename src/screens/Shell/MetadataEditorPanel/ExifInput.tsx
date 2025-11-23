@@ -42,8 +42,12 @@ function ExifInput({ tagName, description, ...props }: Props) {
         }) => {
           let parsedValue: DateValue | null = null;
 
-          if (!invalid && typeof value === 'string') {
-            parsedValue = parseDateTime(value);
+          try {
+            if (!invalid && typeof value === 'string') {
+              parsedValue = parseDateTime(value);
+            }
+          } catch {
+            parsedValue = null;
           }
 
           // When starting with a date, if a segment is removed then the `onChange` `date` is `null`,
