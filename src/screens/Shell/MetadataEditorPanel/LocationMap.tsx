@@ -95,11 +95,14 @@ function LocationMap() {
       }}
       onIdle={onMapIdle}
     >
-      {pinLoc.lat !== undefined && pinLoc.lon !== undefined && (
-        <Marker latitude={pinLoc.lat} longitude={pinLoc.lon} anchor="bottom">
-          <MdLocationPin color="red" size={36} />
-        </Marker>
-      )}
+      {pinLoc.lat !== undefined &&
+        pinLoc.lat !== null &&
+        pinLoc.lon !== undefined &&
+        pinLoc.lon !== null && (
+          <Marker latitude={pinLoc.lat} longitude={pinLoc.lon} anchor="bottom">
+            <MdLocationPin color="red" size={36} />
+          </Marker>
+        )}
     </MapGL>
   );
 }

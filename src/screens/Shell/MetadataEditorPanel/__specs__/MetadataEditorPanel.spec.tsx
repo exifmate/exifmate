@@ -1,7 +1,7 @@
+import { addToast } from '@heroui/react';
 import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
 import type { ImageInfo } from '@platform/file-manager';
-import { showToast } from '@screens/Toasts/toast-queue';
 import { mockIPC } from '@tauri-apps/api/mocks';
 import type { load } from '@tauri-apps/plugin-store';
 import {
@@ -21,7 +21,7 @@ const readMetadataMock = readMetadata as unknown as Mock<typeof readMetadata>;
 const updateMetadataMock = updateMetadata as unknown as Mock<
   typeof updateMetadata
 >;
-const showToastMock = showToast as unknown as Mock<typeof showToast>;
+const addToastMock = addToast as unknown as Mock<typeof addToast>;
 
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi
@@ -33,7 +33,13 @@ vi.mock('@tauri-apps/plugin-store', () => ({
 
 vi.mock('@metadata-handler/read');
 vi.mock('@metadata-handler/update');
-vi.mock('@screens/Toasts/toast-queue');
+vi.mock(import('@heroui/react'), async (importOriginal) => {
+  const original = await importOriginal();
+  return {
+    ...original,
+    addToast: vi.fn(),
+  };
+});
 
 vi.mock('react-map-gl/maplibre');
 
@@ -101,14 +107,11 @@ describe('MetadataEditorPanel', () => {
       });
 
       it('has tabs for the inputs', async () => {
-        const exifTab = screen.getByText('EXIF');
-        const locationTab = screen.getByText('Location');
+        const exifTab = screen.getByRole('tab', { name: 'EXIF' });
+        const locationTab = screen.getByRole('tab', { name: 'Location' });
 
         expect(exifTab).toBeVisible();
         expect(locationTab).toBeVisible();
-
-        expect(exifTab).toHaveRole('tab');
-        expect(locationTab).toHaveRole('tab');
 
         const artistInput = screen.getByLabelText('Artist');
         // TODO: this might be better offloading to the reset test
@@ -135,9 +138,7 @@ describe('MetadataEditorPanel', () => {
       });
 
       it('can enable the form', async () => {
-        const artistInput = screen.getByLabelText('Artist');
-
-        expect(artistInput).toBeDisabled();
+        expect(screen.getByLabelText('Artist')).toBeDisabled();
         await userEvent.click(screen.getByRole('tab', { name: 'Location' }));
 
         const latInput = screen.getByLabelText('GPSLatitude');
@@ -147,7 +148,7 @@ describe('MetadataEditorPanel', () => {
 
         expect(latInput).toBeEnabled();
         await userEvent.click(screen.getByRole('tab', { name: 'EXIF' }));
-        expect(artistInput).toBeEnabled();
+        expect(screen.getByLabelText('Artist')).toBeEnabled();
       });
 
       describe('when form changes are cancelled', () => {
@@ -176,14 +177,14 @@ describe('MetadataEditorPanel', () => {
           expect(artistInput).toBeEnabled();
 
           await userEvent.type(artistInput, 'T');
-          expect(showToastMock).not.toHaveBeenCalled();
+          expect(addToastMock).not.toHaveBeenCalled();
           const saveButton = screen.getByRole('button', { name: 'Save' });
           expect(saveButton).toBeEnabled();
           await userEvent.click(saveButton);
 
           expect(screen.getByLabelText('Artist')).toBeDisabled();
-          expect(showToastMock).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ level: 'success' }),
+          expect(addToastMock).toHaveBeenCalledExactlyOnceWith(
+            expect.objectContaining({ color: 'success' }),
           );
         });
 

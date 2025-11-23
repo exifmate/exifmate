@@ -53,7 +53,6 @@ function ExifTab() {
           description="(ExposureBiasValue)"
         />
         <ExifInput tagName="Flash" type="select" options={FLASH_OPTIONS} />
-
         {/* <ExifInput tagName="ColorSpace" /> */}
         <ExifInput tagName="MaxApertureValue" />
         <ExifInput

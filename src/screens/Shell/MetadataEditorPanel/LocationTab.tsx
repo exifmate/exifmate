@@ -11,7 +11,7 @@ function LocationTab() {
       </div>
 
       <Fieldset legend="GPS">
-        <div className="flex gap-3 items-end">
+        <div className="flex gap-3 items-center">
           <ExifInput tagName="GPSLatitude" />
           <ExifInput tagName="GPSLongitude" />
 

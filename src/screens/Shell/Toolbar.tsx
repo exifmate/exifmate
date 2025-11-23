@@ -1,21 +1,21 @@
+import { Button } from '@heroui/react';
 import { findImages } from '@platform/file-manager';
-import { MdAddPhotoAlternate } from 'react-icons/md';
+import { HiPlus } from 'react-icons/hi2';
 
 function Toolbar() {
   return (
     <div
-      className="bg-base-200 h-12 flex flex-row-reverse items-center px-4"
+      className="h-12 flex flex-row-reverse items-center px-4"
       data-tauri-drag-region
     >
-      <button
-        type="button"
+      <Button
         title="Add Image"
-        className="btn btn-ghost btn-sm"
-        onClick={() => findImages()}
+        size="sm"
+        variant="light"
+        onPress={() => findImages()}
       >
-        <MdAddPhotoAlternate size={25} />
-        <span className="sr-only">Add Image</span>
-      </button>
+        <HiPlus size={25} />
+      </Button>
     </div>
   );
 }

@@ -32,11 +32,8 @@ function Shell() {
     <div className="flex flex-col h-screen">
       <Toolbar />
 
-      <PanelGroup direction="horizontal" className="p-2 gap-2">
-        <Panel
-          defaultSize={65}
-          className="rounded-box bg-base-100 text-neutral-content"
-        >
+      <PanelGroup direction="horizontal" className="px-2 pb-2 gap-2">
+        <Panel defaultSize={65} className="rounded-medium bg-default-50">
           <div className="h-full overflow-auto">
             <ImageGridPanel onImageSelection={setSelectedImages} />
           </div>
@@ -46,7 +43,7 @@ function Shell() {
 
         <Panel
           defaultSize={35}
-          className="rounded-box bg-base-100 text-neutral-content flex flex-col"
+          className="rounded-medium bg-default-50 flex flex-col"
         >
           <MetadataEditorPanel selectedImages={selectedImages} />
         </Panel>

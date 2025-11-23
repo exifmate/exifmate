@@ -1,4 +1,4 @@
-import { showToast } from '@screens/Toasts/toast-queue';
+import { addToast } from '@heroui/react';
 import { emit } from '@tauri-apps/api/event';
 import { basename } from '@tauri-apps/api/path';
 import { open } from '@tauri-apps/plugin-dialog';
@@ -32,6 +32,6 @@ export async function findImages() {
     await imagesOpened(images);
   } catch (err) {
     console.error('Failed adding images:', err);
-    showToast({ level: 'error', message: 'Failed adding images' });
+    addToast({ color: 'danger', title: 'Failed adding images' });
   }
 }

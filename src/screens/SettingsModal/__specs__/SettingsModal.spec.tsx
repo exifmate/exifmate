@@ -2,7 +2,7 @@ import { OPEN_SETTINGS_EVENT } from '@platform/app-menu';
 import { loadSettings, type Settings, saveSettings } from '@platform/settings';
 import { emit } from '@tauri-apps/api/event';
 import { mockIPC } from '@tauri-apps/api/mocks';
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
 import SettingsModal from '../SettingsModal';
@@ -37,19 +37,21 @@ describe('SettingsModal', () => {
       await emit(OPEN_SETTINGS_EVENT);
     });
 
-    expect(await screen.findByText('Settings')).toBeVisible();
+    await waitFor(() => expect(screen.getByText('Settings')).toBeVisible());
     expect(
-      screen.getByLabelText(/Overwrite Original File In Place/),
+      screen.getByLabelText('Overwrite Original File In Place'),
     ).toBeChecked();
 
-    await userEvent.click(screen.getByLabelText(/Copy Original File/));
+    await userEvent.click(
+      screen.getByLabelText('Copy Original File (default)'),
+    );
     expect(mockSaveSettings).not.toHaveBeenCalled();
 
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
     expect(mockSaveSettings).toHaveBeenCalledExactlyOnceWith({
       originalFileBehavior: 'copy_original',
     });
-    // await waitFor(() => expect(screen.queryByText('Settings')).toBeNull());
+    await waitFor(() => expect(screen.queryByText('Settings')).toBeNull());
     // TODO: assert toast shown
   });
 

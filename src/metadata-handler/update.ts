@@ -2,15 +2,22 @@ import type { ImageInfo } from '@platform/file-manager';
 import type { ExifData } from './exifdata';
 import { execute } from './exiftool';
 
-// TODO: should consider making empty values be nulled
+let isSaving = false;
+
 export async function updateMetadata(
   images: ImageInfo[],
   newData: Partial<ExifData>,
 ) {
+  if (isSaving) {
+    return;
+  }
+
+  isSaving = true;
+
   const imgPaths = images.map((i) => i.path);
   const tagArgs = Object.keys(newData).map((key) => {
     let value = newData[key as keyof ExifData];
-    if (value === undefined) {
+    if (value === undefined || value === null) {
       value = '';
     } else if (typeof value === 'string') {
       value = value.trim();
@@ -24,5 +31,9 @@ export async function updateMetadata(
     return `-${key}=${value}`;
   });
 
-  await execute(['-c', '%+.9f', ...tagArgs, ...imgPaths]);
+  try {
+    await execute(['-c', '%+.9f', ...tagArgs, ...imgPaths]);
+  } finally {
+    isSaving = false;
+  }
 }
