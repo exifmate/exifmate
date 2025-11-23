@@ -48,8 +48,8 @@ describe('ImageGridPanel', () => {
 
       expect(screen.queryByText('No Images Loaded')).toBeNull();
 
-      expect(await screen.findByAltText(`image1.jpg thumbnail`)).toBeVisible();
-      expect(screen.getByAltText(`image2.jpg thumbnail`)).toBeVisible();
+      expect(await screen.findByAltText('image1.jpg thumbnail')).toBeVisible();
+      expect(screen.getByAltText('image2.jpg thumbnail')).toBeVisible();
     });
 
     it('can select an image', async () => {
