@@ -1,25 +1,20 @@
-use swift_rs::{swift, Int, SRData, SRString};
 use tauri::ipc::Response;
 
-swift!(fn resize_image(path: SRString, width: Int, height: Int) -> Option<SRData>);
-
-const THUMBNAIL_SIZE: Int = 300;
+mod thumbnails;
 
 #[tauri::command]
-fn read_thumbnail(path: String) -> Result<Response, String> {
-    let Some(image_data) =
-        (unsafe { resize_image(path.as_str().into(), THUMBNAIL_SIZE, THUMBNAIL_SIZE) })
-    else {
-        return Err("Failed to resize image".to_string());
+fn get_thumbnail(path: String) -> Result<Response, String> {
+    let Ok(data) = thumbnails::load_thumbnail(path) else {
+        return Err("Failed to load thumbnail".to_string());
     };
 
-    return Ok(Response::new(image_data.to_vec()));
+    Ok(Response::new(data))
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![read_thumbnail])
+        .invoke_handler(tauri::generate_handler![get_thumbnail])
         .plugin(
             tauri_plugin_log::Builder::new()
                 .level(log::LevelFilter::Info)
