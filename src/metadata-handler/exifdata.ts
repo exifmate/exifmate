@@ -105,7 +105,7 @@ export const ExifData = z.object({
   ExposureCompensation: z.coerce.string().optional().nullable(),
   Flash: z.coerce.string().optional().nullable(),
   // ColorSpace: z.string(),
-  MaxApertureValue: z.coerce.number().optional().nullable(),
+  MaxApertureValue: emptyToUndef(z.coerce.number().optional()).nullable(),
   ExposureMode: z.coerce.string().optional().nullable(),
   ExposureProgram: z.coerce.string().optional().nullable(),
   ExposureTime: z.coerce.string().optional().nullable(),
