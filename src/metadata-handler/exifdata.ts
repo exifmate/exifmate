@@ -77,18 +77,6 @@ export const ORIENTATION_OPTIONS = [
   'Rotate 270 CW',
 ] as const;
 
-const coercedEnum = (OPTS: readonly string[]) =>
-  z.preprocess((v) => {
-    if (typeof v === 'number') {
-      return OPTS[v];
-    }
-    if (v === '') {
-      return undefined;
-    }
-
-    return v;
-  }, z.enum(OPTS).optional());
-
 // This exists because if `z.coerce.number` is given `''`
 // it will turn into `0` and not remove the field.
 function emptyToUndef<T extends ZodType>(schema: T) {
@@ -115,21 +103,21 @@ export const ExifData = z.object({
   FocalLength: z.coerce.string().optional().nullable(),
   FocalLengthIn35mmFormat: z.coerce.string().optional().nullable(),
   ExposureCompensation: z.coerce.string().optional().nullable(),
-  Flash: coercedEnum(FLASH_OPTIONS).optional().nullable(),
+  Flash: z.coerce.string().optional().nullable(),
   // ColorSpace: z.string(),
   MaxApertureValue: z.coerce.number().optional().nullable(),
-  ExposureMode: coercedEnum(EXPOSURE_MODE_OPTIONS).optional().nullable(),
-  ExposureProgram: coercedEnum(EXPOSURE_PROGRAM_OPTIONS).optional().nullable(),
+  ExposureMode: z.coerce.string().optional().nullable(),
+  ExposureProgram: z.coerce.string().optional().nullable(),
   ExposureTime: z.coerce.string().optional().nullable(),
-  MeteringMode: coercedEnum(METERING_MODE_OPTIONS).optional().nullable(),
-  WhiteBalance: coercedEnum(WHITE_BALANCE_OPTIONS).optional().nullable(),
-  Saturation: coercedEnum(SATURATION_OPTIONS).optional().nullable(),
-  Sharpness: coercedEnum(SHARPNESS_OPTIONS).optional().nullable(),
+  MeteringMode: z.coerce.string().optional().nullable(),
+  WhiteBalance: z.coerce.string().optional().nullable(),
+  Saturation: z.coerce.string().optional().nullable(),
+  Sharpness: z.coerce.string().optional().nullable(),
   LensMake: z.coerce.string().optional().nullable(),
   LensModel: z.coerce.string().optional().nullable(),
   Lens: z.coerce.string().optional().nullable(),
   LensSerialNumber: z.coerce.string().optional().nullable(),
-  Orientation: coercedEnum(ORIENTATION_OPTIONS).optional().nullable(),
+  Orientation: z.coerce.string().optional().nullable(),
   ExifImageWidth: emptyToUndef(z.coerce.number().optional().nullable()),
   ExifImageHeight: emptyToUndef(z.coerce.number().optional().nullable()),
   XResolution: emptyToUndef(z.coerce.number().optional().optional().nullable()),
