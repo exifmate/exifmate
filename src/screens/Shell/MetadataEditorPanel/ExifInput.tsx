@@ -1,9 +1,9 @@
 import {
+  Autocomplete,
+  AutocompleteItem,
   DatePicker,
   type DateValue,
   Input,
-  Select,
-  SelectItem,
 } from '@heroui/react';
 import { parseDateTime } from '@internationalized/date';
 import type { ExifData } from '@metadata-handler/exifdata';
@@ -42,8 +42,12 @@ function ExifInput({ tagName, description, ...props }: Props) {
         }) => {
           let parsedValue: DateValue | null = null;
 
-          if (!invalid && typeof value === 'string') {
-            parsedValue = parseDateTime(value);
+          try {
+            if (!invalid && typeof value === 'string') {
+              parsedValue = parseDateTime(value);
+            }
+          } catch {
+            parsedValue = null;
           }
 
           // When starting with a date, if a segment is removed then the `onChange` `date` is `null`,
@@ -84,24 +88,28 @@ function ExifInput({ tagName, description, ...props }: Props) {
         control={control}
         name={tagName}
         render={({
-          field: { disabled, value, ...field },
+          field: { disabled, value, onChange, ...field },
           fieldState: { invalid, error },
         }) => {
           return (
-            <Select
+            <Autocomplete
               {...field}
               isClearable
+              allowsCustomValue
               label={label}
-              value={value as string}
+              inputValue={typeof value === 'string' ? value : ''}
+              value={typeof value === 'string' ? value : ''}
               isDisabled={disabled}
               validationBehavior="aria"
               isInvalid={invalid}
               errorMessage={error?.message}
+              onInputChange={onChange}
+              onValueChange={onChange}
             >
               {props.options.map((option) => (
-                <SelectItem key={option}>{option}</SelectItem>
+                <AutocompleteItem key={option}>{option}</AutocompleteItem>
               ))}
-            </Select>
+            </Autocomplete>
           );
         }}
       />

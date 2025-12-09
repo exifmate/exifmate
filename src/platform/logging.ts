@@ -7,9 +7,13 @@ function forwardConsole(
   const original = console[fnName];
   console[fnName] = (...message) => {
     original(...message);
-    logger(JSON.stringify(message)).catch((err) => {
-      console.error('Failed to log to Tauri:', err);
-    });
+    try {
+      logger(JSON.stringify(message)).catch((err) => {
+        console.error('Failed to log to Tauri:', err);
+      });
+    } catch (err) {
+      console.error('Failed to serialize JSON:', err);
+    }
   };
 }
 

@@ -65,12 +65,12 @@ describe('ExifInput', () => {
       />,
     );
 
-    const selectBtn = screen.getByRole('button', { name: 'Flash' });
+    const selectBtn = screen.getByRole('combobox', { name: 'Flash' });
     expect(selectBtn).toBeVisible();
 
-    expect(screen.queryByRole('listbox', { name: 'Flash' })).toBeNull();
+    expect(screen.queryByRole('listbox')).toBeNull();
     await userEvent.click(selectBtn);
-    const input = screen.getByRole('listbox', { name: 'Flash' });
+    const input = screen.getByRole('listbox');
     await waitFor(() => expect(input).toBeVisible());
 
     const options = within(input)
@@ -81,6 +81,10 @@ describe('ExifInput', () => {
     await userEvent.click(within(input).getByRole('option', { name: 'Fired' }));
     await userEvent.click(screen.getByText('Go'));
     expect(cb).toHaveBeenCalledExactlyOnceWith({ Flash: 'Fired' });
+  });
+
+  describe('when the input is a select', () => {
+    it.todo('can show custom values');
   });
 
   it('can be a date input with seconds', async () => {

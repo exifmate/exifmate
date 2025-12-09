@@ -17,12 +17,34 @@ const Loc = z.object({
 
 type Loc = z.infer<typeof Loc>;
 
+function LocationPin() {
+  const { watch, getFieldState } = useFormContext<ExifData>();
+  const lat = watch('GPSLatitude');
+  const lon = watch('GPSLongitude');
+
+  if (
+    getFieldState('GPSLatitude').invalid ||
+    getFieldState('GPSLongitude').invalid
+  ) {
+    return;
+  }
+
+  if (lat === undefined || lat === null || lon === undefined || lon === null) {
+    return;
+  }
+
+  return (
+    <Marker latitude={lat} longitude={lon} anchor="bottom">
+      <MdLocationPin color="red" size={36} />
+    </Marker>
+  );
+}
+
 function LocationMap() {
   const mapRef = useRef<MapRef>(null);
   const [initialLoc, setInitialLoc] = useState<Loc | undefined>();
   const {
     setValue,
-    watch,
     getValues,
     formState: { disabled },
   } = useFormContext<ExifData>();
@@ -69,8 +91,6 @@ function LocationMap() {
     return <div className="skeleton h-full w-full" title="Loading Map"></div>;
   }
 
-  const pinLoc = { lat: watch('GPSLatitude'), lon: watch('GPSLongitude') };
-
   return (
     <MapGL
       ref={mapRef}
@@ -95,14 +115,7 @@ function LocationMap() {
       }}
       onIdle={onMapIdle}
     >
-      {pinLoc.lat !== undefined &&
-        pinLoc.lat !== null &&
-        pinLoc.lon !== undefined &&
-        pinLoc.lon !== null && (
-          <Marker latitude={pinLoc.lat} longitude={pinLoc.lon} anchor="bottom">
-            <MdLocationPin color="red" size={36} />
-          </Marker>
-        )}
+      <LocationPin />
     </MapGL>
   );
 }
