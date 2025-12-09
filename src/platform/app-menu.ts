@@ -115,7 +115,7 @@ async function fileMenu() {
     text: 'File',
     items: [
       {
-        text: 'Open Folder...',
+        text: 'Open...',
         accelerator: 'CmdOrCtrl+o',
         async action() {
           await findImages();
