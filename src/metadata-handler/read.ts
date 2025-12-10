@@ -9,7 +9,7 @@ export async function readMetadata(images: ImageInfo[]): Promise<ExifData> {
     '-c',
     '%+.9f',
     '-dateformat',
-    '%FT%T',
+    '%Y-%m-%dT%H:%M:%S',
     ...imgPaths,
   ]);
 
