@@ -172,7 +172,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     <FormProvider {...form}>
       <form
         ref={formRef}
-        className="grow flex flex-1 flex-col overflow-clip"
+        className="h-full flex flex-col overflow-clip"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <Tabs
