@@ -1,87 +1,57 @@
 import Foundation
-import CoreGraphics
 import SwiftRs
 import ImageIO
-import UniformTypeIdentifiers
+import CoreGraphics
 
-@_cdecl("resize_image")
-public func resizeImage(path: SRString, width: Int, height: Int) -> SRData? {
+class PixelBufferResult: NSObject {
+    var width: Int
+    var height: Int
+    var data: SRData // Format: RGBA8, premultiplied alpha
+
+    init(width: Int, height: Int, data: Data) {
+        self.width = width
+        self.height = height
+        self.data = SRData(Array(data))
+    }
+}
+
+@_cdecl("load_image_pixels")
+func loadImagePixels(path: SRString) -> PixelBufferResult? {
     let url = URL(fileURLWithPath: path.toString())
 
-    guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil) else {
+    guard let src = CGImageSourceCreateWithURL(url as CFURL, nil),
+          let image = CGImageSourceCreateImageAtIndex(src, 0, nil) else {
         return nil
     }
 
-    guard let image = CGImageSourceCreateImageAtIndex(imageSource, 0, nil) else {
-        return nil
-    }
-
-    let imageSize = CGSize(width: image.width, height: image.height)
-    let targetSize = CGSize(width: Int(width), height: Int(height))
-
-    // Calculate scale to fill (aspect fill) - scale that covers the target
-    let scale = max(targetSize.width / imageSize.width, targetSize.height / imageSize.height)
-    let scaledSize = CGSize(width: imageSize.width * scale, height: imageSize.height * scale)
-
-    // Calculate offset to center the scaled image
-    let offsetX = (scaledSize.width - targetSize.width) / 2.0
-    let offsetY = (scaledSize.height - targetSize.height) / 2.0
+    let width = image.width
+    let height = image.height
+    let bytesPerPixel = 4
+    let bytesPerRow = width * bytesPerPixel
 
     let colorSpace = CGColorSpaceCreateDeviceRGB()
 
-    guard let context = CGContext(
-        data: nil,
-        width: Int(width),
-        height: Int(height),
-        bitsPerComponent: 8,
-        bytesPerRow: 0,
-        space: colorSpace,
-        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-    ) else {
-        return nil
+    var rawData = Data(count: bytesPerRow * height)
+    rawData.withUnsafeMutableBytes { ptr in
+        guard let ctx = CGContext(
+            data: ptr.baseAddress,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: bytesPerRow,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else {
+            return
+        }
+
+        let rect = CGRect(x: 0, y: 0, width: width, height: height)
+        ctx.draw(image, in: rect)
     }
 
-    context.interpolationQuality = .high
-
-    // Transform to center and scale: translate to center, then scale
-    context.translateBy(x: -offsetX, y: -offsetY)
-    context.scaleBy(x: scale, y: scale)
-
-    // Draw the image (will be cropped by context bounds)
-    context.draw(image, in: CGRect(origin: .zero, size: imageSize))
-
-    guard let resizedImage = context.makeImage() else {
-        return nil
-    }
-
-    let destinationData = NSMutableData()
-
-    let jpeg: CFString
-    if #available(macOS 11.0, *) {
-        jpeg = UTType.jpeg.identifier as CFString
-    } else {
-        jpeg = kUTTypeJPEG as CFString
-    }
-
-    guard let imageDestination = CGImageDestinationCreateWithData(
-        destinationData,
-        jpeg,
-        1,
-        nil
-    ) else {
-        return nil
-    }
-
-    let compressionProperties: NSDictionary = [
-        kCGImageDestinationLossyCompressionQuality: 0.9
-    ]
-
-    CGImageDestinationAddImage(imageDestination, resizedImage, compressionProperties)
-
-    guard CGImageDestinationFinalize(imageDestination) else {
-        return nil
-    }
-
-    return SRData(Array(destinationData))
+    return PixelBufferResult(
+        width: width,
+        height: height,
+        data: rawData
+    )
 }
-
