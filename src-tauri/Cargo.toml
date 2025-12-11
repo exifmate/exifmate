@@ -38,3 +38,14 @@ swift-rs = "1.0.5"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 gdk-pixbuf = "0.21.2"
+
+[target.'cfg(target_os = "windows")'.dependencies.windows]
+version = "0.60.0"
+features = [
+    "Win32_System_Com_StructuredStorage",
+    "Win32_Foundation",
+    "Win32_Graphics_Imaging",
+    "Win32_System_Com",
+    "Win32_Graphics_Gdi",
+]
+
