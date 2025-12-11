@@ -1,46 +1,40 @@
-use gdk_pixbuf::{InterpType, Pixbuf};
-use std::path::Path;
-
-const THUMBNAIL_SIZE: i32 = 300;
+use gdk_pixbuf::Pixbuf;
+use image::{DynamicImage, ImageBuffer, Rgba};
 
 pub fn load_thumbnail(path: String) -> Result<Vec<u8>, String> {
-    let Ok(original_image) = Pixbuf::from_file(Path::new(&path)) else {
+    let Ok(original_file) = Pixbuf::from_file(path) else {
         return Err("Failed to read file.".to_string());
     };
 
-    let original_width = original_image.width();
-    let original_height = original_image.height();
+    let width = original_file.width() as u32;
+    let height = original_file.height() as u32;
+    let has_alpha = original_file.has_alpha();
+    let rowstride = original_file.rowstride() as usize;
+    let n_channels = original_file.n_channels() as usize;
 
-    let target_ratio = THUMBNAIL_SIZE as f32 / THUMBNAIL_SIZE as f32;
-    let original_ratio = original_width as f32 / original_height as f32;
+    let pixels = unsafe { original_file.pixels() };
 
-    // Determine crop size
-    let (target_width, target_height) = if original_ratio > target_ratio {
-        // too wide: crop horizontally
-        let target_height = original_height;
-        let target_width = (target_height as f32 * target_ratio).round() as i32;
-        (target_width, target_height)
-    } else {
-        // too tall: crop vertically
-        let target_width = original_width;
-        let target_height = (target_width as f32 / target_ratio).round() as i32;
-        (target_width, target_height)
+    // Convert to a contiguous RGBA buffer for the image crate
+    let mut rgba_data = Vec::with_capacity((width * height * 4) as usize);
+
+    for y in 0..height as usize {
+        let row_start = y * rowstride;
+        for x in 0..width as usize {
+            let px_start = row_start + x * n_channels;
+            rgba_data.push(pixels[px_start]); // R
+            rgba_data.push(pixels[px_start + 1]); // G
+            rgba_data.push(pixels[px_start + 2]); // B
+            if has_alpha {
+                rgba_data.push(pixels[px_start + 3]); // A
+            } else {
+                rgba_data.push(255); // opaque alpha
+            }
+        }
+    }
+
+    let Some(img) = ImageBuffer::<Rgba<u8>, Vec<u8>>::from_raw(width, height, rgba_data) else {
+        return Err("Failed to create image from pixel data".to_string());
     };
 
-    // Center the crop
-    let offset_x = (original_width - target_width) / 2;
-    let offset_y = (original_height - target_height) / 2;
-
-    let sub = original_image.new_subpixbuf(offset_x, offset_y, target_width, target_height);
-
-    let Some(scaled_image) = sub.scale_simple(THUMBNAIL_SIZE, THUMBNAIL_SIZE, InterpType::Bilinear)
-    else {
-        return Err("Failed to scale.".to_string());
-    };
-
-    let Ok(buffer) = scaled_image.save_to_bufferv("jpeg", &[]) else {
-        return Err("Failed to create JPEG buffer".to_string());
-    };
-
-    Ok(buffer)
+    Ok(DynamicImage::ImageRgba8(img))
 }
