@@ -18,11 +18,11 @@ pub use linux::*;
 mod windows;
 
 #[cfg(target_os = "windows")]
-pub use windows::*;
+pub use windows::load_image;
 
 const THUMBNAIL_SIZE: u32 = 300;
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "windows"))]
 pub fn load_thumbnail(path: String) -> Result<Vec<u8>, String> {
     let dynimg = load_image(path)?;
     let mut dst_image = Image::new(THUMBNAIL_SIZE, THUMBNAIL_SIZE, dynimg.pixel_type().unwrap());
