@@ -1,6 +1,6 @@
 use tauri::ipc::Response;
 
-mod thumbnails;
+pub mod thumbnails;
 
 #[tauri::command]
 fn get_thumbnail(path: String) -> Result<Response, String> {
