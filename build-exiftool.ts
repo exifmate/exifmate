@@ -90,6 +90,7 @@ try {
 } catch (err) {
   console.error('Something went wrong');
   console.error(err);
+  process.exitCode = 1;
 } finally {
   await fs.rm(tempDir, { recursive: true, force: true });
 }
