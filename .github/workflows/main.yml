@@ -16,3 +16,41 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm run lint
       - run: npm test
+        
+  test-rust:
+    name: Test Rust
+    strategy:
+      matrix:
+        include:
+          # TODO: wouldn't hurt to add ARM builds for Linux
+          - name: linux-amd64
+            runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - name: win-amd64
+            runner: windows-latest
+            target: x86_64-pc-windows-msvc
+          - name: macos-amd64
+            runner: macos-latest
+            target: x86_64-apple-darwin
+          - name: macos-arm64
+            runner: macos-latest
+            target: aarch64-apple-darwin
+
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+      - name: Lint
+        working-directory: src-tauri
+        run: cargo fmt --check
+      - name: Run tests
+        working-directory: src-tauri
+        run: cargo test
