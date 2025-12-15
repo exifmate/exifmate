@@ -1,28 +1,15 @@
 import { Image, Tooltip } from '@heroui/react';
-import type { ImageInfo } from '@platform/file-manager';
-import { invoke } from '@tauri-apps/api/core';
+import { genThumbnail, type ImageInfo } from '@platform/file-manager';
 import { HiOutlineExclamationTriangle } from 'react-icons/hi2';
 import useSWR from 'swr';
 
 function ImageCard({ path, filename }: ImageInfo) {
-  const { data, isLoading, error } = useSWR(
-    path,
-    (p) =>
-      invoke('get_thumbnail', { path: p }).then((data) => {
-        console.log('i got data', data);
-        if (data instanceof ArrayBuffer) {
-          return URL.createObjectURL(new Blob([data]));
-        }
-
-        throw new Error('Incorrect data type returned for thumbnail');
-      }),
-    {
-      revalidateOnFocus: false,
-      onError(err) {
-        console.error('Failed to load thumbnail:', err);
-      },
+  const { data, isLoading, error } = useSWR(path, genThumbnail, {
+    revalidateOnFocus: false,
+    onError(err) {
+      console.error('Failed to load thumbnail:', err);
     },
-  );
+  });
 
   return (
     <Tooltip content={filename} placement="bottom" color="secondary" showArrow>

@@ -1,10 +1,10 @@
-use exifmate_lib::thumbnails::load_thumbnail;
+use exifmate_lib::thumbnails::create_thumbnail;
 use std::fs;
 
 #[test]
-fn test_load_thumbnail_creates_a_thumbnail() {
+fn test_create_thumbnail_creates_a_thumbnail() {
     let path = "tests/image.png";
-    let result = load_thumbnail(path.to_string());
+    let result = create_thumbnail(path.to_string());
     assert!(result.is_ok());
 
     let buffer = result.unwrap();
@@ -14,8 +14,8 @@ fn test_load_thumbnail_creates_a_thumbnail() {
 }
 
 #[test]
-fn test_load_thumbnail_handles_nonexistent_file() {
+fn test_create_thumbnail_handles_nonexistent_file() {
     let path = "tests/nonexistent.png";
-    let result = load_thumbnail(path.to_string());
+    let result = create_thumbnail(path.to_string());
     assert!(result.is_err());
 }

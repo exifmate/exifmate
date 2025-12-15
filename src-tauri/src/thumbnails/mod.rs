@@ -22,7 +22,7 @@ pub use windows::load_image;
 
 const THUMBNAIL_SIZE: u32 = 300;
 
-pub fn load_thumbnail(path: String) -> Result<Vec<u8>, String> {
+pub fn create_thumbnail(path: String) -> Result<Vec<u8>, String> {
     let dynimg = load_image(path)?;
     let mut dst_image = Image::new(THUMBNAIL_SIZE, THUMBNAIL_SIZE, dynimg.pixel_type().unwrap());
 
