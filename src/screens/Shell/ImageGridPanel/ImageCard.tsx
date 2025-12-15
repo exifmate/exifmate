@@ -7,14 +7,15 @@ import useSWR from 'swr';
 function ImageCard({ path, filename }: ImageInfo) {
   const { data, isLoading, error } = useSWR(
     path,
-    (p) => invoke('get_thumbnail', { path: p }).then((data) => {
-      console.log('i got data', data);
-      if (data instanceof ArrayBuffer) {
-        return URL.createObjectURL(new Blob([data]));
-      }
+    (p) =>
+      invoke('get_thumbnail', { path: p }).then((data) => {
+        console.log('i got data', data);
+        if (data instanceof ArrayBuffer) {
+          return URL.createObjectURL(new Blob([data]));
+        }
 
-      throw new Error('Incorrect data type returned for thumbnail');
-    }),
+        throw new Error('Incorrect data type returned for thumbnail');
+      }),
     {
       revalidateOnFocus: false,
       onError(err) {
