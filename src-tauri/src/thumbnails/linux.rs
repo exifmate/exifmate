@@ -1,7 +1,7 @@
 use gdk_pixbuf::Pixbuf;
 use image::{DynamicImage, ImageBuffer, Rgba};
 
-pub fn load_thumbnail(path: String) -> Result<Vec<u8>, String> {
+pub fn load_image(path: String) -> Result<DynamicImage, String> {
     let Ok(original_file) = Pixbuf::from_file(path) else {
         return Err("Failed to read file.".to_string());
     };
