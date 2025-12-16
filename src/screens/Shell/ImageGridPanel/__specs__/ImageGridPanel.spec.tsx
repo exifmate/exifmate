@@ -7,6 +7,7 @@ import { fs } from 'memfs';
 import { ImageOne, ImageTwo } from 'test-support/fake-images';
 import ImageGridPanel from '../ImageGridPanel';
 
+vi.mock('@platform/file-manager');
 vi.mock('@tauri-apps/plugin-fs');
 vi.stubGlobal('URL', {
   createObjectURL: vi.fn().mockReturnValue('blobby'),

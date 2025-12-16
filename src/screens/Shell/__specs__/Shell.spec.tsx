@@ -13,6 +13,7 @@ import { fs } from 'memfs';
 import { ImageOne, ImageTwo } from 'test-support/fake-images';
 import Shell from '../Shell';
 
+vi.mock('@platform/file-manager');
 vi.mock('@tauri-apps/plugin-fs');
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi.fn<typeof load>(() => new Promise(() => {})),
