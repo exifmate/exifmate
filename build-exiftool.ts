@@ -28,7 +28,7 @@ if (!res.ok || res.body === null) {
   throw new Error('Failed to download');
 }
 
-const tempDir = process.env.RUNNER_TEMP ?? await fs.mkdtemp(tmpdir());
+const tempDir = process.env.RUNNER_TEMP ?? (await fs.mkdtemp(tmpdir()));
 const archivePath = path.join(tempDir, downloadFileName);
 
 try {
