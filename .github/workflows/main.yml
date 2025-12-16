@@ -11,8 +11,68 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-          
       - run: npm ci
+
       - run: npx tsc --noEmit
       - run: npm run lint
       - run: npm test
+        
+  test-rust:
+    name: Test Rust
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-amd64
+            runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - name: win-amd64
+            runner: windows-latest
+            target: x86_64-pc-windows-msvc
+          - name: macos-arm64
+            runner: macos-latest
+            target: aarch64-apple-darwin
+
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install dependencies (ubuntu only)
+        if: matrix.name == 'linux-amd64'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev \
+            librsvg2-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # TODO: cache the exiftool build
+      - run: node build-exiftool.ts
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          # Those targets are only used on macos runners so it's in an `if` to slightly speed up windows and linux builds.
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Lint
+        working-directory: src-tauri
+        run: cargo fmt --check
+      - name: Run tests
+        working-directory: src-tauri
+        run: cargo test

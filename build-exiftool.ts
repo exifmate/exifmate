@@ -28,7 +28,7 @@ if (!res.ok || res.body === null) {
   throw new Error('Failed to download');
 }
 
-const tempDir = await fs.mkdtemp(tmpdir());
+const tempDir = process.env.RUNNER_TEMP ?? (await fs.mkdtemp(tmpdir()));
 const archivePath = path.join(tempDir, downloadFileName);
 
 try {
@@ -90,6 +90,7 @@ try {
 } catch (err) {
   console.error('Something went wrong');
   console.error(err);
+  process.exitCode = 1;
 } finally {
   await fs.rm(tempDir, { recursive: true, force: true });
 }

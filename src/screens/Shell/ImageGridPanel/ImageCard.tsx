@@ -1,21 +1,15 @@
 import { Image, Tooltip } from '@heroui/react';
-import type { ImageInfo } from '@platform/file-manager';
-import { readFile } from '@tauri-apps/plugin-fs';
+import { genThumbnail, type ImageInfo } from '@platform/file-manager';
 import { HiOutlineExclamationTriangle } from 'react-icons/hi2';
 import useSWR from 'swr';
 
 function ImageCard({ path, filename }: ImageInfo) {
-  const { data, isLoading, error } = useSWR(
-    path,
-    (p) =>
-      readFile(p).then((data) => URL.createObjectURL(new Blob([data.buffer]))),
-    {
-      revalidateOnFocus: false,
-      onError(err) {
-        console.error('Failed to load thumbnail:', err);
-      },
+  const { data, isLoading, error } = useSWR(path, genThumbnail, {
+    revalidateOnFocus: false,
+    onError(err) {
+      console.error('Failed to load thumbnail:', err);
     },
-  );
+  });
 
   return (
     <Tooltip content={filename} placement="bottom" color="secondary" showArrow>
