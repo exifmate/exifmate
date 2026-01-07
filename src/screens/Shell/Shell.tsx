@@ -5,7 +5,6 @@ import {
 } from '@platform/app-menu';
 import type { ImageInfo } from '@platform/file-manager';
 import { revealItemInDir } from '@tauri-apps/plugin-opener';
-import { platform } from '@tauri-apps/plugin-os';
 import { useEffect, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import ImageGridPanel from './ImageGridPanel/ImageGridPanel';
@@ -30,13 +29,6 @@ function Shell() {
 
   return (
     <div className="flex flex-col h-screen">
-      {platform() === 'macos' && (
-        <div
-          className="h-7 flex flex-row-reverse items-center bg-divider"
-          data-tauri-drag-region
-        />
-      )}
-
       <PanelGroup direction="horizontal" className="p-2 gap-2">
         <Panel defaultSize={65} className="rounded-medium bg-default-50">
           <div className="h-full overflow-auto">
