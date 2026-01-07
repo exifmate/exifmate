@@ -1,5 +1,5 @@
 import useTauriListener from '@hooks/useTauriListener';
-import type { ImageInfo } from '@platform/file-manager';
+import { IMAGES_OPENED_EVENT, type ImageInfo } from '@platform/file-manager';
 import FileMenu, { REVEAL_IN_DIR_EVENT } from '@platform/menus/file-menu';
 import type { MenuItem } from '@tauri-apps/api/menu';
 import { revealItemInDir } from '@tauri-apps/plugin-opener';
@@ -26,6 +26,10 @@ function Shell() {
 
   useTauriListener(REVEAL_IN_DIR_EVENT, async () => {
     await revealItemInDir(selectedImages[0].path);
+  });
+
+  useTauriListener(IMAGES_OPENED_EVENT, () => {
+    setSelectedImages([]);
   });
 
   return (
