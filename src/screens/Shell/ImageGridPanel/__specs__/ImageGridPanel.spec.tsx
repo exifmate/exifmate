@@ -25,7 +25,7 @@ describe('ImageGridPanel', () => {
 
   it('has a message when no images are opened', () => {
     render(<ImageGridPanel onImageSelection={vi.fn()} />);
-    expect(screen.getByText('No Images Loaded')).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Open Files' })).toBeVisible();
   });
 
   describe('when there are opened images', () => {
