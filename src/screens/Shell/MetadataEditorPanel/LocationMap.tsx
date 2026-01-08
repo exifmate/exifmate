@@ -1,6 +1,6 @@
 import useTauriListener from '@hooks/useTauriListener';
 import type { ExifData } from '@metadata-handler/exifdata';
-import { FOCUS_ON_LOCATION_EVENT } from '@platform/app-menu';
+import { FOCUS_ON_LOCATION_EVENT } from '@platform/menus/tools-menu';
 import { load } from '@tauri-apps/plugin-store';
 import type { MapLibreEvent } from 'maplibre-gl';
 import { useCallback, useEffect, useRef, useState } from 'react';

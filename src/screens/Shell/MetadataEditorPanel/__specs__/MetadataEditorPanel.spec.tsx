@@ -42,6 +42,7 @@ vi.mock(import('@heroui/react'), async (importOriginal) => {
 });
 
 vi.mock('react-map-gl/maplibre');
+vi.mock('@tauri-apps/api/menu');
 
 const Wrapper = ({ children }: { children: ReactNode }) => (
   <SWRConfig value={{ provider: () => new Map() }}>{children}</SWRConfig>

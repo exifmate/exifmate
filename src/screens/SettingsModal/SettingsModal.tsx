@@ -1,6 +1,6 @@
 import { Modal, ModalContent, useDisclosure } from '@heroui/react';
 import useTauriListener from '@hooks/useTauriListener';
-import { OPEN_SETTINGS_EVENT } from '@platform/app-menu';
+import { OPEN_SETTINGS_EVENT } from '@platform/menus/app-menu';
 import SettingsForm from './SettingsForm';
 
 function SettingsModal() {
