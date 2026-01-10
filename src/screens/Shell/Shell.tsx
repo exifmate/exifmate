@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import ImageGridPanel from './ImageGridPanel/ImageGridPanel';
 import MetadataEditorPanel from './MetadataEditorPanel/MetadataEditorPanel';
-import Toolbar from './Toolbar';
 
 function Shell() {
   const [selectedImages, setSelectedImages] = useState<ImageInfo[]>([]);
@@ -30,9 +29,7 @@ function Shell() {
 
   return (
     <div className="flex flex-col h-screen">
-      <Toolbar />
-
-      <PanelGroup direction="horizontal" className="px-2 pb-2 gap-2">
+      <PanelGroup direction="horizontal" className="p-2 gap-2">
         <Panel defaultSize={65} className="rounded-medium bg-default-50">
           <div className="h-full overflow-auto">
             <ImageGridPanel onImageSelection={setSelectedImages} />

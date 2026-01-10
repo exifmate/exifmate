@@ -1,10 +1,10 @@
 import Center from '@components/Center';
-import { Chip, Listbox, ListboxItem } from '@heroui/react';
+import { Button, Chip, Listbox, ListboxItem } from '@heroui/react';
 import useTauriListener from '@hooks/useTauriListener';
 import type { ImageInfo } from '@platform/file-manager';
-import { IMAGES_OPENED_EVENT } from '@platform/file-manager';
+import { findImages, IMAGES_OPENED_EVENT } from '@platform/file-manager';
 import { useState } from 'react';
-import { HiCheck } from 'react-icons/hi2';
+import { HiCheck, HiPlus } from 'react-icons/hi2';
 import ImageCard from './ImageCard';
 
 interface Props {
@@ -28,7 +28,13 @@ function ImageGridPanel({ onImageSelection }: Props) {
   if (images.length === 0) {
     return (
       <Center>
-        <p className="text-large">No Images Loaded</p>
+        <Button
+          onPress={findImages}
+          variant="bordered"
+          endContent={<HiPlus size={24} />}
+        >
+          Open Files
+        </Button>
       </Center>
     );
   }

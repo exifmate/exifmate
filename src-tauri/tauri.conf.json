@@ -17,13 +17,7 @@
         "height": 700,
         "visible": false,
         "decorations": true,
-        "titleBarStyle": "Overlay",
-        "hiddenTitle": true,
-        "dragDropEnabled": true,
-        "trafficLightPosition": {
-          "x": 12,
-          "y": 20
-        }
+        "hiddenTitle": true
       }
     ],
     "security": {
