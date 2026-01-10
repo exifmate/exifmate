@@ -3,7 +3,7 @@ use tauri::ipc::Response;
 pub mod thumbnails;
 
 #[tauri::command]
-fn gen_thumbnail(path: String) -> Result<Response, String> {
+async fn gen_thumbnail(path: String) -> Result<Response, String> {
     let data = thumbnails::create_thumbnail(path)?;
     Ok(Response::new(data))
 }
