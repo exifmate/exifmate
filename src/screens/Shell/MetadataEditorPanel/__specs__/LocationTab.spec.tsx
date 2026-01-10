@@ -7,6 +7,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import type { Mock } from 'vitest';
 import LocationTab from '../LocationTab';
 
+vi.mock('@tauri-apps/api/menu');
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi.fn<typeof load>(() => new Promise(() => {})),
 }));

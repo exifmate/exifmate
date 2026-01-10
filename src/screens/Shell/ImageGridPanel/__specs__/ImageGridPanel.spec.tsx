@@ -9,6 +9,7 @@ import ImageGridPanel from '../ImageGridPanel';
 
 vi.mock('@platform/file-manager');
 vi.mock('@tauri-apps/plugin-fs');
+vi.mock('@tauri-apps/api/menu');
 vi.stubGlobal('URL', {
   createObjectURL: vi.fn().mockReturnValue('blobby'),
 });

@@ -1,4 +1,4 @@
-import { OPEN_SETTINGS_EVENT } from '@platform/app-menu';
+import { OPEN_SETTINGS_EVENT } from '@platform/menus/app-menu';
 import { loadSettings, type Settings, saveSettings } from '@platform/settings';
 import { emit } from '@tauri-apps/api/event';
 import { mockIPC } from '@tauri-apps/api/mocks';
@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import type { Mock } from 'vitest';
 import SettingsModal from '../SettingsModal';
 
-vi.mock('@app/platform/app-menu');
+vi.mock('@tauri-apps/api/menu');
 
 const mockLoadSettings = loadSettings as unknown as Mock<typeof loadSettings>;
 const mockSaveSettings = saveSettings as unknown as Mock<typeof saveSettings>;

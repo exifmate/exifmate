@@ -1,6 +1,6 @@
 import { HeroUIProvider, ToastProvider } from '@heroui/react';
-import { createAppMenu } from '@platform/app-menu';
 import { forwardLogging } from '@platform/logging';
+import { createAppMenu } from '@platform/menus/app-menu';
 import SettingsModal from '@screens/SettingsModal/SettingsModal';
 import Shell from '@screens/Shell/Shell';
 import { StrictMode } from 'react';

@@ -1,9 +1,7 @@
 import useTauriListener from '@hooks/useTauriListener';
-import {
-  REVEAL_IN_DIR_EVENT,
-  setRevealInDirMenuItemEnabled,
-} from '@platform/app-menu';
 import type { ImageInfo } from '@platform/file-manager';
+import FileMenu, { REVEAL_IN_DIR_EVENT } from '@platform/menus/file-menu';
+import type { MenuItem } from '@tauri-apps/api/menu';
 import { revealItemInDir } from '@tauri-apps/plugin-opener';
 import { useEffect, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
@@ -15,12 +13,15 @@ function Shell() {
 
   useEffect(() => {
     const enableReveal = selectedImages.length === 1;
-    setRevealInDirMenuItemEnabled(enableReveal).catch((err) => {
-      console.error(
-        `Failed to ${enableReveal ? 'enable' : 'disable'} reveal in dir menu item:`,
-        err,
-      );
-    });
+
+    FileMenu.get('reveal-in-dir')
+      .then((item) => (item as MenuItem).setEnabled(enableReveal))
+      .catch((err) => {
+        console.error(
+          `Failed to ${enableReveal ? 'enable' : 'disable'} reveal in dir menu item:`,
+          err,
+        );
+      });
   }, [selectedImages.length]);
 
   useTauriListener(REVEAL_IN_DIR_EVENT, async () => {

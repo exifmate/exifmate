@@ -5,15 +5,14 @@ import useTauriListener from '@hooks/useTauriListener';
 import { defaultExifData, ExifData } from '@metadata-handler/exifdata';
 import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
-import {
-  ENTER_METADATA_EDIT_EVENT,
-  SAVE_METADATA_EVENT,
-  setEditImagesMenuItemPluralize,
-  setEditMenuEnabled,
-  setSaveMenuItemEnabled,
-  setToolsMenuEnabled,
-} from '@platform/app-menu';
 import type { ImageInfo } from '@platform/file-manager';
+import EditMenu from '@platform/menus/edit-menu';
+import FileMenu, { SAVE_METADATA_EVENT } from '@platform/menus/file-menu';
+import ToolsMenu, {
+  ENTER_METADATA_EDIT_EVENT,
+  updateEditImagesLabel,
+} from '@platform/menus/tools-menu';
+import type { MenuItem } from '@tauri-apps/api/menu';
 import { useEffect, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import useSWR from 'swr';
@@ -59,7 +58,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
 
   useEffect(() => {
     const toolsMenuEnabled = selectedImages.length !== 0;
-    setToolsMenuEnabled(toolsMenuEnabled).catch((err) => {
+    ToolsMenu.setEnabled(toolsMenuEnabled).catch((err) => {
       console.error(
         `Failed ${toolsMenuEnabled ? 'enabling' : 'disabling'} tools menu:`,
         err,
@@ -67,7 +66,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     });
 
     const pluralizeImages = selectedImages.length !== 1;
-    setEditImagesMenuItemPluralize(pluralizeImages).catch((err) => {
+    updateEditImagesLabel(pluralizeImages).catch((err) => {
       console.error(
         `Failed to ${pluralizeImages ? 'pluralize' : 'singularize'} menu item label:`,
         err,
@@ -80,16 +79,18 @@ function MetadataEditorPanel({ selectedImages }: Props) {
   });
 
   useEffect(() => {
-    setSaveMenuItemEnabled(!badState).catch((err) => {
-      console.error(
-        `Failed to ${!badState ? 'disable' : 'enable'} save menu:`,
-        err,
-      );
-    });
+    FileMenu.get('save')
+      .then((item) => (item as MenuItem).setEnabled(!badState))
+      .catch((err) => {
+        console.error(
+          `Failed to ${!badState ? 'disable' : 'enable'} save menu:`,
+          err,
+        );
+      });
   }, [badState]);
 
   useEffect(() => {
-    setEditMenuEnabled(!disabled).catch((err) => {
+    EditMenu.setEnabled(!disabled).catch((err) => {
       console.error(
         `Failed to ${!disabled ? 'disable' : 'enable'} edit menu:`,
         err,
