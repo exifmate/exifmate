@@ -24,6 +24,11 @@
           "name": "exiftool",
           "cmd": "$RESOURCE/resources/exiftool/exiftool",
           "args": true
+        },
+        {
+          "name": "perl-version",
+          "cmd": "perl",
+          "args": ["-e", "print \"$^V\n\""]
         }
       ]
     }

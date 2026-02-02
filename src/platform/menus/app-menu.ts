@@ -10,10 +10,18 @@ import EditMenu from './edit-menu';
 import FileMenu from './file-menu';
 import ToolsMenu from './tools-menu';
 
+export const OPEN_ABOUT_EVENT = 'app:open-about';
 export const OPEN_SETTINGS_EVENT = 'app:open-settings';
 
 async function appMenu() {
   const items: (PredefinedMenuItem | MenuItemOptions)[] = [
+    {
+      text: 'About',
+      async action() {
+        await emit(OPEN_ABOUT_EVENT);
+      },
+    },
+    await PredefinedMenuItem.new({ item: 'Separator' }),
     {
       text: 'Settings...',
       accelerator: 'CmdOrCtrl+,',
