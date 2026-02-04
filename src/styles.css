@@ -1,9 +1,8 @@
 @import "tailwindcss";
+@import "@heroui/styles";
 
-@plugin "./heroui.ts";
-@source "../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
-@custom-variant dark (&:is(.dark *));
-
-:root {
-  --root-bg: var(--color-neutral);
-}
+/* @custom-variant dark (&:is(.dark *)); */
+/**/
+/* :root { */
+/*   --root-bg: var(--color-neutral); */
+/* } */

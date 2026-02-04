@@ -1,4 +1,3 @@
-import { HeroUIProvider, ToastProvider } from '@heroui/react';
 import { forwardLogging } from '@platform/logging';
 import { createAppMenu } from '@platform/menus/app-menu';
 import AboutModal from '@screens/AboutModal/AboutModal';
@@ -15,12 +14,10 @@ if (!root) {
 
 createRoot(root).render(
   <StrictMode>
-    <HeroUIProvider>
-      <ToastProvider placement="bottom-center" />
-      <Shell />
-      <AboutModal />
-      <SettingsModal />
-    </HeroUIProvider>
+    {/* <ToastProvider placement="bottom-center" /> */}
+    <Shell />
+    <AboutModal />
+    <SettingsModal />
   </StrictMode>,
 );
 
