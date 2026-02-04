@@ -6,7 +6,7 @@ import { revealItemInDir } from '@tauri-apps/plugin-opener';
 import { useEffect, useState } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import ImageGridPanel from './ImageGridPanel/ImageGridPanel';
-import MetadataEditorPanel from './MetadataEditorPanel/MetadataEditorPanel';
+// import MetadataEditorPanel from './MetadataEditorPanel/MetadataEditorPanel';
 
 function Shell() {
   const [selectedImages, setSelectedImages] = useState<ImageInfo[]>([]);
@@ -47,7 +47,7 @@ function Shell() {
           defaultSize={35}
           className="rounded-medium bg-default-50 flex flex-col"
         >
-          <MetadataEditorPanel selectedImages={selectedImages} />
+          {/* <MetadataEditorPanel selectedImages={selectedImages} /> */}
         </Panel>
       </PanelGroup>
     </div>

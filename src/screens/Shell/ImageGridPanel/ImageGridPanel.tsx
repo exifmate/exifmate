@@ -1,5 +1,5 @@
 import Center from '@components/Center';
-import { Button, Chip, Listbox, ListboxItem } from '@heroui/react';
+import { Button, Chip, ListBox } from '@heroui/react';
 import useTauriListener from '@hooks/useTauriListener';
 import type { ImageInfo } from '@platform/file-manager';
 import { findImages, IMAGES_OPENED_EVENT } from '@platform/file-manager';
@@ -30,9 +30,10 @@ function ImageGridPanel({ onImageSelection }: Props) {
       <Center>
         <Button
           onPress={findImages}
-          variant="bordered"
-          endContent={<HiPlus size={24} />}
+          variant="tertiary"
+          size="lg"
         >
+          <HiPlus size={24} />
           Open Files
         </Button>
       </Center>
@@ -41,7 +42,7 @@ function ImageGridPanel({ onImageSelection }: Props) {
 
   return (
     <div className="p-2">
-      <Listbox
+      <ListBox
         items={images}
         aria-label="Image Grid"
         selectionMode="multiple"
@@ -56,37 +57,38 @@ function ImageGridPanel({ onImageSelection }: Props) {
             onImageSelection(images);
           }
         }}
-        classNames={{
-          list: 'flex flex-wrap flex-row',
-        }}
+      // classNames={{
+      //   list: 'flex flex-wrap flex-row',
+      // }}
       >
         {(image) => (
-          <ListboxItem
-            key={image.path}
+          <ListBox.Item
+            id={image.path}
             textValue={image.path}
-            variant="bordered"
-            selectedIcon={(p) => {
-              if (!p.isSelected) {
-                return null;
-              }
-
-              return (
-                <Chip color="primary" size="md" classNames={{ base: 'p-0' }}>
-                  <HiCheck />
-                </Chip>
-              );
-            }}
-            classNames={{
-              selectedIcon: 'absolute top-2 left-2 z-10',
-              base: 'w-fit data-selected:bg-default group',
-            }}
+          // variant="bordered"
+          // selectedIcon={(p) => {
+          //   if (!p.isSelected) {
+          //     return null;
+          //   }
+          //
+          //   return (
+          //     <Chip color="primary" size="md" classNames={{ base: 'p-0' }}>
+          //       <HiCheck />
+          //     </Chip>
+          //   );
+          // }}
+          // classNames={{
+          //   selectedIcon: 'absolute top-2 left-2 z-10',
+          //   base: 'w-fit data-selected:bg-default group',
+          // }}
           >
-            <div className="group-data-selected:scale-93 motion-safe:transition-transform">
+            <ListBox.ItemIndicator />
+            <div className="group-data-selected:scale-93 motion-safe:transition-transform" key={image.path}>
               <ImageCard path={image.path} filename={image.filename} />
             </div>
-          </ListboxItem>
+          </ListBox.Item>
         )}
-      </Listbox>
+      </ListBox>
     </div>
   );
 }

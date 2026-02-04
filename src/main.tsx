@@ -1,7 +1,7 @@
 import { forwardLogging } from '@platform/logging';
 import { createAppMenu } from '@platform/menus/app-menu';
 import AboutModal from '@screens/AboutModal/AboutModal';
-import SettingsModal from '@screens/SettingsModal/SettingsModal';
+// import SettingsModal from '@screens/SettingsModal/SettingsModal';
 import Shell from '@screens/Shell/Shell';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -17,7 +17,7 @@ createRoot(root).render(
     {/* <ToastProvider placement="bottom-center" /> */}
     <Shell />
     <AboutModal />
-    <SettingsModal />
+    {/* <SettingsModal /> */}
   </StrictMode>,
 );
 
