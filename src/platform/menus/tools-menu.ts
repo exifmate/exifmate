@@ -27,7 +27,7 @@ const ToolsMenu = await Submenu.new({
   items: [
     editImagesMenuItem,
     {
-      text: 'Focus on location',
+      text: 'Focus on Location',
       accelerator: 'CmdOrCtrl+l',
       async action() {
         await emit(FOCUS_ON_LOCATION_EVENT);
