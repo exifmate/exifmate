@@ -12,10 +12,10 @@ const onWindows = platform() === 'win32';
 let exiftoolName: string;
 let downloadFileName: string;
 if (onWindows) {
-  exiftoolName = 'exiftool-13.42_64';
+  exiftoolName = 'exiftool-13.50_64';
   downloadFileName = `${exiftoolName}.zip`;
 } else {
-  exiftoolName = 'Image-ExifTool-13.42';
+  exiftoolName = 'Image-ExifTool-13.50';
   downloadFileName = `${exiftoolName}.tar.gz`;
 }
 const downloadUrl = `https://sourceforge.net/projects/exiftool/files/${downloadFileName}`;
