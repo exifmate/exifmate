@@ -43,7 +43,6 @@ const FileMenu = await Submenu.new({
     {
       id: 'reveal-in-dir',
       text: revealInDirLabel,
-      // enabled: false,
       async action() {
         await emit(REVEAL_IN_DIR_EVENT);
       },
