@@ -57,32 +57,21 @@ function ImageGridPanel({ onImageSelection }: Props) {
             onImageSelection(images);
           }
         }}
-      // classNames={{
-      //   list: 'flex flex-wrap flex-row',
-      // }}
+        className="flex flex-wrap flex-row gap-3"
       >
         {(image) => (
           <ListBox.Item
             id={image.path}
             textValue={image.path}
-          // variant="bordered"
-          // selectedIcon={(p) => {
-          //   if (!p.isSelected) {
-          //     return null;
-          //   }
-          //
-          //   return (
-          //     <Chip color="primary" size="md" classNames={{ base: 'p-0' }}>
-          //       <HiCheck />
-          //     </Chip>
-          //   );
-          // }}
-          // classNames={{
-          //   selectedIcon: 'absolute top-2 left-2 z-10',
-          //   base: 'w-fit data-selected:bg-default group',
-          // }}
+            className="w-fit data-selected:bg-default group p-3"
           >
-            <ListBox.ItemIndicator />
+            <ListBox.ItemIndicator color="primary" className="absolute top-6 left-4 z-10">
+              {({ isSelected }) => isSelected && (
+                <Chip size="lg" variant="primary" color="accent" className="p-1">
+                  <HiCheck className="w-5 h-5" />
+                </Chip>
+              )}
+            </ListBox.ItemIndicator>
             <div className="group-data-selected:scale-93 motion-safe:transition-transform" key={image.path}>
               <ImageCard path={image.path} filename={image.filename} />
             </div>

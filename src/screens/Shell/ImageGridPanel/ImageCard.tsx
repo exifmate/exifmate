@@ -1,4 +1,4 @@
-import { Tooltip } from '@heroui/react';
+import { Skeleton, Tooltip } from '@heroui/react';
 import { genThumbnail, type ImageInfo } from '@platform/file-manager';
 import { revealInDirLabel } from '@platform/menus/file-menu';
 import { Menu } from '@tauri-apps/api/menu';
@@ -32,7 +32,7 @@ function ImageCard({ path, filename }: ImageInfo) {
   return (
     <Tooltip>
       <figure
-        className="rounded-large bg-content2 flex justify-center items-center h-56 w-56"
+        className="bg-content2 flex justify-center items-center h-56 w-56"
         onContextMenu={(e) => {
           e.preventDefault();
           showContextMenu(path).catch((err) => {
@@ -43,14 +43,17 @@ function ImageCard({ path, filename }: ImageInfo) {
         {error ? (
           <HiOutlineExclamationTriangle size={40} />
         ) : (
-          <img
-            src={data}
-            // isLoading={isLoading}
-            alt={`${filename} thumbnail`}
-            className="h-56 object-cover"
-            height={224}
-            width={224}
-          />
+          isLoading ? (
+            <Skeleton className="h-56 w-56" />
+          ) : (
+            <img
+              src={data}
+              alt={`${filename} thumbnail`}
+              className="h-56 object-cover rounded-xl"
+              height={224}
+              width={224}
+            />
+          )
         )}
         <figcaption className="sr-only">{filename}</figcaption>
       </figure>
