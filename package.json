@@ -13,10 +13,9 @@
     "lint": "biome check"
   },
   "dependencies": {
-    "@heroui/react": "^3.0.0-beta.5",
+    "@heroui/react": "^3.0.0-beta.6",
     "@heroui/styles": "^3.0.0-beta.5",
     "@hookform/resolvers": "^5.1.1",
-    "@internationalized/date": "^3.10.0",
     "@tauri-apps/api": "^2.5.0",
     "@tauri-apps/plugin-clipboard-manager": "^2.3.0",
     "@tauri-apps/plugin-dialog": "~2",

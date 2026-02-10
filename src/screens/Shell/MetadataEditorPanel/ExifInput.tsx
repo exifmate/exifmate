@@ -1,30 +1,40 @@
 import {
   Autocomplete,
-  AutocompleteItem,
-  DatePicker,
+  DateField,
+  DateInputGroup,
+  // AutocompleteItem,
+  // DatePicker,
   type DateValue,
+  FieldError,
   Input,
+  Label,
+  ListBox,
+  SearchField,
+  Select,
+  TextField,
+  useFilter,
 } from '@heroui/react';
-import { parseDateTime } from '@internationalized/date';
-import type { ExifData } from '@metadata-handler/exifdata';
+// import { parseDateTime } from '@internationalized/date';
+import { ExifData } from '@metadata-handler/exifdata';
 import { Controller, useFormContext } from 'react-hook-form';
 
 type Props = {
   tagName: keyof ExifData;
   description?: string;
 } & (
-  | {
+    | {
       type?: 'datetime-local' | 'text';
     }
-  | {
+    | {
       type: 'select';
       options: readonly string[];
     }
-);
+  );
 
 function ExifInput({ tagName, description, ...props }: Props) {
   // Need to use a controlled inputs or else the inputs go shit when changing images.
   const { control } = useFormContext<ExifData>();
+  const { contains } = useFilter({ sensitivity: 'base' });
 
   let label: string = tagName;
   if (description) {
@@ -40,15 +50,41 @@ function ExifInput({ tagName, description, ...props }: Props) {
           field: { value, disabled, onChange, ...field },
           fieldState: { invalid, error },
         }) => {
-          let parsedValue: DateValue | null = null;
+          // let parsedValue: DateValue | null = null;
+          //
+          // try {
+          //   if (!invalid && typeof value === 'string') {
+          //     parsedValue = parseDateTime(value);
+          //   }
+          // } catch {
+          //   parsedValue = null;
+          // }
 
-          try {
-            if (!invalid && typeof value === 'string') {
-              parsedValue = parseDateTime(value);
-            }
-          } catch {
-            parsedValue = null;
-          }
+          return (
+            <DateField className="w-[256px]" name="date">
+              <Label>Date</Label>
+              <DateInputGroup>
+                <DateInputGroup.Input>
+                  {(segment) => <DateInputGroup.Segment segment={segment} />}
+                </DateInputGroup.Input>
+              </DateInputGroup>
+            </DateField>
+          );
+          // return (
+          //   <DateField
+          //     // {...field}
+          //     // value={parsedValue}
+          //     // onChange={onChange}
+          //     // granularity="second"
+          //   >
+          //     <Label>{label}</Label>
+          //     {/* <DateInputGroup> */}
+          //     {/*   <DateInputGroup.Input> */}
+          //     {/*     {(segment) => <DateInputGroup.Segment segment={segment} />} */}
+          //     {/*   </DateInputGroup.Input> */}
+          //     {/* </DateInputGroup> */}
+          //   </DateField>
+          // );
 
           // When starting with a date, if a segment is removed then the `onChange` `date` is `null`,
           // which causes the date to be removed (which it either should or should be marked as invalid).
@@ -62,21 +98,21 @@ function ExifInput({ tagName, description, ...props }: Props) {
           // it's invalid, since it's marked as optional in Zod.
           //
           // Both of these seem to be the behavior for normal `datetime-locale` inputs (at least with Safari).
-          return (
-            <DatePicker
-              {...field}
-              granularity="second"
-              label={label}
-              value={parsedValue}
-              onChange={(date) => {
-                onChange(date?.toString());
-              }}
-              isDisabled={disabled}
-              validationBehavior="aria"
-              isInvalid={invalid}
-              errorMessage={error?.message}
-            />
-          );
+          // return (
+          //   <DatePicker
+          //     {...field}
+          //     granularity="second"
+          //     label={label}
+          //     value={parsedValue}
+          //     onChange={(date) => {
+          //       onChange(date?.toString());
+          //     }}
+          //     isDisabled={disabled}
+          //     validationBehavior="aria"
+          //     isInvalid={invalid}
+          //     errorMessage={error?.message}
+          //   />
+          // );
         }}
       />
     );
@@ -88,28 +124,41 @@ function ExifInput({ tagName, description, ...props }: Props) {
         control={control}
         name={tagName}
         render={({
-          field: { disabled, value, onChange, ...field },
+          field: { disabled, onChange, ...field },
           fieldState: { invalid, error },
         }) => {
+          // TODO: need to handle when the value is already a non-standard value
           return (
-            <Autocomplete
+            <Select
               {...field}
-              isClearable
-              allowsCustomValue
-              label={label}
-              inputValue={typeof value === 'string' ? value : ''}
-              value={typeof value === 'string' ? value : ''}
               isDisabled={disabled}
-              validationBehavior="aria"
               isInvalid={invalid}
-              errorMessage={error?.message}
-              onInputChange={onChange}
-              onValueChange={onChange}
+              onChange={(newValue) => {
+                if (newValue === '__clear__') {
+                  onChange(null)
+                } else {
+                  onChange(newValue)
+                }
+              }}
             >
-              {props.options.map((option) => (
-                <AutocompleteItem key={option}>{option}</AutocompleteItem>
-              ))}
-            </Autocomplete>
+              <Label>{label}</Label>
+              <Select.Trigger>
+                <Select.Value />
+                <Select.Indicator />
+              </Select.Trigger>
+              <FieldError>{error?.message}</FieldError>
+              <Select.Popover>
+                <ListBox>
+                  <ListBox.Item textValue="Clear Value" id="__clear__" />
+                  {props.options.map((option) => (
+                    <ListBox.Item key={option} id={option} textValue={option}>
+                      {option}
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
+            </Select>
           );
         }}
       />
@@ -125,18 +174,21 @@ function ExifInput({ tagName, description, ...props }: Props) {
         fieldState: { invalid, error },
       }) => {
         return (
-          <Input
+          <TextField
             {...field}
             isDisabled={disabled}
-            label={label}
-            // Casting is needed because the `value` prop thinks it doesn't support numbers.
-            // Coalescing is needed to resolve warnings about the inputs going from uncontrolled to controlled.
-            value={(value as string) ?? ''}
-            onValueChange={onChange}
-            validationBehavior="aria"
+            name={label}
             isInvalid={invalid}
-            errorMessage={error?.message}
-          />
+          >
+            <Label>{label}</Label>
+            <Input
+              // Casting is needed because the `value` prop thinks it doesn't support numbers.
+              // Coalescing is needed to resolve warnings about the inputs going from uncontrolled to controlled.
+              value={(value as string) ?? ''}
+              onChange={onChange}
+            />
+            <FieldError>{error?.message}</FieldError>
+          </TextField>
         );
       }}
     />
