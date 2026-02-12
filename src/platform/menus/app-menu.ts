@@ -1,3 +1,4 @@
+import { getName } from '@tauri-apps/api/app';
 import { emit } from '@tauri-apps/api/event';
 import {
   Menu,
@@ -14,9 +15,11 @@ export const OPEN_ABOUT_EVENT = 'app:open-about';
 export const OPEN_SETTINGS_EVENT = 'app:open-settings';
 
 async function appMenu() {
+  const appName = await getName();
+
   const items: (PredefinedMenuItem | MenuItemOptions)[] = [
     {
-      text: 'About',
+      text: `About ${appName}`,
       async action() {
         await emit(OPEN_ABOUT_EVENT);
       },
@@ -44,7 +47,7 @@ async function appMenu() {
 
   return Submenu.new({
     items,
-    text: platform() === 'macos' ? 'ExifMate' : 'Help',
+    text: appName,
   });
 }
 
