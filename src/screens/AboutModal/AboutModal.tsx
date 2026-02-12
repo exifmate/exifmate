@@ -1,12 +1,37 @@
-import { Modal, ModalBody, ModalContent, ModalHeader, useDisclosure } from '@heroui/react';
+import {
+  Image,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  Skeleton,
+  useDisclosure,
+} from '@heroui/react';
 import useTauriListener from '@hooks/useTauriListener';
 import { exiftoolVersion, perlVersion } from '@metadata-handler/exiftool';
 import { OPEN_ABOUT_EVENT } from '@platform/menus/app-menu';
 import { getVersion } from '@tauri-apps/api/app';
-import useSWR from 'swr';
+import useSWR, { type SWRResponse } from 'swr';
 import AppIcon from '../../../app-icon.svg?url';
 
-console.log('shit yeah', AppIcon);
+interface InfoLineProps {
+  res: SWRResponse;
+  label: string;
+}
+
+function InfoLine({ res, label }: InfoLineProps) {
+  return (
+    <div className="flex items-end gap-2">
+      <span className="font-semibold">{label}</span>
+
+      <Skeleton className="min-w-14" isLoaded={!res.isLoading}>
+        {res.data && res.data}
+        {res.error && <span className="text-danger italic">Error Loading</span>}
+      </Skeleton>
+    </div>
+  );
+}
+
 function AboutModal() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -36,36 +61,26 @@ function AboutModal() {
   });
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      scrollBehavior="inside"
-    >
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         <ModalHeader>About ExifMate</ModalHeader>
         <ModalBody>
-          <img src={AppIcon} alt="" />
+          <div className="flex w-full items-center gap-4">
+            <Image
+              src={AppIcon}
+              alt="ExifMate Icon"
+              className="h-20 w-20"
+              height={80}
+              width={80}
+            />
 
-          <div>
-            {appVersionRes.isLoading && '...'}
-            {appVersionRes.data && appVersionRes.data}
-            {appVersionRes.error && 'failed to get app version'}
-          </div>
-
-          <div>
-            {exiftoolVersionRes.isLoading && '...'}
-            {exiftoolVersionRes.data && exiftoolVersionRes.data}
-            {exiftoolVersionRes.error && 'failed to get exiftool version'}
-          </div>
-
-          <div>
-            {perlVersionRes.isLoading && '...'}
-            {perlVersionRes.data && perlVersionRes.data}
-            {perlVersionRes.error && 'failed to get perl version'}
+            <div className="grow">
+              <InfoLine res={appVersionRes} label="ExifMate Version:" />
+              <InfoLine res={exiftoolVersionRes} label="ExifTool Version" />
+              <InfoLine res={perlVersionRes} label="Perl Version" />
+            </div>
           </div>
         </ModalBody>
-
-        {/* {(onClose) => <p>hello</p>} */}
       </ModalContent>
     </Modal>
   );
