@@ -39,10 +39,10 @@ export async function exiftoolVersion() {
 }
 
 export async function perlVersion() {
-  const res = await Command.create(
-    'perl-version',
-    ['-e', 'print "$^V\n"'],
-  ).execute();
+  const res = await Command.create('perl-version', [
+    '-e',
+    'print "$^V\n"',
+  ]).execute();
 
   if (res.stderr || res.code !== 0) {
     throw new Error(res.stderr);
