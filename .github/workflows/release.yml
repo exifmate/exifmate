@@ -25,8 +25,9 @@ jobs:
           - platform: 'ubuntu-22.04-arm'
             args: ''
             dist_path: src-tauri/target/release/bundle/appimage/
-          # - platform: 'windows-latest'
-          #   args: ''
+          - platform: 'windows-latest'
+            args: '--bundles nsis'
+            dist_path: src-tauri/target/release/bundle/nsis/
 
     runs-on: ${{ matrix.platform }}
     steps:
