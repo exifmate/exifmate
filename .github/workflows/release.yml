@@ -17,17 +17,17 @@ jobs:
         include:
           - platform: 'macos-latest'
             args: '--target aarch64-apple-darwin --bundles app'
-            dist_path: src-tauri/target/aarch64-apple-darwin/release/bundle/macos/exifmate.app.tar.gz
+            # dist_path: src-tauri/target/aarch64-apple-darwin/release/bundle/macos/exifmate.app.tar.gz
           # - platform: 'macos-latest'
           #   args: '--target x86_64-apple-darwin --bundles app'
           # - platform: 'ubuntu-22.04'
           #   args: ''
           - platform: 'ubuntu-22.04-arm'
             args: ''
-            dist_path: src-tauri/target/release/bundle/appimage/
+            # dist_path: src-tauri/target/release/bundle/appimage/
           - platform: 'windows-latest'
             args: '--bundles nsis'
-            dist_path: src-tauri/target/release/bundle/nsis/
+            # dist_path: src-tauri/target/release/bundle/nsis/
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -70,17 +70,14 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         with:
           args: ${{ matrix.args }}
+          tagName: exifmate-v__VERSION__
+          releaseName: 'ExifMate v__VERSION__'
+          releaseDraft: true
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-        # env:
-        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # with:
-        #   tagName: v__VERSION__
-        #   releaseName: 'v__VERSION__'
-        #   # releaseBody: 'See the assets to download this version and install.'
-        #   releaseDraft: true
-        #   prerelease: true
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: build-${{ matrix.platform }}
-          path: ${{ matrix.dist_path }}
+      # - uses: actions/upload-artifact@v4
+      #   with:
+      #     name: build-${{ matrix.platform }}
+      #     path: ${{ matrix.dist_path }}
