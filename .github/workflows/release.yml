@@ -69,7 +69,6 @@ jobs:
           args: ${{ matrix.args }}
           tagName: exifmate-v__VERSION__
           releaseName: 'ExifMate v__VERSION__'
-          releaseDraft: true
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
