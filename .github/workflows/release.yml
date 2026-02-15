@@ -68,7 +68,7 @@ jobs:
         with:
           args: ${{ matrix.args }}
           tagName: exifmate-v__VERSION__
-          releaseName: 'ExifMate v__VERSION__'
+          releaseName: 'v__VERSION__'
           assetNamePattern: '[name]-[version]-[platform]-[arch][setup][ext]'
           prerelease: true
         env:
