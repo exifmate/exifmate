@@ -1,21 +1,19 @@
 import {
-  Autocomplete,
+  Calendar,
   DateField,
-  DateInputGroup,
-  // AutocompleteItem,
-  // DatePicker,
+  DatePicker,
   type DateValue,
   FieldError,
   Input,
   Label,
   ListBox,
-  SearchField,
   Select,
   TextField,
-  useFilter,
+  TimeField,
+  type TimeValue,
 } from '@heroui/react';
-// import { parseDateTime } from '@internationalized/date';
-import { ExifData } from '@metadata-handler/exifdata';
+import { parseDateTime } from '@internationalized/date';
+import type { ExifData } from '@metadata-handler/exifdata';
 import { Controller, useFormContext } from 'react-hook-form';
 
 type Props = {
@@ -34,7 +32,6 @@ type Props = {
 function ExifInput({ tagName, description, ...props }: Props) {
   // Need to use a controlled inputs or else the inputs go shit when changing images.
   const { control } = useFormContext<ExifData>();
-  const { contains } = useFilter({ sensitivity: 'base' });
 
   let label: string = tagName;
   if (description) {
@@ -50,41 +47,15 @@ function ExifInput({ tagName, description, ...props }: Props) {
           field: { value, disabled, onChange, ...field },
           fieldState: { invalid, error },
         }) => {
-          // let parsedValue: DateValue | null = null;
-          //
-          // try {
-          //   if (!invalid && typeof value === 'string') {
-          //     parsedValue = parseDateTime(value);
-          //   }
-          // } catch {
-          //   parsedValue = null;
-          // }
+          let parsedValue: DateValue | null = null;
 
-          return (
-            <DateField className="w-[256px]" name="date">
-              <Label>Date</Label>
-              <DateInputGroup>
-                <DateInputGroup.Input>
-                  {(segment) => <DateInputGroup.Segment segment={segment} />}
-                </DateInputGroup.Input>
-              </DateInputGroup>
-            </DateField>
-          );
-          // return (
-          //   <DateField
-          //     // {...field}
-          //     // value={parsedValue}
-          //     // onChange={onChange}
-          //     // granularity="second"
-          //   >
-          //     <Label>{label}</Label>
-          //     {/* <DateInputGroup> */}
-          //     {/*   <DateInputGroup.Input> */}
-          //     {/*     {(segment) => <DateInputGroup.Segment segment={segment} />} */}
-          //     {/*   </DateInputGroup.Input> */}
-          //     {/* </DateInputGroup> */}
-          //   </DateField>
-          // );
+          try {
+            if (!invalid && typeof value === 'string') {
+              parsedValue = parseDateTime(value);
+            }
+          } catch {
+            parsedValue = null;
+          }
 
           // When starting with a date, if a segment is removed then the `onChange` `date` is `null`,
           // which causes the date to be removed (which it either should or should be marked as invalid).
@@ -98,21 +69,78 @@ function ExifInput({ tagName, description, ...props }: Props) {
           // it's invalid, since it's marked as optional in Zod.
           //
           // Both of these seem to be the behavior for normal `datetime-locale` inputs (at least with Safari).
-          // return (
-          //   <DatePicker
-          //     {...field}
-          //     granularity="second"
-          //     label={label}
-          //     value={parsedValue}
-          //     onChange={(date) => {
-          //       onChange(date?.toString());
-          //     }}
-          //     isDisabled={disabled}
-          //     validationBehavior="aria"
-          //     isInvalid={invalid}
-          //     errorMessage={error?.message}
-          //   />
-          // );
+          return (
+            <DatePicker
+              {...field}
+              granularity="second"
+              name="date"
+              value={parsedValue}
+              onChange={(date) => {
+                onChange(date?.toString());
+              }}
+              isDisabled={disabled}
+              validationBehavior='aria'
+              isInvalid={invalid}
+            >
+              {({ state }) => (
+                <>
+                  <Label>{label}</Label>
+                  <DateField.Group fullWidth>
+                    <DateField.Input>
+                      {(segment) => <DateField.Segment segment={segment} />}
+                    </DateField.Input>
+                    <DateField.Suffix>
+                      <DatePicker.Trigger>
+                        <DatePicker.TriggerIndicator />
+                      </DatePicker.Trigger>
+                    </DateField.Suffix>
+                  </DateField.Group>
+
+                  <FieldError>{error?.message}</FieldError>
+
+                  <DatePicker.Popover className="flex flex-col gap-3">
+                    <Calendar aria-label="Event date">
+                      <Calendar.Header>
+                        <Calendar.YearPickerTrigger>
+                          <Calendar.YearPickerTriggerHeading />
+                          <Calendar.YearPickerTriggerIndicator />
+                        </Calendar.YearPickerTrigger>
+                        <Calendar.NavButton slot="previous" />
+                        <Calendar.NavButton slot="next" />
+                      </Calendar.Header>
+                      <Calendar.Grid>
+                        <Calendar.GridHeader>
+                          {(day) => <Calendar.HeaderCell>{day}</Calendar.HeaderCell>}
+                        </Calendar.GridHeader>
+                        <Calendar.GridBody>{(date) => <Calendar.Cell date={date} />}</Calendar.GridBody>
+                      </Calendar.Grid>
+                      <Calendar.YearPickerGrid>
+                        <Calendar.YearPickerGridBody>
+                          {({ year }) => <Calendar.YearPickerCell year={year} />}
+                        </Calendar.YearPickerGridBody>
+                      </Calendar.YearPickerGrid>
+                    </Calendar>
+                    <div className="flex items-center justify-between">
+                      <Label>Time</Label>
+                      <TimeField
+                        aria-label="Time"
+                        granularity="second"
+                        name="time"
+                        value={state.timeValue}
+                        onChange={(v) => state.setTimeValue(v as TimeValue)}
+                      >
+                        <TimeField.Group variant="secondary">
+                          <TimeField.Input>
+                            {(segment) => <TimeField.Segment segment={segment} />}
+                          </TimeField.Input>
+                        </TimeField.Group>
+                      </TimeField>
+                    </div>
+                  </DatePicker.Popover>
+                </>
+              )}
+            </DatePicker>
+          )
         }}
       />
     );

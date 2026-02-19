@@ -1,11 +1,12 @@
 import {
-  addToast,
   Button,
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
+  Description,
+  Label,
+  Modal,
   Radio,
   RadioGroup,
+  Spinner,
+  toast,
 } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loadSettings, Settings, saveSettings } from '@platform/settings';
@@ -36,7 +37,7 @@ function SettingsForm({ onClose }: Props) {
     revalidateOnFocus: false,
     onError(err) {
       console.error('Failed to load settings:', err);
-      addToast({ color: 'danger', title: 'Failed to load settings' });
+      toast.danger('Failed to load settings');
     },
   });
 
@@ -51,24 +52,24 @@ function SettingsForm({ onClose }: Props) {
   });
 
   return (
-    <>
-      <ModalHeader>Settings</ModalHeader>
-      <ModalBody>
+    <Modal.Dialog>
+      <Modal.CloseTrigger />
+      <Modal.Header>
+        <Modal.Heading>Settings</Modal.Heading>
+      </Modal.Header>
+
+      <Modal.Body>
         <form
           id="settings-form"
           onSubmit={handleSubmit(async (newSettings) => {
             try {
               await saveSettings(newSettings);
               await res.mutate(newSettings);
-              addToast({
-                color: 'success',
-                timeout: 3_000,
-                title: 'Settings Saved',
-              });
+              toast.success('Settings Saved', { timeout: 3_000 });
               onClose();
             } catch (err) {
               console.error('Failed to save settings:', err);
-              addToast({ color: 'danger', title: 'Failed to save settings' });
+              toast.danger('Failed to save settings');
             }
           })}
         >
@@ -79,45 +80,62 @@ function SettingsForm({ onClose }: Props) {
               return (
                 <RadioGroup
                   {...field}
-                  label="Original File Behavior"
                   isDisabled={disabled}
                   value={value ?? null}
                 >
-                  <Radio value="copy_original" description={copyOriginal}>
-                    Copy Original File (default)
+                  <Label>Original File Behavior</Label>
+
+                  <Radio value="copy_original">
+                    <Radio.Control>
+                      <Radio.Indicator />
+                    </Radio.Control>
+                    <Radio.Content>
+                      <Label>Copy Original File (default)</Label>
+                      <Description>{copyOriginal}</Description>
+                    </Radio.Content>
                   </Radio>
-                  <Radio
-                    value="overwrite_original"
-                    description={overwriteOriginal}
-                  >
-                    Overwrite Original File
+                  <Radio value="overwrite_original">
+                    <Radio.Control>
+                      <Radio.Indicator />
+                    </Radio.Control>
+                    <Radio.Content>
+                      <Label>Overwrite Original File</Label>
+                      <Description>{overwriteOriginal}</Description>
+                    </Radio.Content>
                   </Radio>
-                  <Radio
-                    value="overwrite_original_in_place"
-                    description={overwriteOriginalInPlace}
-                  >
-                    Overwrite Original File In Place
+                  <Radio value="overwrite_original_in_place">
+                    <Radio.Control>
+                      <Radio.Indicator />
+                    </Radio.Control>
+                    <Radio.Content>
+                      <Label>Overwrite Original File In Place</Label>
+                      <Description>{overwriteOriginalInPlace}</Description>
+                    </Radio.Content>
                   </Radio>
                 </RadioGroup>
               );
             }}
           />
         </form>
-      </ModalBody>
+      </Modal.Body>
 
-      <ModalFooter>
-        <Button onPress={onClose}>Cancel</Button>
+      <Modal.Footer>
+        <Button slot="close" variant="secondary" onPress={onClose}>Cancel</Button>
         <Button
           form="settings-form"
           type="submit"
-          color="primary"
-          isLoading={isSubmitting || res.isLoading}
+          isPending={isSubmitting || res.isLoading}
           isDisabled={disabled}
         >
-          Save
+          {({ isPending }) => (
+            <>
+              {isPending && <Spinner color="current" size="sm" />}
+              Save
+            </>
+          )}
         </Button>
-      </ModalFooter>
-    </>
+      </Modal.Footer>
+    </Modal.Dialog>
   );
 }
 

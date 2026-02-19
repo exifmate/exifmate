@@ -44,7 +44,7 @@ function ImageCard({ path, filename }: ImageInfo) {
           <HiOutlineExclamationTriangle size={40} />
         ) : (
           isLoading ? (
-            <Skeleton className="h-56 w-56" />
+            <Skeleton className="h-56 w-56 rounded-xl" />
           ) : (
             <img
               src={data}

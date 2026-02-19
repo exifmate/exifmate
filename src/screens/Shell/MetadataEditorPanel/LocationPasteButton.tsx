@@ -40,20 +40,18 @@ function LocationPasteButton() {
   };
 
   return (
-    <Tooltip
-      content={labelText}
-      color="secondary"
-      placement="top-end"
-      showArrow
-    >
+    <Tooltip delay={0} closeDelay={0}>
       <Button
-        color="primary"
+        variant="tertiary"
         isIconOnly
         isDisabled={disabled}
         onPress={pasteLocation}
       >
         <HiClipboardDocument />
       </Button>
+      <Tooltip.Content>
+        {labelText}
+      </Tooltip.Content>
     </Tooltip>
   );
 }

@@ -1,5 +1,11 @@
 import Center from '@components/Center';
-import { Alert, Button, Spinner, Tab, Tabs } from '@heroui/react';
+import {
+  Alert,
+  Button,
+  Spinner,
+  Tabs,
+  toast,
+} from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useTauriListener from '@hooks/useTauriListener';
 import { defaultExifData, ExifData } from '@metadata-handler/exifdata';
@@ -124,22 +130,14 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     } catch (err) {
       console.error('Failed saving:', newExif);
       console.error(err);
-      // addToast({
-      //   color: 'danger',
-      //   title: 'Failed to save images',
-      // });
-
+      toast.danger('Failed to save images');
       return;
     }
 
     await exifDataRes.mutate();
 
     setIsEditing(false);
-    // addToast({
-    //   color: 'success',
-    //   timeout: 3_000,
-    //   title: 'Saved Metadata!',
-    // });
+    toast.success('Saved Metadata!', { timeout: 3_000 });
   };
 
   if (selectedImages.length === 0) {
@@ -195,15 +193,12 @@ function MetadataEditorPanel({ selectedImages }: Props) {
             </Tabs.List>
           </Tabs.ListContainer>
 
-          <div className="overflow-auto px-3">
-            <Tabs.Panel id="EXIF">
-              <ExifTab />
-            </Tabs.Panel>
-            <Tabs.Panel id="Location">
-              <p>location tab</p>
-              {/* <LocationTab /> */}
-            </Tabs.Panel>
-          </div>
+          <Tabs.Panel id="EXIF" className="h-full overflow-auto px-4">
+            <ExifTab />
+          </Tabs.Panel>
+          <Tabs.Panel id="Location" className="h-full overflow-auto px-4">
+            <LocationTab />
+          </Tabs.Panel>
         </Tabs>
 
         <div className="flex px-4 py-2 justify-between">

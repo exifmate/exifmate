@@ -1,4 +1,4 @@
-import { addToast } from '@heroui/react';
+import { toast } from '@heroui/react';
 import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
 import type { ImageInfo } from '@platform/file-manager';
@@ -21,7 +21,7 @@ const readMetadataMock = readMetadata as unknown as Mock<typeof readMetadata>;
 const updateMetadataMock = updateMetadata as unknown as Mock<
   typeof updateMetadata
 >;
-const addToastMock = addToast as unknown as Mock<typeof addToast>;
+const toastMock = toast as unknown as Mock<typeof toast>;
 
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi
@@ -33,13 +33,7 @@ vi.mock('@tauri-apps/plugin-store', () => ({
 
 vi.mock('@metadata-handler/read');
 vi.mock('@metadata-handler/update');
-vi.mock(import('@heroui/react'), async (importOriginal) => {
-  const original = await importOriginal();
-  return {
-    ...original,
-    addToast: vi.fn(),
-  };
-});
+vi.mock('@heroui/react');
 
 vi.mock('react-map-gl/maplibre');
 vi.mock('@tauri-apps/api/menu');
@@ -53,7 +47,7 @@ const render = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
 
 describe('MetadataEditorPanel', () => {
   beforeEach(() => {
-    mockIPC(() => {}, { shouldMockEvents: true });
+    mockIPC(() => { }, { shouldMockEvents: true });
   });
 
   afterEach(() => {
@@ -84,7 +78,7 @@ describe('MetadataEditorPanel', () => {
 
     describe('when failing to open an image', () => {
       beforeEach(() => {
-        vi.stubGlobal('console', { error: () => {} });
+        vi.stubGlobal('console', { error: () => { } });
       });
 
       it('indicates failure with no form even with partial load error', async () => {
@@ -178,15 +172,13 @@ describe('MetadataEditorPanel', () => {
           expect(artistInput).toBeEnabled();
 
           await userEvent.type(artistInput, 'T');
-          expect(addToastMock).not.toHaveBeenCalled();
+          expect(toastMock).not.toHaveBeenCalled();
           const saveButton = screen.getByRole('button', { name: 'Save' });
           expect(saveButton).toBeEnabled();
           await userEvent.click(saveButton);
 
           expect(screen.getByLabelText('Artist')).toBeDisabled();
-          expect(addToastMock).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ color: 'success' }),
-          );
+          expect(toastMock.success).toHaveBeenCalledOnce();
         });
 
         // this has no properties to test against

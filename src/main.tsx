@@ -1,7 +1,8 @@
+import { ToastProvider } from '@heroui/react';
 import { forwardLogging } from '@platform/logging';
 import { createAppMenu } from '@platform/menus/app-menu';
 import AboutModal from '@screens/AboutModal/AboutModal';
-// import SettingsModal from '@screens/SettingsModal/SettingsModal';
+import SettingsModal from '@screens/SettingsModal/SettingsModal';
 import Shell from '@screens/Shell/Shell';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -14,10 +15,10 @@ if (!root) {
 
 createRoot(root).render(
   <StrictMode>
-    {/* <ToastProvider placement="bottom-center" /> */}
+    <ToastProvider />
     <Shell />
     <AboutModal />
-    {/* <SettingsModal /> */}
+    <SettingsModal />
   </StrictMode>,
 );
 
