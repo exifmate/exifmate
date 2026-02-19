@@ -43,10 +43,7 @@ function Shell() {
 
         <PanelResizeHandle />
 
-        <Panel
-          defaultSize={35}
-          className="flex flex-col"
-        >
+        <Panel defaultSize={35} className="flex flex-col">
           <MetadataEditorPanel selectedImages={selectedImages} />
         </Panel>
       </PanelGroup>

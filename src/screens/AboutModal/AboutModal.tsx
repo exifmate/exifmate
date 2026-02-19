@@ -1,7 +1,4 @@
-import {
-  Modal,
-  Skeleton,
-} from '@heroui/react';
+import { Modal, Skeleton } from '@heroui/react';
 import useTauriListener from '@hooks/useTauriListener';
 import { exiftoolVersion, perlVersion } from '@metadata-handler/exiftool';
 import { OPEN_ABOUT_EVENT } from '@platform/menus/app-menu';
@@ -25,7 +22,9 @@ function InfoLine({ res, label }: InfoLineProps) {
       ) : (
         <span>
           {res.data && res.data}
-          {res.error && <span className="text-danger italic">Error Loading</span>}
+          {res.error && (
+            <span className="text-danger italic">Error Loading</span>
+          )}
         </span>
       )}
     </div>
@@ -66,9 +65,7 @@ function AboutModal() {
         <Modal.Dialog>
           <Modal.CloseTrigger />
           <Modal.Header>
-            <Modal.Heading>
-              About ExifMate
-            </Modal.Heading>
+            <Modal.Heading>About ExifMate</Modal.Heading>
           </Modal.Header>
 
           <Modal.Body>

@@ -1,11 +1,5 @@
 import Center from '@components/Center';
-import {
-  Alert,
-  Button,
-  Spinner,
-  Tabs,
-  toast,
-} from '@heroui/react';
+import { Alert, Button, Spinner, Tabs, toast } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useTauriListener from '@hooks/useTauriListener';
 import { defaultExifData, ExifData } from '@metadata-handler/exifdata';

@@ -20,14 +20,14 @@ type Props = {
   tagName: keyof ExifData;
   description?: string;
 } & (
-    | {
+  | {
       type?: 'datetime-local' | 'text';
     }
-    | {
+  | {
       type: 'select';
       options: readonly string[];
     }
-  );
+);
 
 function ExifInput({ tagName, description, ...props }: Props) {
   // Need to use a controlled inputs or else the inputs go shit when changing images.
@@ -79,7 +79,7 @@ function ExifInput({ tagName, description, ...props }: Props) {
                 onChange(date?.toString());
               }}
               isDisabled={disabled}
-              validationBehavior='aria'
+              validationBehavior="aria"
               isInvalid={invalid}
             >
               {({ state }) => (
@@ -110,13 +110,19 @@ function ExifInput({ tagName, description, ...props }: Props) {
                       </Calendar.Header>
                       <Calendar.Grid>
                         <Calendar.GridHeader>
-                          {(day) => <Calendar.HeaderCell>{day}</Calendar.HeaderCell>}
+                          {(day) => (
+                            <Calendar.HeaderCell>{day}</Calendar.HeaderCell>
+                          )}
                         </Calendar.GridHeader>
-                        <Calendar.GridBody>{(date) => <Calendar.Cell date={date} />}</Calendar.GridBody>
+                        <Calendar.GridBody>
+                          {(date) => <Calendar.Cell date={date} />}
+                        </Calendar.GridBody>
                       </Calendar.Grid>
                       <Calendar.YearPickerGrid>
                         <Calendar.YearPickerGridBody>
-                          {({ year }) => <Calendar.YearPickerCell year={year} />}
+                          {({ year }) => (
+                            <Calendar.YearPickerCell year={year} />
+                          )}
                         </Calendar.YearPickerGridBody>
                       </Calendar.YearPickerGrid>
                     </Calendar>
@@ -131,7 +137,9 @@ function ExifInput({ tagName, description, ...props }: Props) {
                       >
                         <TimeField.Group variant="secondary">
                           <TimeField.Input>
-                            {(segment) => <TimeField.Segment segment={segment} />}
+                            {(segment) => (
+                              <TimeField.Segment segment={segment} />
+                            )}
                           </TimeField.Input>
                         </TimeField.Group>
                       </TimeField>
@@ -140,7 +148,7 @@ function ExifInput({ tagName, description, ...props }: Props) {
                 </>
               )}
             </DatePicker>
-          )
+          );
         }}
       />
     );
@@ -163,9 +171,9 @@ function ExifInput({ tagName, description, ...props }: Props) {
               isInvalid={invalid}
               onChange={(newValue) => {
                 if (newValue === '__clear__') {
-                  onChange(null)
+                  onChange(null);
                 } else {
-                  onChange(newValue)
+                  onChange(newValue);
                 }
               }}
             >

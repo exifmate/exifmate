@@ -49,9 +49,7 @@ function LocationPasteButton() {
       >
         <HiClipboardDocument />
       </Button>
-      <Tooltip.Content>
-        {labelText}
-      </Tooltip.Content>
+      <Tooltip.Content>{labelText}</Tooltip.Content>
     </Tooltip>
   );
 }

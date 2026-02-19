@@ -12,10 +12,7 @@ function SettingsModal() {
   });
 
   return (
-    <Modal.Backdrop
-      isOpen={isOpen}
-      onOpenChange={setIsOpen}
-    >
+    <Modal.Backdrop isOpen={isOpen} onOpenChange={setIsOpen}>
       <Modal.Container scroll="inside" size="lg">
         <SettingsForm onClose={() => setIsOpen(false)} />
       </Modal.Container>

@@ -120,7 +120,9 @@ function SettingsForm({ onClose }: Props) {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button slot="close" variant="secondary" onPress={onClose}>Cancel</Button>
+        <Button slot="close" variant="secondary" onPress={onClose}>
+          Cancel
+        </Button>
         <Button
           form="settings-form"
           type="submit"

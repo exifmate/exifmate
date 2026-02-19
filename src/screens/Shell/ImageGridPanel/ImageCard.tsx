@@ -42,18 +42,16 @@ function ImageCard({ path, filename }: ImageInfo) {
       >
         {error ? (
           <HiOutlineExclamationTriangle size={40} />
+        ) : isLoading ? (
+          <Skeleton className="h-56 w-56 rounded-xl" />
         ) : (
-          isLoading ? (
-            <Skeleton className="h-56 w-56 rounded-xl" />
-          ) : (
-            <img
-              src={data}
-              alt={`${filename} thumbnail`}
-              className="h-56 object-cover rounded-xl"
-              height={224}
-              width={224}
-            />
-          )
+          <img
+            src={data}
+            alt={`${filename} thumbnail`}
+            className="h-56 object-cover rounded-xl"
+            height={224}
+            width={224}
+          />
         )}
         <figcaption className="sr-only">{filename}</figcaption>
       </figure>

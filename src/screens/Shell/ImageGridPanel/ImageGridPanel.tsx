@@ -28,11 +28,7 @@ function ImageGridPanel({ onImageSelection }: Props) {
   if (images.length === 0) {
     return (
       <Center>
-        <Button
-          onPress={findImages}
-          variant="tertiary"
-          size="lg"
-        >
+        <Button onPress={findImages} variant="tertiary" size="lg">
           <HiPlus size={24} />
           Open Files
         </Button>
@@ -65,14 +61,27 @@ function ImageGridPanel({ onImageSelection }: Props) {
             textValue={image.path}
             className="w-fit data-selected:bg-default group p-3"
           >
-            <ListBox.ItemIndicator color="primary" className="absolute top-6 left-4 z-10">
-              {({ isSelected }) => isSelected && (
-                <Chip size="lg" variant="primary" color="accent" className="p-1">
-                  <HiCheck className="w-5 h-5" />
-                </Chip>
-              )}
+            <ListBox.ItemIndicator
+              color="primary"
+              className="absolute top-6 left-4 z-10"
+            >
+              {({ isSelected }) =>
+                isSelected && (
+                  <Chip
+                    size="lg"
+                    variant="primary"
+                    color="accent"
+                    className="p-1"
+                  >
+                    <HiCheck className="w-5 h-5" />
+                  </Chip>
+                )
+              }
             </ListBox.ItemIndicator>
-            <div className="group-data-selected:scale-93 motion-safe:transition-transform" key={image.path}>
+            <div
+              className="group-data-selected:scale-93 motion-safe:transition-transform"
+              key={image.path}
+            >
               <ImageCard path={image.path} filename={image.filename} />
             </div>
           </ListBox.Item>
