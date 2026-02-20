@@ -1,3 +1,4 @@
+import { Surface } from '@heroui/react';
 import useTauriListener from '@hooks/useTauriListener';
 import { IMAGES_OPENED_EVENT, type ImageInfo } from '@platform/file-manager';
 import FileMenu, { REVEAL_IN_DIR_EVENT } from '@platform/menus/file-menu';
@@ -36,15 +37,23 @@ function Shell() {
     <div className="flex flex-col h-screen">
       <PanelGroup direction="horizontal" className="p-2 gap-2">
         <Panel defaultSize={65}>
-          <div className="h-full overflow-auto">
+          <Surface
+            className="h-full overflow-auto rounded-3xl border"
+            variant="transparent"
+          >
             <ImageGridPanel onImageSelection={setSelectedImages} />
-          </div>
+          </Surface>
         </Panel>
 
         <PanelResizeHandle />
 
-        <Panel defaultSize={35} className="flex flex-col">
-          <MetadataEditorPanel selectedImages={selectedImages} />
+        <Panel defaultSize={35}>
+          <Surface
+            className="h-full flex flex-col rounded-3xl border"
+            variant="transparent"
+          >
+            <MetadataEditorPanel selectedImages={selectedImages} />
+          </Surface>
         </Panel>
       </PanelGroup>
     </div>

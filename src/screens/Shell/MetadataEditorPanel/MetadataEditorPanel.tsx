@@ -1,5 +1,5 @@
 import Center from '@components/Center';
-import { Alert, Button, Spinner, Tabs, toast } from '@heroui/react';
+import { Alert, Button, Spinner, Surface, Tabs, toast } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useTauriListener from '@hooks/useTauriListener';
 import { defaultExifData, ExifData } from '@metadata-handler/exifdata';
@@ -174,7 +174,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
           onSelectionChange={(k) => setActiveTab(k as 'EXIF' | 'Location')}
           className="flex-1 flex flex-col overflow-hidden"
         >
-          <Tabs.ListContainer aria-label="Editor Tabs">
+          <Tabs.ListContainer aria-label="Editor Tabs" className="pt-2 px-2">
             <Tabs.List>
               <Tabs.Tab id="EXIF">
                 EXIF
@@ -195,7 +195,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
           </Tabs.Panel>
         </Tabs>
 
-        <div className="flex px-4 py-2 justify-between">
+        <Surface className="flex px-4 py-2 justify-between rounded-b-3xl">
           {!isEditing ? (
             <Button
               isDisabled={isSubmitting}
@@ -230,7 +230,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
               </Button>
             </>
           )}
-        </div>
+        </Surface>
       </form>
     </FormProvider>
   );
