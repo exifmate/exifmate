@@ -85,7 +85,7 @@ function ExifInput({ tagName, description, ...props }: Props) {
               {({ state }) => (
                 <>
                   <Label>{label}</Label>
-                  <DateField.Group fullWidth>
+                  <DateField.Group fullWidth variant="secondary">
                     <DateField.Input>
                       {(segment) => <DateField.Segment segment={segment} />}
                     </DateField.Input>
@@ -167,6 +167,7 @@ function ExifInput({ tagName, description, ...props }: Props) {
           return (
             <Select
               {...field}
+              variant="secondary"
               isDisabled={disabled}
               isInvalid={invalid}
               onChange={(newValue) => {
@@ -215,6 +216,7 @@ function ExifInput({ tagName, description, ...props }: Props) {
             isDisabled={disabled}
             name={label}
             isInvalid={invalid}
+            variant="secondary"
           >
             <Label>{label}</Label>
             <Input

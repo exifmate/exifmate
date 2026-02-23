@@ -137,7 +137,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
   if (selectedImages.length === 0) {
     return (
       <Center>
-        <p className="text-lg">No Image Selected</p>
+        <p className="text-lg text-muted">No Image Selected</p>
       </Center>
     );
   }
@@ -146,7 +146,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     return (
       <Center>
         <Spinner color="accent" />
-        <p className="text-lg">Loading Metadata...</p>
+        <p className="text-lg text-muted">Loading Metadata...</p>
       </Center>
     );
   }
@@ -187,15 +187,18 @@ function MetadataEditorPanel({ selectedImages }: Props) {
             </Tabs.List>
           </Tabs.ListContainer>
 
-          <Tabs.Panel id="EXIF" className="h-full overflow-auto px-4">
+          <Tabs.Panel id="EXIF" className="h-full overflow-auto px-3">
             <ExifTab />
           </Tabs.Panel>
-          <Tabs.Panel id="Location" className="h-full overflow-auto px-4">
+          <Tabs.Panel id="Location" className="h-full overflow-auto px-3">
             <LocationTab />
           </Tabs.Panel>
         </Tabs>
 
-        <Surface className="flex px-4 py-2 justify-between rounded-b-3xl">
+        <Surface
+          className="flex px-3 py-2 justify-between rounded-b-3xl border-t-2"
+          variant="transparent"
+        >
           {!isEditing ? (
             <Button
               isDisabled={isSubmitting}

@@ -53,17 +53,17 @@ function ImageGridPanel({ onImageSelection }: Props) {
             onImageSelection(images);
           }
         }}
-        className="flex flex-wrap flex-row gap-3"
+        className="flex flex-wrap flex-row gap-1"
       >
         {(image) => (
           <ListBox.Item
             id={image.path}
             textValue={image.path}
-            className="w-fit data-selected:bg-default group p-3"
+            className="w-fit data-selected:bg-default group p-2 rounded-field"
           >
             <ListBox.ItemIndicator
               color="primary"
-              className="absolute top-6 left-4 z-10"
+              className="absolute top-5 left-3 z-10"
             >
               {({ isSelected }) =>
                 isSelected && (
@@ -71,7 +71,7 @@ function ImageGridPanel({ onImageSelection }: Props) {
                     size="lg"
                     variant="primary"
                     color="accent"
-                    className="p-1"
+                    className="p-1 rounded-full"
                   >
                     <HiCheck className="w-5 h-5" />
                   </Chip>

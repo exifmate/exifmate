@@ -82,6 +82,7 @@ function SettingsForm({ onClose }: Props) {
                   {...field}
                   isDisabled={disabled}
                   value={value ?? null}
+                  variant="secondary"
                 >
                   <Label>Original File Behavior</Label>
 

@@ -35,12 +35,9 @@ function Shell() {
 
   return (
     <div className="flex flex-col h-screen">
-      <PanelGroup direction="horizontal" className="p-2 gap-2">
+      <PanelGroup direction="horizontal" className="p-2 gap-1">
         <Panel defaultSize={65}>
-          <Surface
-            className="h-full overflow-auto rounded-3xl border"
-            variant="transparent"
-          >
+          <Surface className="h-full overflow-auto rounded-3xl">
             <ImageGridPanel onImageSelection={setSelectedImages} />
           </Surface>
         </Panel>
@@ -48,10 +45,7 @@ function Shell() {
         <PanelResizeHandle />
 
         <Panel defaultSize={35}>
-          <Surface
-            className="h-full flex flex-col rounded-3xl border"
-            variant="transparent"
-          >
+          <Surface className="h-full flex flex-col rounded-3xl">
             <MetadataEditorPanel selectedImages={selectedImages} />
           </Surface>
         </Panel>
