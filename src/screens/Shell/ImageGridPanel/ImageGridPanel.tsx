@@ -12,7 +12,6 @@ interface Props {
 }
 
 /*
- * I think this'll go slow if the images are large; need to test.
  * May want to look into lazy loading the images or `Virtualizer` from react-aria.
  */
 function ImageGridPanel({ onImageSelection }: Props) {
