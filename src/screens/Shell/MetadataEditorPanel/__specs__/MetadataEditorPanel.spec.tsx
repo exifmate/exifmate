@@ -33,7 +33,12 @@ vi.mock('@tauri-apps/plugin-store', () => ({
 
 vi.mock('@metadata-handler/read');
 vi.mock('@metadata-handler/update');
-vi.mock('@heroui/react');
+vi.mock(import('@heroui/react'), async (importOriginal) => {
+  const original = await importOriginal();
+  original.toast.danger = vi.fn();
+  original.toast.success = vi.fn();
+  return original;
+});
 
 vi.mock('react-map-gl/maplibre');
 vi.mock('@tauri-apps/api/menu');
@@ -94,6 +99,9 @@ describe('MetadataEditorPanel', () => {
 
     describe('when finished loading metadata', () => {
       beforeEach(async () => {
+        // Called when changing tabs but not defined in JSDOM
+        Element.prototype.getAnimations = vi.fn().mockReturnValue([]);
+
         readMetadataMock.mockResolvedValueOnce({ Artist: 'test person' });
         render(<MetadataEditorPanel selectedImages={selectedImages} />);
         await waitFor(() =>
@@ -172,7 +180,7 @@ describe('MetadataEditorPanel', () => {
           expect(artistInput).toBeEnabled();
 
           await userEvent.type(artistInput, 'T');
-          expect(toastMock).not.toHaveBeenCalled();
+          expect(toastMock.danger).not.toHaveBeenCalled();
           const saveButton = screen.getByRole('button', { name: 'Save' });
           expect(saveButton).toBeEnabled();
           await userEvent.click(saveButton);

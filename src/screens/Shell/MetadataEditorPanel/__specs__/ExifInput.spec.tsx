@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ExifData, FLASH_OPTIONS } from '@metadata-handler/exifdata';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormProvider, useForm } from 'react-hook-form';
 import ExifInput from '../ExifInput';
@@ -65,18 +65,18 @@ describe('ExifInput', () => {
       />,
     );
 
-    const selectBtn = screen.getByRole('combobox', { name: 'Flash' });
+    const selectBtn = screen.getByLabelText('Flash');
     expect(selectBtn).toBeVisible();
 
     expect(screen.queryByRole('listbox')).toBeNull();
     await userEvent.click(selectBtn);
     const input = screen.getByRole('listbox');
-    await waitFor(() => expect(input).toBeVisible());
+    expect(input).toBeVisible();
 
     const options = within(input)
       .getAllByRole('option')
       .map((o) => o.textContent);
-    expect(options).toEqual(FLASH_OPTIONS);
+    expect(options).toEqual([''].concat(FLASH_OPTIONS));
 
     await userEvent.click(within(input).getByRole('option', { name: 'Fired' }));
     await userEvent.click(screen.getByText('Go'));

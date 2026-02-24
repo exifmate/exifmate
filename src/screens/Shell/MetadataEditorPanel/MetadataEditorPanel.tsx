@@ -155,7 +155,15 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     return (
       <Center>
         <div>
-          <Alert color="danger" title="Error Loading Metadata" />
+          <Alert
+            status="danger"
+            className="bg-danger-soft text-danger-soft-foreground"
+          >
+            <Alert.Indicator />
+            <Alert.Content>
+              <Alert.Title>Error Loading Metadata</Alert.Title>
+            </Alert.Content>
+          </Alert>
         </div>
       </Center>
     );
