@@ -33,7 +33,7 @@ function ImageCard({ path, filename }: ImageInfo) {
     <Tooltip delay={0}>
       <Tooltip.Trigger>
         <figure
-          className="bg-content2 flex justify-center items-center h-56 w-56"
+          className="flex justify-center items-center h-56 w-56"
           onContextMenu={(e) => {
             e.preventDefault();
             showContextMenu(path).catch((err) => {
