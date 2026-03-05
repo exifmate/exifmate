@@ -1,5 +1,6 @@
 import { FieldError, Label, ListBox, Select } from '@heroui/react';
 import type { ExifData } from '@metadata-handler/exifdata';
+import { useRef } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 interface Props {
@@ -9,7 +10,14 @@ interface Props {
 }
 
 function SelectInput({ tagName, description, options }: Props) {
-  const { control } = useFormContext<ExifData>();
+  const { control, getValues } = useFormContext<ExifData>();
+
+  const nonStandardValueRef = useRef<string | null>(null);
+  const currentValue = getValues(tagName) as string | null;
+  if (currentValue != null && !options.includes(currentValue)) {
+    nonStandardValueRef.current = currentValue;
+  }
+  const nonStandardValue = nonStandardValueRef.current;
 
   let label: string = tagName;
   if (description) {
@@ -24,7 +32,6 @@ function SelectInput({ tagName, description, options }: Props) {
         field: { disabled, onChange, ...field },
         fieldState: { invalid, error },
       }) => {
-        // TODO: need to handle when the value is already a non-standard value
         return (
           <Select
             {...field}
@@ -48,6 +55,17 @@ function SelectInput({ tagName, description, options }: Props) {
             <Select.Popover>
               <ListBox>
                 <ListBox.Item textValue="Clear Value" id="__clear__" />
+                {nonStandardValue && (
+                  <ListBox.Item
+                    id={nonStandardValue}
+                    textValue={nonStandardValue}
+                    isDisabled
+                  >
+                    {nonStandardValue}
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                )}
+
                 {options.map((option) => (
                   <ListBox.Item key={option} id={option} textValue={option}>
                     {option}
