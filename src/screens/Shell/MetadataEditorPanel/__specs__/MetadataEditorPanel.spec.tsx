@@ -1,4 +1,4 @@
-import { addToast } from '@heroui/react';
+import { toast } from '@heroui/react';
 import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
 import type { ImageInfo } from '@platform/file-manager';
@@ -21,7 +21,7 @@ const readMetadataMock = readMetadata as unknown as Mock<typeof readMetadata>;
 const updateMetadataMock = updateMetadata as unknown as Mock<
   typeof updateMetadata
 >;
-const addToastMock = addToast as unknown as Mock<typeof addToast>;
+const toastMock = toast as unknown as Mock<typeof toast>;
 
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi
@@ -35,10 +35,9 @@ vi.mock('@metadata-handler/read');
 vi.mock('@metadata-handler/update');
 vi.mock(import('@heroui/react'), async (importOriginal) => {
   const original = await importOriginal();
-  return {
-    ...original,
-    addToast: vi.fn(),
-  };
+  original.toast.danger = vi.fn();
+  original.toast.success = vi.fn();
+  return original;
 });
 
 vi.mock('react-map-gl/maplibre');
@@ -100,6 +99,9 @@ describe('MetadataEditorPanel', () => {
 
     describe('when finished loading metadata', () => {
       beforeEach(async () => {
+        // Called when changing tabs but not defined in JSDOM
+        Element.prototype.getAnimations = vi.fn().mockReturnValue([]);
+
         readMetadataMock.mockResolvedValueOnce({ Artist: 'test person' });
         render(<MetadataEditorPanel selectedImages={selectedImages} />);
         await waitFor(() =>
@@ -178,15 +180,13 @@ describe('MetadataEditorPanel', () => {
           expect(artistInput).toBeEnabled();
 
           await userEvent.type(artistInput, 'T');
-          expect(addToastMock).not.toHaveBeenCalled();
+          expect(toastMock.danger).not.toHaveBeenCalled();
           const saveButton = screen.getByRole('button', { name: 'Save' });
           expect(saveButton).toBeEnabled();
           await userEvent.click(saveButton);
 
           expect(screen.getByLabelText('Artist')).toBeDisabled();
-          expect(addToastMock).toHaveBeenCalledExactlyOnceWith(
-            expect.objectContaining({ color: 'success' }),
-          );
+          expect(toastMock.success).toHaveBeenCalledOnce();
         });
 
         // this has no properties to test against

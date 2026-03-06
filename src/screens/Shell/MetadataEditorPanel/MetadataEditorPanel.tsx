@@ -1,5 +1,5 @@
 import Center from '@components/Center';
-import { Alert, addToast, Button, Spinner, Tab, Tabs } from '@heroui/react';
+import { Alert, Button, Spinner, Surface, Tabs, toast } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import useTauriListener from '@hooks/useTauriListener';
 import { defaultExifData, ExifData } from '@metadata-handler/exifdata';
@@ -124,28 +124,20 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     } catch (err) {
       console.error('Failed saving:', newExif);
       console.error(err);
-      addToast({
-        color: 'danger',
-        title: 'Failed to save images',
-      });
-
+      toast.danger('Failed to save images');
       return;
     }
 
     await exifDataRes.mutate();
 
     setIsEditing(false);
-    addToast({
-      color: 'success',
-      timeout: 3_000,
-      title: 'Saved Metadata!',
-    });
+    toast.success('Saved Metadata!', { timeout: 3_000 });
   };
 
   if (selectedImages.length === 0) {
     return (
       <Center>
-        <p className="text-large">No Image Selected</p>
+        <p className="text-lg text-muted">No Image Selected</p>
       </Center>
     );
   }
@@ -153,8 +145,8 @@ function MetadataEditorPanel({ selectedImages }: Props) {
   if (exifDataRes.isLoading) {
     return (
       <Center>
-        <Spinner color="secondary" />
-        <p className="text-large">Loading Metadata...</p>
+        <Spinner color="accent" />
+        <p className="text-lg text-muted">Loading Metadata...</p>
       </Center>
     );
   }
@@ -163,7 +155,15 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     return (
       <Center>
         <div>
-          <Alert color="danger" title="Error Loading Metadata" />
+          <Alert
+            status="danger"
+            className="bg-danger-soft text-danger-soft-foreground"
+          >
+            <Alert.Indicator />
+            <Alert.Content>
+              <Alert.Title>Error Loading Metadata</Alert.Title>
+            </Alert.Content>
+          </Alert>
         </div>
       </Center>
     );
@@ -173,31 +173,42 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     <FormProvider {...form}>
       <form
         ref={formRef}
-        className="h-full flex flex-col overflow-clip"
+        className="h-full flex flex-col"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <Tabs
           aria-label="Editor Tabs"
           selectedKey={activeTab}
           onSelectionChange={(k) => setActiveTab(k as 'EXIF' | 'Location')}
-          classNames={{
-            base: 'px-2 pt-2',
-            tabList: 'w-full',
-            panel: 'overflow-auto grow px-3',
-          }}
+          className="flex-1 flex flex-col overflow-hidden"
         >
-          <Tab key="EXIF" title="EXIF">
+          <Tabs.ListContainer aria-label="Editor Tabs" className="pt-2 px-2">
+            <Tabs.List>
+              <Tabs.Tab id="EXIF">
+                EXIF
+                <Tabs.Indicator />
+              </Tabs.Tab>
+              <Tabs.Tab id="Location">
+                Location
+                <Tabs.Indicator />
+              </Tabs.Tab>
+            </Tabs.List>
+          </Tabs.ListContainer>
+
+          <Tabs.Panel id="EXIF" className="h-full overflow-auto px-3">
             <ExifTab />
-          </Tab>
-          <Tab key="Location" title="Location">
+          </Tabs.Panel>
+          <Tabs.Panel id="Location" className="h-full overflow-auto px-3">
             <LocationTab />
-          </Tab>
+          </Tabs.Panel>
         </Tabs>
 
-        <div className="flex px-4 py-2 justify-between">
+        <Surface
+          className="flex px-3 py-2 justify-between rounded-b-3xl border-t-2"
+          variant="transparent"
+        >
           {!isEditing ? (
             <Button
-              color="secondary"
               isDisabled={isSubmitting}
               onPress={() => setIsEditing(true)}
             >
@@ -207,6 +218,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
             <>
               <Button
                 isDisabled={isSubmitting}
+                variant="secondary"
                 onPress={() => {
                   setIsEditing(false);
                   form.reset();
@@ -217,15 +229,19 @@ function MetadataEditorPanel({ selectedImages }: Props) {
 
               <Button
                 type="submit"
-                color="primary"
                 isDisabled={badState}
-                isLoading={isSubmitting}
+                isPending={isSubmitting}
               >
-                Save
+                {({ isPending }) => (
+                  <>
+                    {isPending && <Spinner color="current" size="sm" />}
+                    Save
+                  </>
+                )}
               </Button>
             </>
           )}
-        </div>
+        </Surface>
       </form>
     </FormProvider>
   );

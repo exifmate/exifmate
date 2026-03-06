@@ -39,11 +39,11 @@ describe('SettingsModal', () => {
 
     await waitFor(() => expect(screen.getByText('Settings')).toBeVisible());
     expect(
-      screen.getByLabelText('Overwrite Original File In Place'),
+      screen.getByLabelText(/Overwrite Original File In Place/),
     ).toBeChecked();
 
     await userEvent.click(
-      screen.getByLabelText('Copy Original File (default)'),
+      screen.getByLabelText(/Copy Original File \(default\)/),
     );
     expect(mockSaveSettings).not.toHaveBeenCalled();
 

@@ -1,26 +1,22 @@
-import { Modal, ModalContent, useDisclosure } from '@heroui/react';
+import { Modal } from '@heroui/react';
 import useTauriListener from '@hooks/useTauriListener';
 import { OPEN_SETTINGS_EVENT } from '@platform/menus/app-menu';
+import { useState } from 'react';
 import SettingsForm from './SettingsForm';
 
 function SettingsModal() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   useTauriListener(OPEN_SETTINGS_EVENT, () => {
-    onOpen();
+    setIsOpen(true);
   });
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      size="5xl"
-      scrollBehavior="inside"
-    >
-      <ModalContent>
-        {(onClose) => <SettingsForm onClose={onClose} />}
-      </ModalContent>
-    </Modal>
+    <Modal.Backdrop isOpen={isOpen} onOpenChange={setIsOpen}>
+      <Modal.Container scroll="inside" size="lg">
+        <SettingsForm onClose={() => setIsOpen(false)} />
+      </Modal.Container>
+    </Modal.Backdrop>
   );
 }
 

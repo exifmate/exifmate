@@ -1,19 +1,19 @@
 import Fieldset from '@components/Fieldset';
-import ExifInput from './ExifInput';
 import LocationMap from './LocationMap';
 import LocationPasteButton from './LocationPasteButton';
+import TextInput from './TextInput';
 
 function LocationTab() {
   return (
-    <div className="h-full flex flex-col gap-4 pt-4">
-      <div className="min-h-52 grow rounded-box overflow-clip">
+    <div className="h-full flex flex-col gap-4">
+      <div className="min-h-52 grow rounded-xl overflow-clip">
         <LocationMap />
       </div>
 
       <Fieldset legend="GPS">
-        <div className="flex gap-3 items-center">
-          <ExifInput tagName="GPSLatitude" />
-          <ExifInput tagName="GPSLongitude" />
+        <div className="flex gap-3 items-end">
+          <TextInput tagName="GPSLatitude" />
+          <TextInput tagName="GPSLongitude" />
 
           <LocationPasteButton />
         </div>

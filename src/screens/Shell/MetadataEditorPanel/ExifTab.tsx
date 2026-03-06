@@ -9,100 +9,73 @@ import {
   SHARPNESS_OPTIONS,
   WHITE_BALANCE_OPTIONS,
 } from '@metadata-handler/exifdata';
-import ExifInput from './ExifInput';
+import DateTimeInput from './DateTimeInput';
+import SelectInput from './SelectInput';
+import TextInput from './TextInput';
 
 function ExifTab() {
   return (
     <div className="flex flex-col gap-4">
       <Fieldset legend="Date and Time">
-        <ExifInput tagName="DateTimeOriginal" type="datetime-local" />
-        <ExifInput
-          tagName="CreateDate"
-          type="datetime-local"
-          description="(DateTimeDigitized)"
-        />
-        <ExifInput tagName="ModifyDate" type="datetime-local" />
+        <DateTimeInput tagName="DateTimeOriginal" />
+        <DateTimeInput tagName="CreateDate" description="(DateTimeDigitized)" />
+        <DateTimeInput tagName="ModifyDate" />
         {/* TODO: add sync all checkbox */}
       </Fieldset>
 
       <Fieldset legend="General">
-        <ExifInput tagName="Artist" />
-        <ExifInput tagName="ImageDescription" />
-        <ExifInput tagName="Copyright" />
-        <ExifInput tagName="Software" />
-        <ExifInput tagName="UserComment" />
+        <TextInput tagName="Artist" />
+        <TextInput tagName="ImageDescription" />
+        <TextInput tagName="Copyright" />
+        <TextInput tagName="Software" />
+        <TextInput tagName="UserComment" />
       </Fieldset>
 
       <Fieldset legend="Camera">
-        <ExifInput tagName="Make" />
-        <ExifInput tagName="Model" />
-        <ExifInput tagName="SerialNumber" description="(BodySerialNumber)" />
+        <TextInput tagName="Make" />
+        <TextInput tagName="Model" />
+        <TextInput tagName="SerialNumber" description="(BodySerialNumber)" />
       </Fieldset>
 
       <Fieldset legend="Camera Settings">
-        <ExifInput tagName="ISO" />
-        <ExifInput tagName="FNumber" />
-        {/* <ExifInput tagName="ShutterSpeed" /> */}
-        <ExifInput tagName="FocalLength" />
-        <ExifInput
+        <TextInput tagName="ISO" />
+        <TextInput tagName="FNumber" />
+        {/* <TextInput tagName="ShutterSpeed" /> */}
+        <TextInput tagName="FocalLength" />
+        <TextInput
           tagName="FocalLengthIn35mmFormat"
           description="(FocalLengthIn35mmFilm)"
         />
-        <ExifInput
+        <TextInput
           tagName="ExposureCompensation"
           description="(ExposureBiasValue)"
         />
-        <ExifInput tagName="Flash" type="select" options={FLASH_OPTIONS} />
-        {/* <ExifInput tagName="ColorSpace" /> */}
-        <ExifInput tagName="MaxApertureValue" />
-        <ExifInput
-          tagName="ExposureMode"
-          type="select"
-          options={EXPOSURE_MODE_OPTIONS}
-        />
-        <ExifInput
+        <SelectInput tagName="Flash" options={FLASH_OPTIONS} />
+        {/* <TextInput tagName="ColorSpace" /> */}
+        <TextInput tagName="MaxApertureValue" />
+        <SelectInput tagName="ExposureMode" options={EXPOSURE_MODE_OPTIONS} />
+        <SelectInput
           tagName="ExposureProgram"
-          type="select"
           options={EXPOSURE_PROGRAM_OPTIONS}
         />
-        <ExifInput tagName="ExposureTime" />
-        <ExifInput
-          tagName="MeteringMode"
-          type="select"
-          options={METERING_MODE_OPTIONS}
-        />
-        <ExifInput
-          tagName="WhiteBalance"
-          type="select"
-          options={WHITE_BALANCE_OPTIONS}
-        />
-        <ExifInput
-          tagName="Saturation"
-          type="select"
-          options={SATURATION_OPTIONS}
-        />
-        <ExifInput
-          tagName="Sharpness"
-          type="select"
-          options={SHARPNESS_OPTIONS}
-        />
+        <TextInput tagName="ExposureTime" />
+        <SelectInput tagName="MeteringMode" options={METERING_MODE_OPTIONS} />
+        <SelectInput tagName="WhiteBalance" options={WHITE_BALANCE_OPTIONS} />
+        <SelectInput tagName="Saturation" options={SATURATION_OPTIONS} />
+        <SelectInput tagName="Sharpness" options={SHARPNESS_OPTIONS} />
       </Fieldset>
 
       <Fieldset legend="Lens">
-        <ExifInput tagName="LensMake" />
-        <ExifInput tagName="LensModel" />
-        <ExifInput tagName="Lens" />
-        <ExifInput tagName="LensSerialNumber" />
+        <TextInput tagName="LensMake" />
+        <TextInput tagName="LensModel" />
+        <TextInput tagName="Lens" />
+        <TextInput tagName="LensSerialNumber" />
       </Fieldset>
 
       <Fieldset legend="Dimensions and Resolution">
-        <ExifInput
-          tagName="Orientation"
-          type="select"
-          options={ORIENTATION_OPTIONS}
-        />
-        <ExifInput tagName="ExifImageWidth" description="(PixelXDimension)" />
-        <ExifInput tagName="ExifImageHeight" description="(PixelYDimension)" />
+        <SelectInput tagName="Orientation" options={ORIENTATION_OPTIONS} />
+        <TextInput tagName="ExifImageWidth" description="(PixelXDimension)" />
+        <TextInput tagName="ExifImageHeight" description="(PixelYDimension)" />
       </Fieldset>
     </div>
   );
