@@ -24,17 +24,6 @@ vi.stubGlobal('URL', {
   createObjectURL: vi.fn(),
 });
 
-vi.mock(import('react-resizable-panels'), async (importOriginal) => {
-  const original = await importOriginal();
-  return {
-    ...original,
-    // I don't know why the resize handle makes the tests not work
-    PanelResizeHandle: (() => (
-      <div />
-    )) as unknown as typeof original.PanelResizeHandle,
-  };
-});
-
 describe('Shell', () => {
   beforeEach(async () => {
     mockIPC(() => {}, { shouldMockEvents: true });

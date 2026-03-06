@@ -5,11 +5,21 @@ import FileMenu, { REVEAL_IN_DIR_EVENT } from '@platform/menus/file-menu';
 import type { MenuItem } from '@tauri-apps/api/menu';
 import { revealItemInDir } from '@tauri-apps/plugin-opener';
 import { useEffect, useState } from 'react';
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import {
+  Group,
+  Panel,
+  Separator,
+  useDefaultLayout,
+} from 'react-resizable-panels';
 import ImageGridPanel from './ImageGridPanel/ImageGridPanel';
 import MetadataEditorPanel from './MetadataEditorPanel/MetadataEditorPanel';
 
 function Shell() {
+  const { defaultLayout, onLayoutChanged } = useDefaultLayout({
+    id: 'root-views',
+    storage: localStorage,
+  });
+
   const [selectedImages, setSelectedImages] = useState<ImageInfo[]>([]);
 
   useEffect(() => {
@@ -35,21 +45,25 @@ function Shell() {
 
   return (
     <div className="flex flex-col h-screen">
-      <PanelGroup direction="horizontal" className="p-2 gap-1">
+      <Group
+        defaultLayout={defaultLayout}
+        onLayoutChanged={onLayoutChanged}
+        className="p-2 gap-1"
+      >
         <Panel defaultSize={65}>
           <Surface className="h-full overflow-auto rounded-3xl">
             <ImageGridPanel onImageSelection={setSelectedImages} />
           </Surface>
         </Panel>
 
-        <PanelResizeHandle />
+        <Separator />
 
         <Panel defaultSize={35}>
           <Surface className="h-full flex flex-col rounded-3xl">
             <MetadataEditorPanel selectedImages={selectedImages} />
           </Surface>
         </Panel>
-      </PanelGroup>
+      </Group>
     </div>
   );
 }
