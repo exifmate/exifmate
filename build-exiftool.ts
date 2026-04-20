@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import { platform, tmpdir } from 'node:os';
 import path from 'node:path';
 import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import { extract } from 'tar';
 import unzipper from 'unzipper';
 
@@ -45,14 +46,7 @@ const tempDir = process.env.RUNNER_TEMP ?? (await fs.mkdtemp(tmpdir()));
 const archivePath = path.join(tempDir, downloadFileName);
 
 try {
-  const nodeStream = Readable.from(res.body);
-  const fileStream = createWriteStream(archivePath);
-
-  await new Promise<void>((resolve, reject) => {
-    nodeStream.pipe(fileStream);
-    nodeStream.on('error', reject);
-    fileStream.on('finish', resolve);
-  });
+  await pipeline(Readable.from(res.body), createWriteStream(archivePath));
 
   console.log('Extracting...');
 
