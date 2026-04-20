@@ -9,15 +9,28 @@ import unzipper from 'unzipper';
 
 const onWindows = platform() === 'win32';
 
-let exiftoolName: string;
-let downloadFileName: string;
-if (onWindows) {
-  exiftoolName = 'exiftool-13.50_64';
-  downloadFileName = `${exiftoolName}.zip`;
-} else {
-  exiftoolName = 'Image-ExifTool-13.50';
-  downloadFileName = `${exiftoolName}.tar.gz`;
+console.log('Resolving current ExifTool version...');
+const versionRes = await fetch(
+  'https://sourceforge.net/projects/exiftool/files/ver.txt/download',
+);
+if (!versionRes.ok) {
+  throw new Error(
+    `Failed to resolve current ExifTool version: HTTP ${versionRes.status}`,
+  );
 }
+const version = (await versionRes.text()).trim();
+if (!/^\d+\.\d+$/.test(version)) {
+  throw new Error(
+    `Failed to resolve current ExifTool version: unexpected body ${JSON.stringify(version)}`,
+  );
+}
+
+const exiftoolName = onWindows
+  ? `exiftool-${version}_64`
+  : `Image-ExifTool-${version}`;
+const downloadFileName = onWindows
+  ? `${exiftoolName}.zip`
+  : `${exiftoolName}.tar.gz`;
 const downloadUrl = `https://sourceforge.net/projects/exiftool/files/${downloadFileName}`;
 
 console.log(`Let's get ${exiftoolName}`);
