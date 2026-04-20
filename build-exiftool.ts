@@ -39,7 +39,7 @@ console.log(`Let's get ${exiftoolName}`);
 console.log('Downloading...');
 const res = await fetch(downloadUrl);
 if (!res.ok || res.body === null) {
-  throw new Error('Failed to download');
+  throw new Error(`Failed to download ${downloadFileName}: HTTP ${res.status}`);
 }
 
 const tempDir = process.env.RUNNER_TEMP ?? (await fs.mkdtemp(tmpdir()));
@@ -93,7 +93,6 @@ try {
   await fs.mkdir(targetDir, { recursive: true });
   await fs.rename(distPath, path.join(targetDir, 'exiftool'));
 } catch (err) {
-  console.error('Something went wrong');
   console.error(err);
   process.exitCode = 1;
 } finally {
