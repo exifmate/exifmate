@@ -56,7 +56,7 @@ try {
   if (onWindows) {
     const zipDir = await unzipper.Open.file(archivePath);
     await zipDir.extract({ path: tempDir });
-    distPath = path.join(extractedPath);
+    distPath = extractedPath;
 
     await fs.rename(
       path.join(distPath, 'exiftool(-k).exe'),
@@ -80,14 +80,12 @@ try {
       path.join(distPath, 'exiftool'),
     );
 
-    await fs.rm(path.join(distPath, 'arch'), { recursive: true, force: true });
-    await fs.rm(path.join(distPath, 'bin'), { recursive: true, force: true });
-    await fs.rm(path.join(distPath, 'man1'), { recursive: true, force: true });
-    await fs.rm(path.join(distPath, 'man3'), { recursive: true, force: true });
-    await fs.rm(path.join(distPath, 'script'), {
-      recursive: true,
-      force: true,
-    });
+    for (const subdir of ['arch', 'bin', 'man1', 'man3', 'script']) {
+      await fs.rm(path.join(distPath, subdir), {
+        recursive: true,
+        force: true,
+      });
+    }
   }
 
   console.log('Putting ExifTool dist in project...');
