@@ -4,20 +4,34 @@ import fs from 'node:fs/promises';
 import { platform, tmpdir } from 'node:os';
 import path from 'node:path';
 import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 import { extract } from 'tar';
 import unzipper from 'unzipper';
 
 const onWindows = platform() === 'win32';
 
-let exiftoolName: string;
-let downloadFileName: string;
-if (onWindows) {
-  exiftoolName = 'exiftool-13.50_64';
-  downloadFileName = `${exiftoolName}.zip`;
-} else {
-  exiftoolName = 'Image-ExifTool-13.50';
-  downloadFileName = `${exiftoolName}.tar.gz`;
+console.log('Resolving current ExifTool version...');
+const versionRes = await fetch(
+  'https://sourceforge.net/projects/exiftool/files/ver.txt/download',
+);
+if (!versionRes.ok) {
+  throw new Error(
+    `Failed to resolve current ExifTool version: HTTP ${versionRes.status}`,
+  );
 }
+const version = (await versionRes.text()).trim();
+if (!/^\d+\.\d+$/.test(version)) {
+  throw new Error(
+    `Failed to resolve current ExifTool version: unexpected body ${JSON.stringify(version)}`,
+  );
+}
+
+const exiftoolName = onWindows
+  ? `exiftool-${version}_64`
+  : `Image-ExifTool-${version}`;
+const downloadFileName = onWindows
+  ? `${exiftoolName}.zip`
+  : `${exiftoolName}.tar.gz`;
 const downloadUrl = `https://sourceforge.net/projects/exiftool/files/${downloadFileName}`;
 
 console.log(`Let's get ${exiftoolName}`);
@@ -25,21 +39,14 @@ console.log(`Let's get ${exiftoolName}`);
 console.log('Downloading...');
 const res = await fetch(downloadUrl);
 if (!res.ok || res.body === null) {
-  throw new Error('Failed to download');
+  throw new Error(`Failed to download ${downloadFileName}: HTTP ${res.status}`);
 }
 
 const tempDir = process.env.RUNNER_TEMP ?? (await fs.mkdtemp(tmpdir()));
 const archivePath = path.join(tempDir, downloadFileName);
 
 try {
-  const nodeStream = Readable.from(res.body);
-  const fileStream = createWriteStream(archivePath);
-
-  await new Promise<void>((resolve, reject) => {
-    nodeStream.pipe(fileStream);
-    nodeStream.on('error', reject);
-    fileStream.on('finish', resolve);
-  });
+  await pipeline(Readable.from(res.body), createWriteStream(archivePath));
 
   console.log('Extracting...');
 
@@ -49,7 +56,7 @@ try {
   if (onWindows) {
     const zipDir = await unzipper.Open.file(archivePath);
     await zipDir.extract({ path: tempDir });
-    distPath = path.join(extractedPath);
+    distPath = extractedPath;
 
     await fs.rename(
       path.join(distPath, 'exiftool(-k).exe'),
@@ -73,14 +80,12 @@ try {
       path.join(distPath, 'exiftool'),
     );
 
-    await fs.rm(path.join(distPath, 'arch'), { recursive: true, force: true });
-    await fs.rm(path.join(distPath, 'bin'), { recursive: true, force: true });
-    await fs.rm(path.join(distPath, 'man1'), { recursive: true, force: true });
-    await fs.rm(path.join(distPath, 'man3'), { recursive: true, force: true });
-    await fs.rm(path.join(distPath, 'script'), {
-      recursive: true,
-      force: true,
-    });
+    for (const subdir of ['arch', 'bin', 'man1', 'man3', 'script']) {
+      await fs.rm(path.join(distPath, subdir), {
+        recursive: true,
+        force: true,
+      });
+    }
   }
 
   console.log('Putting ExifTool dist in project...');
@@ -88,7 +93,6 @@ try {
   await fs.mkdir(targetDir, { recursive: true });
   await fs.rename(distPath, path.join(targetDir, 'exiftool'));
 } catch (err) {
-  console.error('Something went wrong');
   console.error(err);
   process.exitCode = 1;
 } finally {
