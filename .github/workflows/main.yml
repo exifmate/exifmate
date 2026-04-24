@@ -57,8 +57,27 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      # TODO: cache the exiftool build
-      - run: node build-exiftool.ts
+
+      - name: Resolve ExifTool version
+        id: exiftool-version
+        shell: bash
+        run: |
+          version=$(curl -fsSL https://sourceforge.net/projects/exiftool/files/ver.txt/download | tr -d '[:space:]')
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+$ ]]; then
+            echo "Unexpected ver.txt response: $version" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Cache ExifTool build
+        id: exiftool-cache
+        uses: actions/cache@v4
+        with:
+          path: src-tauri/resources/exiftool
+          key: exiftool-${{ matrix.name }}-${{ steps.exiftool-version.outputs.version }}
+
+      - if: steps.exiftool-cache.outputs.cache-hit != 'true'
+        run: node build-exiftool.ts
 
       - name: install Rust stable
         uses: dtolnay/rust-toolchain@stable
