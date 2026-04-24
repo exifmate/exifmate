@@ -52,6 +52,14 @@ describe('ImageGridPanel', () => {
 
       expect(await screen.findByAltText('image1.jpg thumbnail')).toBeVisible();
       expect(screen.getByAltText('image2.jpg thumbnail')).toBeVisible();
+
+      const imageOneCaption = screen.getByText('image1.jpg');
+      expect(imageOneCaption).toBeVisible();
+      expect(imageOneCaption).not.toHaveClass('sr-only');
+
+      const imageTwoCaption = screen.getByText('image2.jpg');
+      expect(imageTwoCaption).toBeVisible();
+      expect(imageTwoCaption).not.toHaveClass('sr-only');
     });
 
     it('can select an image', async () => {
