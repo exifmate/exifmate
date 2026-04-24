@@ -85,5 +85,36 @@ describe('ImageGridPanel', () => {
         },
       ]);
     });
+
+    it('anchors keyboard navigation to the most recently clicked image', async () => {
+      render(<ImageGridPanel onImageSelection={vi.fn()} />);
+
+      await act(async () => {
+        await emit(IMAGES_OPENED_EVENT, {
+          images: [
+            { filename: 'image1.jpg', path: '/image1.jpg' },
+            { filename: 'image2.jpg', path: '/image2.jpg' },
+            { filename: 'image3.jpg', path: '/image3.jpg' },
+            { filename: 'image4.jpg', path: '/image4.jpg' },
+            { filename: 'image5.jpg', path: '/image5.jpg' },
+          ],
+        });
+      });
+
+      await userEvent.click(await screen.findByAltText('image1.jpg thumbnail'));
+      await userEvent.keyboard('{ArrowDown}');
+      expect(screen.getByLabelText('image2.jpg')).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+
+      await userEvent.click(screen.getByAltText('image4.jpg thumbnail'));
+      await userEvent.keyboard('{ArrowDown}');
+
+      expect(screen.getByLabelText('image5.jpg')).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+    });
   });
 });
