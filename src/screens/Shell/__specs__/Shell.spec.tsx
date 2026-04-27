@@ -103,9 +103,7 @@ describe('Shell', () => {
     beforeEach(async () => {
       readMetadataMock.mockResolvedValueOnce({ Artist: 'Tegan' });
       await userEvent.click(screen.getByLabelText('image-one.jpg'));
-      await waitFor(() =>
-        expect(screen.queryByText('Loading Metadata...')).toBeNull(),
-      );
+      await screen.findByRole('tab', { name: 'EXIF' });
     });
 
     it('persists the opened tab between image selection changing', async () => {
@@ -119,9 +117,7 @@ describe('Shell', () => {
 
       readMetadataMock.mockResolvedValueOnce({});
       await userEvent.click(screen.getByLabelText('image-two.jpg'));
-      await waitFor(() =>
-        expect(screen.queryByText('Loading Metadata...')).toBeNull(),
-      );
+      await screen.findByRole('tab', { name: 'EXIF' });
 
       expect(screen.queryByLabelText('Artist')).toBeNull();
       expect(screen.getByLabelText('GPSLatitude')).toBeVisible();
@@ -133,9 +129,7 @@ describe('Shell', () => {
 
       readMetadataMock.mockResolvedValueOnce({});
       await userEvent.click(screen.getByLabelText('image-two.jpg'));
-      await waitFor(() =>
-        expect(screen.queryByText('Loading Metadata...')).toBeNull(),
-      );
+      await screen.findByRole('tab', { name: 'EXIF' });
       expect(screen.getByLabelText('Artist')).toBeDisabled();
     });
 
@@ -146,9 +140,7 @@ describe('Shell', () => {
         Flash: 'Fired',
       });
       await userEvent.click(screen.getByLabelText('image-two.jpg'));
-      await waitFor(() =>
-        expect(screen.queryByText('Loading Metadata...')).toBeNull(),
-      );
+      await screen.findByRole('tab', { name: 'EXIF' });
 
       expect(screen.getByLabelText('Artist')).toHaveValue('Test Person');
       expect(screen.getByLabelText('Flash')).toHaveTextContent('Fired');
@@ -161,9 +153,7 @@ describe('Shell', () => {
 
       readMetadataMock.mockResolvedValueOnce({});
       await userEvent.click(screen.getByLabelText('image-one.jpg'));
-      await waitFor(() =>
-        expect(screen.queryByText('Loading Metadata...')).toBeNull(),
-      );
+      await screen.findByRole('tab', { name: 'EXIF' });
 
       expect(screen.getByLabelText('Artist')).toHaveValue('');
 

@@ -104,9 +104,7 @@ describe('MetadataEditorPanel', () => {
 
         readMetadataMock.mockResolvedValueOnce({ Artist: 'test person' });
         render(<MetadataEditorPanel selectedImages={selectedImages} />);
-        await waitFor(() =>
-          expect(screen.queryByText('Loading Metadata...')).toBeNull(),
-        );
+        await screen.findByRole('tab', { name: 'EXIF' });
       });
 
       it('has tabs for the inputs', async () => {
