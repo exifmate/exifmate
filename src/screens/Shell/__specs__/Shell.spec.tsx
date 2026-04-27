@@ -1,6 +1,8 @@
 import { readMetadata } from '@metadata-handler/read';
 import { IMAGES_OPENED_EVENT } from '@platform/file-manager';
+import { REVEAL_IN_DIR_EVENT } from '@platform/menus/file-menu';
 import { emit } from '@tauri-apps/api/event';
+import { revealItemInDir } from '@tauri-apps/plugin-opener';
 import { mockIPC } from '@tauri-apps/api/mocks';
 import type { load } from '@tauri-apps/plugin-store';
 import {
@@ -8,6 +10,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SWRConfig } from 'swr';
@@ -33,6 +36,9 @@ vi.stubGlobal('URL', {
 });
 
 const readMetadataMock = readMetadata as unknown as Mock<typeof readMetadata>;
+const revealItemInDirMock = revealItemInDir as unknown as Mock<
+  typeof revealItemInDir
+>;
 
 describe('Shell', () => {
   beforeEach(async () => {
@@ -81,7 +87,17 @@ describe('Shell', () => {
     expect(screen.getByText('Loading Metadata...')).toBeVisible();
   });
 
-  it.todo('handles the reveal in dir event');
+  it('handles the reveal in dir event', async () => {
+    await userEvent.click(screen.getByLabelText('image-one.jpg'));
+
+    await act(async () => {
+      await emit(REVEAL_IN_DIR_EVENT);
+    });
+
+    await waitFor(() =>
+      expect(revealItemInDirMock).toHaveBeenCalledWith('/image-one.jpg'),
+    );
+  });
 
   describe('when selected image is changed', () => {
     beforeEach(async () => {
