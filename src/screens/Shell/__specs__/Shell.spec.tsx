@@ -139,7 +139,56 @@ describe('Shell', () => {
       expect(screen.getByLabelText('Artist')).toBeDisabled();
     });
 
-    it.todo('blanks out inputs for fields that now have no value');
+    it('blanks out inputs for fields that now have no value', async () => {
+      readMetadataMock.mockResolvedValueOnce({
+        Artist: 'Test Person',
+        DateTimeOriginal: '2025-01-01T12:00:00',
+        Flash: 'Fired',
+      });
+      await userEvent.click(screen.getByLabelText('image-two.jpg'));
+      await waitFor(() =>
+        expect(screen.queryByText('Loading Metadata...')).toBeNull(),
+      );
+
+      expect(screen.getByLabelText('Artist')).toHaveValue('Test Person');
+      expect(screen.getByLabelText('Flash')).toHaveTextContent('Fired');
+      const populatedDateGroup = screen.getByRole('group', {
+        name: 'DateTimeOriginal',
+      });
+      expect(
+        within(populatedDateGroup).getByLabelText('year,'),
+      ).toHaveTextContent('2025');
+      expect(
+        within(populatedDateGroup).getByLabelText('year,'),
+      ).not.toHaveAttribute('data-placeholder');
+
+      readMetadataMock.mockResolvedValueOnce({});
+      await userEvent.click(screen.getByLabelText('image-one.jpg'));
+      await waitFor(() =>
+        expect(screen.queryByText('Loading Metadata...')).toBeNull(),
+      );
+
+      expect(screen.getByLabelText('Artist')).toHaveValue('');
+
+      const flashTrigger = screen.getByLabelText('Flash');
+      expect(flashTrigger).not.toHaveTextContent('Fired');
+      expect(
+        flashTrigger.querySelector('[data-slot="select-value"]'),
+      ).toHaveAttribute('data-placeholder', 'true');
+
+      const blankDateGroup = screen.getByRole('group', {
+        name: 'DateTimeOriginal',
+      });
+      const yearSegment = within(blankDateGroup).getByLabelText('year,');
+      expect(yearSegment).toHaveAttribute('data-placeholder', 'true');
+      expect(yearSegment).toHaveAttribute('aria-valuetext', 'Empty');
+      const monthSegment = within(blankDateGroup).getByLabelText('month,');
+      expect(monthSegment).toHaveAttribute('data-placeholder', 'true');
+      expect(monthSegment).toHaveAttribute('aria-valuetext', 'Empty');
+      const daySegment = within(blankDateGroup).getByLabelText('day,');
+      expect(daySegment).toHaveAttribute('data-placeholder', 'true');
+      expect(daySegment).toHaveAttribute('aria-valuetext', 'Empty');
+    });
 
     it.todo('enables the reveal in dir menu item');
   });
