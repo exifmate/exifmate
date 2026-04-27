@@ -52,6 +52,14 @@ describe('ImageGridPanel', () => {
 
       expect(await screen.findByAltText('image1.jpg thumbnail')).toBeVisible();
       expect(screen.getByAltText('image2.jpg thumbnail')).toBeVisible();
+
+      const imageOneCaption = screen.getByText('image1.jpg');
+      expect(imageOneCaption).toBeVisible();
+      expect(imageOneCaption).not.toHaveClass('sr-only');
+
+      const imageTwoCaption = screen.getByText('image2.jpg');
+      expect(imageTwoCaption).toBeVisible();
+      expect(imageTwoCaption).not.toHaveClass('sr-only');
     });
 
     it('can select an image', async () => {
@@ -84,6 +92,37 @@ describe('ImageGridPanel', () => {
           path: '/image1.jpg',
         },
       ]);
+    });
+
+    it('anchors keyboard navigation to the most recently clicked image', async () => {
+      render(<ImageGridPanel onImageSelection={vi.fn()} />);
+
+      await act(async () => {
+        await emit(IMAGES_OPENED_EVENT, {
+          images: [
+            { filename: 'image1.jpg', path: '/image1.jpg' },
+            { filename: 'image2.jpg', path: '/image2.jpg' },
+            { filename: 'image3.jpg', path: '/image3.jpg' },
+            { filename: 'image4.jpg', path: '/image4.jpg' },
+            { filename: 'image5.jpg', path: '/image5.jpg' },
+          ],
+        });
+      });
+
+      await userEvent.click(await screen.findByAltText('image1.jpg thumbnail'));
+      await userEvent.keyboard('{ArrowDown}');
+      expect(screen.getByLabelText('image2.jpg')).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+
+      await userEvent.click(screen.getByAltText('image4.jpg thumbnail'));
+      await userEvent.keyboard('{ArrowDown}');
+
+      expect(screen.getByLabelText('image5.jpg')).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
     });
   });
 });

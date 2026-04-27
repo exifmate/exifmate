@@ -1,4 +1,4 @@
-import { Skeleton, Tooltip } from '@heroui/react';
+import { Skeleton } from '@heroui/react';
 import { genThumbnail, type ImageInfo } from '@platform/file-manager';
 import { revealInDirLabel } from '@platform/menus/file-menu';
 import { Menu } from '@tauri-apps/api/menu';
@@ -30,43 +30,34 @@ function ImageCard({ path, filename }: ImageInfo) {
   });
 
   return (
-    <Tooltip delay={0}>
-      <Tooltip.Trigger>
-        <figure
-          className="flex justify-center items-center h-56 w-56"
-          onContextMenu={(e) => {
-            e.preventDefault();
-            showContextMenu(path).catch((err) => {
-              console.error('Failed to open image card context menu:', err);
-            });
-          }}
-        >
-          {error ? (
-            <HiOutlineExclamationTriangle size={40} />
-          ) : isLoading ? (
-            <Skeleton className="h-56 w-56 rounded-field" />
-          ) : (
-            <img
-              src={data}
-              alt={`${filename} thumbnail`}
-              className="h-56 object-cover rounded-field"
-              height={224}
-              width={224}
-            />
-          )}
-          <figcaption className="sr-only">{filename}</figcaption>
-        </figure>
-      </Tooltip.Trigger>
-
-      <Tooltip.Content
-        placement="bottom"
-        showArrow
-        className="bg-accent text-accent-foreground"
-      >
-        <Tooltip.Arrow className="[&>svg]:fill-accent" />
+    <figure
+      className="flex flex-col items-center gap-1 w-56"
+      onContextMenu={(e) => {
+        e.preventDefault();
+        showContextMenu(path).catch((err) => {
+          console.error('Failed to open image card context menu:', err);
+        });
+      }}
+    >
+      <div className="flex justify-center items-center h-56 w-56 group-data-selected:scale-93 motion-safe:transition-transform">
+        {error ? (
+          <HiOutlineExclamationTriangle size={40} />
+        ) : isLoading ? (
+          <Skeleton className="h-56 w-56 rounded-field" />
+        ) : (
+          <img
+            src={data}
+            alt={`${filename} thumbnail`}
+            className="h-56 object-cover rounded-field"
+            height={224}
+            width={224}
+          />
+        )}
+      </div>
+      <figcaption className="text-xs text-muted w-56 truncate text-center">
         {filename}
-      </Tooltip.Content>
-    </Tooltip>
+      </figcaption>
+    </figure>
   );
 }
 
