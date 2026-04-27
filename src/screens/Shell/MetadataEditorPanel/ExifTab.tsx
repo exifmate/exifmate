@@ -76,6 +76,8 @@ function ExifTab() {
         <SelectInput tagName="Orientation" options={ORIENTATION_OPTIONS} />
         <TextInput tagName="ExifImageWidth" description="(PixelXDimension)" />
         <TextInput tagName="ExifImageHeight" description="(PixelYDimension)" />
+        <TextInput tagName="XResolution" />
+        <TextInput tagName="YResolution" />
       </Fieldset>
     </div>
   );
