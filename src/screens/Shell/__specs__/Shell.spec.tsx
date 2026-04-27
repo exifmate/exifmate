@@ -155,12 +155,9 @@ describe('Shell', () => {
       const populatedDateGroup = screen.getByRole('group', {
         name: 'DateTimeOriginal',
       });
-      expect(
-        within(populatedDateGroup).getByLabelText('year,'),
-      ).toHaveTextContent('2025');
-      expect(
-        within(populatedDateGroup).getByLabelText('year,'),
-      ).not.toHaveAttribute('data-placeholder');
+      const populatedYearSegment = within(populatedDateGroup).getByLabelText('year,');
+      expect(populatedYearSegment).toHaveTextContent('2025');
+      expect(populatedYearSegment).not.toHaveAttribute('data-placeholder');
 
       readMetadataMock.mockResolvedValueOnce({});
       await userEvent.click(screen.getByLabelText('image-one.jpg'));
@@ -188,6 +185,18 @@ describe('Shell', () => {
       const daySegment = within(blankDateGroup).getByLabelText('day,');
       expect(daySegment).toHaveAttribute('data-placeholder', 'true');
       expect(daySegment).toHaveAttribute('aria-valuetext', 'Empty');
+
+      const hourSegment = within(blankDateGroup).getByLabelText('hour,');
+      expect(hourSegment).toHaveAttribute('data-placeholder', 'true');
+      expect(hourSegment).toHaveAttribute('aria-valuetext', 'Empty');
+
+      const minuteSegment = within(blankDateGroup).getByLabelText('minute,');
+      expect(minuteSegment).toHaveAttribute('data-placeholder', 'true');
+      expect(minuteSegment).toHaveAttribute('aria-valuetext', 'Empty');
+
+      const secondSegment = within(blankDateGroup).getByLabelText('second,');
+      expect(secondSegment).toHaveAttribute('data-placeholder', 'true');
+      expect(secondSegment).toHaveAttribute('aria-valuetext', 'Empty');
     });
 
     it.todo('enables the reveal in dir menu item');
