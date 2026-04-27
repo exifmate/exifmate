@@ -78,12 +78,7 @@ function ImageGridPanel({ onImageSelection }: Props) {
                 )
               }
             </ListBox.ItemIndicator>
-            <div
-              className="group-data-selected:scale-93 motion-safe:transition-transform"
-              key={image.path}
-            >
-              <ImageCard path={image.path} filename={image.filename} />
-            </div>
+            <ImageCard path={image.path} filename={image.filename} />
           </ListBox.Item>
         )}
       </ListBox>
