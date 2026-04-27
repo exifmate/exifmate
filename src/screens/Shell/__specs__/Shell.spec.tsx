@@ -1,3 +1,4 @@
+import { readMetadata } from '@metadata-handler/read';
 import { IMAGES_OPENED_EVENT } from '@platform/file-manager';
 import { emit } from '@tauri-apps/api/event';
 import { mockIPC } from '@tauri-apps/api/mocks';
@@ -6,26 +7,46 @@ import {
   act,
   render,
   screen,
-  waitForElementToBeRemoved,
+  waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SWRConfig } from 'swr';
+import type { Mock } from 'vitest';
 import Shell from '../Shell';
 
 vi.mock('@platform/file-manager');
 vi.mock('@tauri-apps/api/menu');
+vi.mock('@tauri-apps/plugin-opener');
+vi.mock('@metadata-handler/read');
 vi.mock('@tauri-apps/plugin-store', () => ({
-  load: vi.fn<typeof load>(() => new Promise(() => {})),
+  load: vi.fn<typeof load>(() => new Promise(() => { })),
 }));
+vi.mock(import('@heroui/react'), async (importOriginal) => {
+  const original = await importOriginal();
+  original.toast.danger = vi.fn();
+  original.toast.success = vi.fn();
+  return original;
+});
 
 vi.stubGlobal('URL', {
   createObjectURL: vi.fn(),
 });
 
+const readMetadataMock = readMetadata as unknown as Mock<typeof readMetadata>;
+
 describe('Shell', () => {
   beforeEach(async () => {
-    mockIPC(() => {}, { shouldMockEvents: true });
+    vi.clearAllMocks();
+    Element.prototype.getAnimations = vi.fn().mockReturnValue([]);
 
-    render(<Shell />);
+    mockIPC(() => { }, { shouldMockEvents: true });
+    readMetadataMock.mockImplementation(() => new Promise(() => { }));
+
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <Shell />
+      </SWRConfig>,
+    );
 
     await act(async () => {
       await emit(IMAGES_OPENED_EVENT, {
@@ -56,15 +77,17 @@ describe('Shell', () => {
 
     expect(screen.queryByText('No Image Selected')).toBeNull();
     expect(screen.getByText('Loading Metadata...')).toBeVisible();
-    // expect(await screen.findByLabelText('Artist')).toBeVisible();
   });
 
   it.todo('handles the reveal in dir event');
 
-  describe.skip('when selected image is changed', () => {
+  describe('when selected image is changed', () => {
     beforeEach(async () => {
+      readMetadataMock.mockResolvedValueOnce({ Artist: 'Tegan' });
       await userEvent.click(screen.getByLabelText('image-one.jpg'));
-      await waitForElementToBeRemoved(screen.getByText('Loading Metadata...'));
+      await waitFor(() =>
+        expect(screen.queryByText('Loading Metadata...')).toBeNull(),
+      );
     });
 
     it('persists the opened tab between image selection changing', async () => {
@@ -76,8 +99,11 @@ describe('Shell', () => {
       expect(screen.getByLabelText('GPSLatitude')).toBeVisible();
       expect(screen.queryByLabelText('Artist')).toBeNull();
 
+      readMetadataMock.mockResolvedValueOnce({});
       await userEvent.click(screen.getByLabelText('image-two.jpg'));
-      await waitForElementToBeRemoved(screen.getByText('Loading Metadata...'));
+      await waitFor(() =>
+        expect(screen.queryByText('Loading Metadata...')).toBeNull(),
+      );
 
       expect(screen.queryByLabelText('Artist')).toBeNull();
       expect(screen.getByLabelText('GPSLatitude')).toBeVisible();
@@ -87,8 +113,11 @@ describe('Shell', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
       expect(screen.getByLabelText('Artist')).toBeEnabled();
 
+      readMetadataMock.mockResolvedValueOnce({});
       await userEvent.click(screen.getByLabelText('image-two.jpg'));
-      await waitForElementToBeRemoved(screen.getByText('Loading Metadata...'));
+      await waitFor(() =>
+        expect(screen.queryByText('Loading Metadata...')).toBeNull(),
+      );
       expect(screen.getByLabelText('Artist')).toBeDisabled();
     });
 
