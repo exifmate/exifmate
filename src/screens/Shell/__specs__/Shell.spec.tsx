@@ -176,27 +176,11 @@ describe('Shell', () => {
       const blankDateGroup = screen.getByRole('group', {
         name: 'DateTimeOriginal',
       });
-      const yearSegment = within(blankDateGroup).getByLabelText('year,');
-      expect(yearSegment).toHaveAttribute('data-placeholder', 'true');
-      expect(yearSegment).toHaveAttribute('aria-valuetext', 'Empty');
-      const monthSegment = within(blankDateGroup).getByLabelText('month,');
-      expect(monthSegment).toHaveAttribute('data-placeholder', 'true');
-      expect(monthSegment).toHaveAttribute('aria-valuetext', 'Empty');
-      const daySegment = within(blankDateGroup).getByLabelText('day,');
-      expect(daySegment).toHaveAttribute('data-placeholder', 'true');
-      expect(daySegment).toHaveAttribute('aria-valuetext', 'Empty');
-
-      const hourSegment = within(blankDateGroup).getByLabelText('hour,');
-      expect(hourSegment).toHaveAttribute('data-placeholder', 'true');
-      expect(hourSegment).toHaveAttribute('aria-valuetext', 'Empty');
-
-      const minuteSegment = within(blankDateGroup).getByLabelText('minute,');
-      expect(minuteSegment).toHaveAttribute('data-placeholder', 'true');
-      expect(minuteSegment).toHaveAttribute('aria-valuetext', 'Empty');
-
-      const secondSegment = within(blankDateGroup).getByLabelText('second,');
-      expect(secondSegment).toHaveAttribute('data-placeholder', 'true');
-      expect(secondSegment).toHaveAttribute('aria-valuetext', 'Empty');
+      for (const name of ['year,', 'month,', 'day,', 'hour,', 'minute,', 'second,']) {
+        const segment = within(blankDateGroup).getByLabelText(name);
+        expect(segment).toHaveAttribute('data-placeholder', 'true');
+        expect(segment).toHaveAttribute('aria-valuetext', 'Empty');
+      }
     });
 
     it('enables the reveal in dir menu item', async () => {
