@@ -64,7 +64,9 @@ describe('Shell', () => {
     });
   });
 
-  it.todo('has a resizable panel for images and metadata editor');
+  it('has a resizable panel for images and metadata editor', () => {
+    expect(screen.getByRole('separator')).toBeVisible();
+  });
 
   it('can select an image', async () => {
     expect(screen.getByText('No Image Selected')).toBeVisible();
