@@ -2,16 +2,10 @@ import { readMetadata } from '@metadata-handler/read';
 import { IMAGES_OPENED_EVENT } from '@platform/file-manager';
 import FileMenu, { REVEAL_IN_DIR_EVENT } from '@platform/menus/file-menu';
 import { emit } from '@tauri-apps/api/event';
-import { revealItemInDir } from '@tauri-apps/plugin-opener';
 import { mockIPC } from '@tauri-apps/api/mocks';
+import { revealItemInDir } from '@tauri-apps/plugin-opener';
 import type { load } from '@tauri-apps/plugin-store';
-import {
-  act,
-  render,
-  screen,
-  waitFor,
-  within,
-} from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SWRConfig } from 'swr';
 import type { Mock } from 'vitest';
@@ -22,7 +16,7 @@ vi.mock('@tauri-apps/api/menu');
 vi.mock('@tauri-apps/plugin-opener');
 vi.mock('@metadata-handler/read');
 vi.mock('@tauri-apps/plugin-store', () => ({
-  load: vi.fn<typeof load>(() => new Promise(() => { })),
+  load: vi.fn<typeof load>(() => new Promise(() => {})),
 }));
 vi.mock(import('@heroui/react'), async (importOriginal) => {
   const original = await importOriginal();
@@ -45,8 +39,8 @@ describe('Shell', () => {
     vi.clearAllMocks();
     Element.prototype.getAnimations = vi.fn().mockReturnValue([]);
 
-    mockIPC(() => { }, { shouldMockEvents: true });
-    readMetadataMock.mockImplementation(() => new Promise(() => { }));
+    mockIPC(() => {}, { shouldMockEvents: true });
+    readMetadataMock.mockImplementation(() => new Promise(() => {}));
 
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
@@ -147,7 +141,8 @@ describe('Shell', () => {
       const populatedDateGroup = screen.getByRole('group', {
         name: 'DateTimeOriginal',
       });
-      const populatedYearSegment = within(populatedDateGroup).getByLabelText('year,');
+      const populatedYearSegment =
+        within(populatedDateGroup).getByLabelText('year,');
       expect(populatedYearSegment).toHaveTextContent('2025');
       expect(populatedYearSegment).not.toHaveAttribute('data-placeholder');
 
@@ -166,7 +161,14 @@ describe('Shell', () => {
       const blankDateGroup = screen.getByRole('group', {
         name: 'DateTimeOriginal',
       });
-      for (const name of ['year,', 'month,', 'day,', 'hour,', 'minute,', 'second,']) {
+      for (const name of [
+        'year,',
+        'month,',
+        'day,',
+        'hour,',
+        'minute,',
+        'second,',
+      ]) {
         const segment = within(blankDateGroup).getByLabelText(name);
         expect(segment).toHaveAttribute('data-placeholder', 'true');
         expect(segment).toHaveAttribute('aria-valuetext', 'Empty');

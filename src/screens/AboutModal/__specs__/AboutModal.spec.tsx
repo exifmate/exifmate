@@ -82,20 +82,20 @@ describe('AboutModal', () => {
     mockIPC(() => {}, { shouldMockEvents: true });
   });
 
-  test.each(cases)(
-    'shows the $name state for all version fetchers',
-    async ({ setup, assert }) => {
-      setup();
+  test.each(cases)('shows the $name state for all version fetchers', async ({
+    setup,
+    assert,
+  }) => {
+    setup();
 
-      render(<AboutModal />, { wrapper: Wrapper });
+    render(<AboutModal />, { wrapper: Wrapper });
 
-      expect(screen.queryByText('About ExifMate')).toBeNull();
-      await act(async () => {
-        await emit(OPEN_ABOUT_EVENT);
-      });
-      await screen.findByText('About ExifMate');
+    expect(screen.queryByText('About ExifMate')).toBeNull();
+    await act(async () => {
+      await emit(OPEN_ABOUT_EVENT);
+    });
+    await screen.findByText('About ExifMate');
 
-      await assert();
-    },
-  );
+    await assert();
+  });
 });
