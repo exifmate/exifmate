@@ -15,10 +15,10 @@ function TestContainer() {
 
 describe('ExifTab', () => {
   it('has an input for all tags that are not location related', () => {
-    render(<TestContainer />);
+    const { container } = render(<TestContainer />);
 
     const tagsInTab = Array.from(
-      document.querySelectorAll('[data-slot="label"]'),
+      container.querySelectorAll('[data-slot="label"]'),
     )
       .map((l) => (l.textContent ?? '').split(' (')[0].trim())
       .filter(Boolean)
