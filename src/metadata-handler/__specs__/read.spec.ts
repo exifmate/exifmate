@@ -1,45 +1,46 @@
-import type { Mock } from 'vitest';
+import { ImageOne, ImageTwo } from 'test-support/fake-images';
+import {
+  withFixtureImage,
+  withFixtureImages,
+} from 'test-support/fixture-image';
 import type { ExifData } from '../exifdata';
-import { execute } from '../exiftool';
 import { aggregateData, readMetadata } from '../read';
 
-const mockExecute = execute as unknown as Mock<typeof execute>;
-vi.mock('../exiftool');
+vi.mock('@tauri-apps/plugin-shell');
+vi.mock('@platform/settings', () => ({
+  loadSettings: vi.fn(async () => ({})),
+}));
 
 describe('readMetadata', () => {
-  it('calls exiftool read metadata', async () => {
-    mockExecute.mockResolvedValueOnce('[{}]');
-    expect(mockExecute).not.toHaveBeenCalled();
-    await readMetadata([
-      { path: '/one.jpg', filename: 'image-one' },
-      { path: '/two.jpg', filename: 'image-two' },
+  it('returns schema-parsed exif data from a real image', async () => {
+    const info = await withFixtureImage(ImageOne);
+
+    const result = await readMetadata([info]);
+
+    expect(result.Make).toBe('Test');
+    expect(result.Model).toBe('Test Model');
+  });
+
+  it('aggregates fields across multiple images, dropping fields that differ', async () => {
+    const infos = await withFixtureImages([
+      { buffer: ImageOne, filename: 'one.jpg' },
+      { buffer: ImageTwo, filename: 'two.jpg' },
     ]);
 
-    const expected = expect.arrayContaining(['/one.jpg', '/two.jpg']);
-    expect(mockExecute).toHaveBeenCalledExactlyOnceWith(expected);
+    const result = await readMetadata(infos);
+
+    expect(result.Make).toBe('Test');
+    expect(result.Model).toBeUndefined();
   });
 
-  it('enforces that the exiftool command returns valid data', async () => {
-    const args = [{ path: '/one.jpg', filename: '' }];
-    mockExecute.mockResolvedValueOnce(
-      JSON.stringify([{ not: 'valid', Artist: 'test' }]),
-    );
-    const result = await readMetadata(args);
-    expect(result).toEqual({ Artist: 'test' });
-  });
-
-  describe('when exiftool was unsuccessful', () => {
-    it('can notify of that', async () => {
-      mockExecute.mockRejectedValueOnce('no');
-
-      await expect(async () => {
-        await readMetadata([{ path: '/one.jpg', filename: '' }]);
-      }).rejects.toThrowError('no');
-    });
+  it('rejects when exiftool cannot read the file', async () => {
+    await expect(
+      readMetadata([{ path: '/nonexistent/path.jpg', filename: 'missing' }]),
+    ).rejects.toThrow();
   });
 });
 
-describe('aggregateExif', () => {
+describe('aggregateData', () => {
   it('aggregates the given exif data', () => {
     const test: ExifData[] = [
       {
