@@ -230,9 +230,24 @@ describe('MetadataEditorPanel', () => {
         });
 
         describe('when failed to save an image', () => {
-          it.todo('indicates when an image fails to save');
+          beforeEach(() => {
+            vi.stubGlobal('console', { error: () => {} });
+          });
 
-          it.todo('does something to the form value if partial success saving');
+          it('indicates when an image fails to save', async () => {
+            updateMetadataMock.mockRejectedValueOnce(new Error('No'));
+
+            await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+            const artistInput = screen.getByLabelText('Artist');
+            await userEvent.type(artistInput, 'T');
+            await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+            expect(toastMock.danger).toHaveBeenCalledWith(
+              'Failed to save images',
+            );
+            expect(artistInput).toBeEnabled();
+          });
         });
       });
     });
