@@ -86,6 +86,8 @@ try {
         force: true,
       });
     }
+
+    execSync('chmod -R u+w .', { cwd: distPath });
   }
 
   console.log('Putting ExifTool dist in project...');
