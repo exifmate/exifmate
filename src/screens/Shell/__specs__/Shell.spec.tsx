@@ -9,13 +9,10 @@ import {
   waitForElementToBeRemoved,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { fs } from 'memfs';
-import { ImageOne, ImageTwo } from 'test-support/fake-images';
 import Shell from '../Shell';
 
 vi.mock('@platform/file-manager');
 vi.mock('@tauri-apps/api/menu');
-vi.mock('@tauri-apps/plugin-fs');
 vi.mock('@tauri-apps/plugin-store', () => ({
   load: vi.fn<typeof load>(() => new Promise(() => {})),
 }));
@@ -27,11 +24,6 @@ vi.stubGlobal('URL', {
 describe('Shell', () => {
   beforeEach(async () => {
     mockIPC(() => {}, { shouldMockEvents: true });
-
-    await Promise.all([
-      fs.promises.writeFile('/image-one.jpg', ImageOne),
-      fs.promises.writeFile('/image-two.jpg', ImageTwo),
-    ]);
 
     render(<Shell />);
 

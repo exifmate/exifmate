@@ -3,12 +3,9 @@ import { emit } from '@tauri-apps/api/event';
 import { mockIPC } from '@tauri-apps/api/mocks';
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { fs } from 'memfs';
-import { ImageOne, ImageTwo } from 'test-support/fake-images';
 import ImageGridPanel from '../ImageGridPanel';
 
 vi.mock('@platform/file-manager');
-vi.mock('@tauri-apps/plugin-fs');
 vi.mock('@tauri-apps/api/menu');
 vi.stubGlobal('URL', {
   createObjectURL: vi.fn().mockReturnValue('blobby'),
@@ -17,11 +14,6 @@ vi.stubGlobal('URL', {
 describe('ImageGridPanel', () => {
   beforeEach(async () => {
     mockIPC(() => {}, { shouldMockEvents: true });
-
-    await Promise.all([
-      fs.promises.writeFile('/image1.jpg', ImageOne),
-      fs.promises.writeFile('/image2.jpg', ImageTwo),
-    ]);
   });
 
   it('has a message when no images are opened', () => {
