@@ -57,6 +57,4 @@ describe('DateTimeInput', () => {
       DateTimeOriginal: '2025-07-15T12:30:10',
     });
   });
-
-  it.todo('is valid if the date is typed or selected');
 });
