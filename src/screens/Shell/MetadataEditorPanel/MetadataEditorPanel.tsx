@@ -32,7 +32,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
   const exifDataRes = useSWR(selectedImages, readMetadata, {
     revalidateOnFocus: false,
     onError(err) {
-      console.error('Failed reading metadata for selection:', err);
+      reportError('Failed to read metadata', err);
     },
   });
 

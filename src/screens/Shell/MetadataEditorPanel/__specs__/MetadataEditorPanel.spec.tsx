@@ -89,12 +89,25 @@ describe('MetadataEditorPanel', () => {
 
       it('indicates failure with no form even with partial load error', async () => {
         readMetadataMock.mockRejectedValueOnce(new Error('No'));
+
+        const errorHandler = vi.fn();
+        await listen(ERROR_REPORTED_EVENT, (event) =>
+          errorHandler(event.payload),
+        );
+
         render(<MetadataEditorPanel selectedImages={selectedImages} />);
         await waitForElementToBeRemoved(
           screen.queryByText('Loading Metadata...'),
         );
         expect(screen.getByText('Error Loading Metadata')).toBeVisible();
         expect(screen.queryByText('No Image Selected')).toBeNull();
+
+        await waitFor(() =>
+          expect(errorHandler).toHaveBeenCalledExactlyOnceWith({
+            message: 'Failed to read metadata',
+            detail: 'No',
+          }),
+        );
       });
     });
 
