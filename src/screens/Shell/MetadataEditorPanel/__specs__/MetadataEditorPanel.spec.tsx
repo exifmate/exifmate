@@ -104,9 +104,7 @@ describe('MetadataEditorPanel', () => {
 
         readMetadataMock.mockResolvedValueOnce({ Artist: 'test person' });
         render(<MetadataEditorPanel selectedImages={selectedImages} />);
-        await waitFor(() =>
-          expect(screen.queryByText('Loading Metadata...')).toBeNull(),
-        );
+        await screen.findByRole('tab', { name: 'EXIF' });
       });
 
       it('has tabs for the inputs', async () => {
@@ -117,8 +115,6 @@ describe('MetadataEditorPanel', () => {
         expect(locationTab).toBeVisible();
 
         const artistInput = screen.getByLabelText('Artist');
-        // TODO: this might be better offloading to the reset test
-        expect(artistInput).toHaveValue('test person');
         expect(artistInput).toBeVisible();
 
         expect(screen.queryByLabelText('GPSLatitude')).toBeNull();
@@ -156,19 +152,17 @@ describe('MetadataEditorPanel', () => {
 
       describe('when form changes are cancelled', () => {
         it('resets unsaved values', async () => {
-          const artistInput = screen.getByLabelText(
-            'Artist',
-          ) as HTMLInputElement;
-          const initialValue = artistInput.value;
+          const artistInput = screen.getByLabelText('Artist');
+          expect(artistInput).toHaveValue('test person');
 
           await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
           await userEvent.type(artistInput, 'diff');
-          expect(artistInput).toHaveValue(`${initialValue}diff`);
+          expect(artistInput).toHaveValue('test persondiff');
 
           await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
           expect(artistInput).toBeDisabled();
-          expect(artistInput).toHaveValue(initialValue);
+          expect(artistInput).toHaveValue('test person');
         });
       });
 
@@ -189,8 +183,30 @@ describe('MetadataEditorPanel', () => {
           expect(toastMock.success).toHaveBeenCalledOnce();
         });
 
-        // this has no properties to test against
-        it.todo('has a saving indicator');
+        it('has a saving indicator', async () => {
+          let resolveUpdate: () => void = () => {};
+          updateMetadataMock.mockImplementationOnce(
+            () =>
+              new Promise<void>((resolve) => {
+                resolveUpdate = resolve;
+              }),
+          );
+
+          await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+          await userEvent.type(screen.getByLabelText('Artist'), 'T');
+
+          const saveButton = screen.getByRole('button', { name: 'Save' });
+          expect(saveButton).not.toHaveAttribute('data-pending');
+
+          await userEvent.click(saveButton);
+
+          expect(saveButton).toHaveAttribute('data-pending', 'true');
+
+          resolveUpdate();
+          await waitFor(() =>
+            expect(screen.queryByRole('button', { name: 'Save' })).toBeNull(),
+          );
+        });
 
         it('sets the form to the reread value', async () => {
           const expectedLoadedArtist = 'Funky Artist';
@@ -213,28 +229,51 @@ describe('MetadataEditorPanel', () => {
           expect(updateMetadataMock).toHaveBeenCalledOnce();
         });
 
-        it.todo('can not submit if the form is not dirty');
+        it('can not submit if the form is not dirty', async () => {
+          await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
-        it.skip('can not submit if the form is invalid', async () => {
+          const saveButton = screen.getByRole('button', { name: 'Save' });
+          expect(saveButton).toBeDisabled();
+
+          await userEvent.click(saveButton);
+          expect(updateMetadataMock).not.toHaveBeenCalled();
+        });
+
+        it('can not submit if the form is invalid', async () => {
           await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
           const isoInput = screen.getByLabelText('ISO');
           const saveButton = screen.getByRole('button', { name: 'Save' });
-          await userEvent.type(isoInput, '100'); // form needs to be edited for button to be enabled
+          await userEvent.type(isoInput, '100');
 
           expect(isoInput).toBeValid();
-          expect(saveButton).toBeEnabled();
+          await waitFor(() => expect(saveButton).toBeEnabled());
 
           await userEvent.type(isoInput, 'nope');
 
           expect(isoInput).toBeInvalid();
-          expect(saveButton).toBeDisabled();
+          await waitFor(() => expect(saveButton).toBeDisabled());
         });
 
         describe('when failed to save an image', () => {
-          it.todo('indicates when an image fails to save');
+          beforeEach(() => {
+            vi.stubGlobal('console', { error: () => {} });
+          });
 
-          it.todo('does something to the form value if partial success saving');
+          it('indicates when an image fails to save', async () => {
+            updateMetadataMock.mockRejectedValueOnce(new Error('No'));
+
+            await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+            const artistInput = screen.getByLabelText('Artist');
+            await userEvent.type(artistInput, 'T');
+            await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+            expect(toastMock.danger).toHaveBeenCalledWith(
+              'Failed to save images',
+            );
+            expect(artistInput).toBeEnabled();
+          });
         });
       });
     });
