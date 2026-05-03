@@ -1,8 +1,8 @@
-import { toast } from '@heroui/react';
 import { invoke } from '@tauri-apps/api/core';
 import { emit } from '@tauri-apps/api/event';
 import { basename } from '@tauri-apps/api/path';
 import { open } from '@tauri-apps/plugin-dialog';
+import { reportError } from './error-reporter';
 
 export interface ImageInfo {
   filename: string;
@@ -32,8 +32,7 @@ export async function findImages() {
 
     await imagesOpened(images);
   } catch (err) {
-    console.error('Failed adding images:', err);
-    toast.danger('Failed adding images');
+    reportError('Failed adding images', err);
   }
 }
 
