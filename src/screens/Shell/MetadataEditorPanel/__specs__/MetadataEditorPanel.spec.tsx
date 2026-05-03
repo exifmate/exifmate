@@ -1,7 +1,9 @@
 import { toast } from '@heroui/react';
 import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
+import { ERROR_REPORTED_EVENT } from '@platform/error-reporter';
 import type { ImageInfo } from '@platform/file-manager';
+import { listen } from '@tauri-apps/api/event';
 import { mockIPC } from '@tauri-apps/api/mocks';
 import type { load } from '@tauri-apps/plugin-store';
 import {
@@ -35,7 +37,6 @@ vi.mock('@metadata-handler/read');
 vi.mock('@metadata-handler/update');
 vi.mock(import('@heroui/react'), async (importOriginal) => {
   const original = await importOriginal();
-  original.toast.danger = vi.fn();
   original.toast.success = vi.fn();
   return original;
 });
@@ -88,12 +89,25 @@ describe('MetadataEditorPanel', () => {
 
       it('indicates failure with no form even with partial load error', async () => {
         readMetadataMock.mockRejectedValueOnce(new Error('No'));
+
+        const errorHandler = vi.fn();
+        await listen(ERROR_REPORTED_EVENT, (event) =>
+          errorHandler(event.payload),
+        );
+
         render(<MetadataEditorPanel selectedImages={selectedImages} />);
         await waitForElementToBeRemoved(
           screen.queryByText('Loading Metadata...'),
         );
         expect(screen.getByText('Error Loading Metadata')).toBeVisible();
         expect(screen.queryByText('No Image Selected')).toBeNull();
+
+        await waitFor(() =>
+          expect(errorHandler).toHaveBeenCalledExactlyOnceWith({
+            message: 'Failed to read metadata',
+            detail: 'No',
+          }),
+        );
       });
     });
 
@@ -174,7 +188,6 @@ describe('MetadataEditorPanel', () => {
           expect(artistInput).toBeEnabled();
 
           await userEvent.type(artistInput, 'T');
-          expect(toastMock.danger).not.toHaveBeenCalled();
           const saveButton = screen.getByRole('button', { name: 'Save' });
           expect(saveButton).toBeEnabled();
           await userEvent.click(saveButton);
@@ -260,8 +273,13 @@ describe('MetadataEditorPanel', () => {
             vi.stubGlobal('console', { error: () => {} });
           });
 
-          it('indicates when an image fails to save', async () => {
+          it('reports the error and re-enables the form', async () => {
             updateMetadataMock.mockRejectedValueOnce(new Error('No'));
+
+            const errorHandler = vi.fn();
+            await listen(ERROR_REPORTED_EVENT, (event) =>
+              errorHandler(event.payload),
+            );
 
             await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
@@ -269,8 +287,11 @@ describe('MetadataEditorPanel', () => {
             await userEvent.type(artistInput, 'T');
             await userEvent.click(screen.getByRole('button', { name: 'Save' }));
 
-            expect(toastMock.danger).toHaveBeenCalledWith(
-              'Failed to save images',
+            await waitFor(() =>
+              expect(errorHandler).toHaveBeenCalledExactlyOnceWith({
+                message: 'Failed to save images',
+                detail: 'No',
+              }),
             );
             expect(artistInput).toBeEnabled();
           });

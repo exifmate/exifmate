@@ -1,4 +1,4 @@
-import { toast } from '@heroui/react';
+import { ERROR_REPORTED_EVENT } from '@platform/error-reporter';
 import { findImages, IMAGES_OPENED_EVENT } from '@platform/file-manager';
 import { listen } from '@tauri-apps/api/event';
 import { mockIPC } from '@tauri-apps/api/mocks';
@@ -9,15 +9,9 @@ import type { Mock } from 'vitest';
 
 vi.mock('@tauri-apps/plugin-dialog');
 vi.mock('@tauri-apps/api/path');
-vi.mock(import('@heroui/react'), async (importOriginal) => {
-  const original = await importOriginal();
-  original.toast.danger = vi.fn();
-  return original;
-});
 
 const openMock = open as unknown as Mock<typeof open>;
 const basenameMock = basename as unknown as Mock<typeof basename>;
-const toastMock = toast as unknown as Mock<typeof toast>;
 
 describe('findImages', () => {
   beforeEach(() => {
@@ -47,23 +41,31 @@ describe('findImages', () => {
   it('does nothing when the dialog returns no paths', async () => {
     openMock.mockResolvedValueOnce(null);
 
-    const handler = vi.fn();
-    await listen(IMAGES_OPENED_EVENT, handler);
+    const imagesHandler = vi.fn();
+    const errorHandler = vi.fn();
+    await listen(IMAGES_OPENED_EVENT, imagesHandler);
+    await listen(ERROR_REPORTED_EVENT, errorHandler);
 
     await findImages();
 
-    expect(handler).not.toHaveBeenCalled();
-    expect(toastMock.danger).not.toHaveBeenCalled();
+    expect(imagesHandler).not.toHaveBeenCalled();
+    expect(errorHandler).not.toHaveBeenCalled();
   });
 
-  it('toasts when the dialog fails', async () => {
+  it('reports an error when the dialog fails', async () => {
     vi.stubGlobal('console', { error: () => {} });
     openMock.mockRejectedValueOnce(new Error('boom'));
 
+    const handler = vi.fn();
+    await listen(ERROR_REPORTED_EVENT, (event) => handler(event.payload));
+
     await findImages();
 
-    expect(toastMock.danger).toHaveBeenCalledExactlyOnceWith(
-      'Failed adding images',
+    await waitFor(() =>
+      expect(handler).toHaveBeenCalledExactlyOnceWith({
+        message: 'Failed adding images',
+        detail: 'boom',
+      }),
     );
   });
 });

@@ -1,7 +1,8 @@
 import { toast } from '@heroui/react';
+import { ERROR_REPORTED_EVENT } from '@platform/error-reporter';
 import { OPEN_SETTINGS_EVENT } from '@platform/menus/app-menu';
 import { loadSettings, type Settings, saveSettings } from '@platform/settings';
-import { emit } from '@tauri-apps/api/event';
+import { emit, listen } from '@tauri-apps/api/event';
 import { mockIPC } from '@tauri-apps/api/mocks';
 import {
   act,
@@ -39,7 +40,6 @@ vi.mock(import('@platform/settings'), async (importOriginal) => {
 
 vi.mock(import('@heroui/react'), async (importOriginal) => {
   const original = await importOriginal();
-  original.toast.danger = vi.fn();
   original.toast.success = vi.fn();
   return original;
 });
@@ -58,6 +58,9 @@ describe('SettingsModal', () => {
   });
 
   it('has a form for settings', async () => {
+    const errorHandler = vi.fn();
+    await listen(ERROR_REPORTED_EVENT, (event) => errorHandler(event.payload));
+
     render(<SettingsModal />);
     await act(async () => {
       await emit(OPEN_SETTINGS_EVENT);
@@ -84,13 +87,16 @@ describe('SettingsModal', () => {
         timeout: 3_000,
       },
     );
-    expect(toastMock.danger).not.toHaveBeenCalled();
+    expect(errorHandler).not.toHaveBeenCalled();
   });
 
-  it('shows an alert if the settings fail to load', async () => {
+  it('reports an error if the settings fail to load', async () => {
     vi.stubGlobal('console', { error: () => {} });
     mockLoadSettings.mockReset();
-    mockLoadSettings.mockRejectedValue(new Error('boom'));
+    mockLoadSettings.mockRejectedValue(new Error('load boom'));
+
+    const errorHandler = vi.fn();
+    await listen(ERROR_REPORTED_EVENT, (event) => errorHandler(event.payload));
 
     render(<SettingsModal />);
     await act(async () => {
@@ -98,13 +104,19 @@ describe('SettingsModal', () => {
     });
 
     await waitFor(() =>
-      expect(toastMock.danger).toHaveBeenCalledWith('Failed to load settings'),
+      expect(errorHandler).toHaveBeenCalledWith({
+        message: 'Failed to load settings',
+        detail: 'load boom',
+      }),
     );
   });
 
-  it('shows an alert if the settings fail to save', async () => {
+  it('reports an error if the settings fail to save', async () => {
     vi.stubGlobal('console', { error: () => {} });
-    mockSaveSettings.mockRejectedValueOnce(new Error('boom'));
+    mockSaveSettings.mockRejectedValueOnce(new Error('save boom'));
+
+    const errorHandler = vi.fn();
+    await listen(ERROR_REPORTED_EVENT, (event) => errorHandler(event.payload));
 
     render(<SettingsModal />);
     await act(async () => {
@@ -118,9 +130,10 @@ describe('SettingsModal', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() =>
-      expect(toastMock.danger).toHaveBeenCalledExactlyOnceWith(
-        'Failed to save settings',
-      ),
+      expect(errorHandler).toHaveBeenCalledExactlyOnceWith({
+        message: 'Failed to save settings',
+        detail: 'save boom',
+      }),
     );
     expect(screen.getByText('Settings')).toBeVisible();
   });

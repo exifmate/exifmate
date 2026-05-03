@@ -21,7 +21,6 @@ vi.mock('@tauri-apps/plugin-store', () => ({
 }));
 vi.mock(import('@heroui/react'), async (importOriginal) => {
   const original = await importOriginal();
-  original.toast.danger = vi.fn();
   original.toast.success = vi.fn();
   return original;
 });

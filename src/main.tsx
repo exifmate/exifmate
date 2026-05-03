@@ -2,6 +2,7 @@ import { ToastProvider } from '@heroui/react';
 import { forwardLogging } from '@platform/logging';
 import { createAppMenu } from '@platform/menus/app-menu';
 import AboutModal from '@screens/AboutModal/AboutModal';
+import ErrorDetailModal from '@screens/ErrorDetailModal';
 import SettingsModal from '@screens/SettingsModal/SettingsModal';
 import Shell from '@screens/Shell/Shell';
 import { StrictMode } from 'react';
@@ -19,6 +20,7 @@ createRoot(root).render(
     <Shell />
     <AboutModal />
     <SettingsModal />
+    <ErrorDetailModal />
   </StrictMode>,
 );
 

@@ -5,6 +5,7 @@ import useTauriListener from '@hooks/useTauriListener';
 import { defaultExifData, ExifData } from '@metadata-handler/exifdata';
 import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
+import { reportError } from '@platform/error-reporter';
 import type { ImageInfo } from '@platform/file-manager';
 import EditMenu from '@platform/menus/edit-menu';
 import FileMenu, { SAVE_METADATA_EVENT } from '@platform/menus/file-menu';
@@ -31,7 +32,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
   const exifDataRes = useSWR(selectedImages, readMetadata, {
     revalidateOnFocus: false,
     onError(err) {
-      console.error('Failed reading metadata for selection:', err);
+      reportError('Failed to read metadata', err);
     },
   });
 
@@ -122,9 +123,7 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     try {
       await updateMetadata(selectedImages, newExif);
     } catch (err) {
-      console.error('Failed saving:', newExif);
-      console.error(err);
-      toast.danger('Failed to save images');
+      reportError('Failed to save images', err);
       return;
     }
 

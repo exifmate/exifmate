@@ -9,6 +9,7 @@ import {
   toast,
 } from '@heroui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { reportError } from '@platform/error-reporter';
 import { loadSettings, Settings, saveSettings } from '@platform/settings';
 import { Controller, useForm } from 'react-hook-form';
 import useSWR from 'swr';
@@ -36,8 +37,7 @@ function SettingsForm({ onClose }: Props) {
   const res = useSWR('settings', loadSettings, {
     revalidateOnFocus: false,
     onError(err) {
-      console.error('Failed to load settings:', err);
-      toast.danger('Failed to load settings');
+      reportError('Failed to load settings', err);
     },
   });
 
@@ -68,8 +68,7 @@ function SettingsForm({ onClose }: Props) {
               toast.success('Settings Saved', { timeout: 3_000 });
               onClose();
             } catch (err) {
-              console.error('Failed to save settings:', err);
-              toast.danger('Failed to save settings');
+              reportError('Failed to save settings', err);
             }
           })}
         >
