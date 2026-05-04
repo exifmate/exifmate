@@ -1,5 +1,4 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ExifData } from '@metadata-handler/exifdata';
+import { type ExifData, exifDataResolver } from '@metadata-handler/exifdata';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -7,11 +6,27 @@ import TextInput from '../TextInput';
 
 type TestContainerProps = Parameters<typeof TextInput>[0] & {
   cb?: (v: unknown) => void;
+  defaultValue?: string;
 };
 
-function TestContainer({ cb, tagName, ...props }: TestContainerProps) {
+function TestContainer({
+  cb,
+  tagName,
+  defaultValue,
+  ...props
+}: TestContainerProps) {
+  const baseline =
+    defaultValue !== undefined
+      ? ({ [tagName]: defaultValue } as Partial<ExifData>)
+      : ({} as Partial<ExifData>);
+
   const form = useForm({
-    resolver: zodResolver(ExifData),
+    resolver: exifDataResolver,
+    context: { baseline },
+    defaultValues:
+      defaultValue !== undefined
+        ? ({ [tagName]: defaultValue } as Partial<ExifData>)
+        : undefined,
   });
 
   return (
@@ -66,6 +81,55 @@ describe('TextInput', () => {
       expect(
         screen.getByText('Invalid input: expected number, received NaN'),
       ).toBeVisible();
+    });
+  });
+
+  describe('with a writeRule', () => {
+    it('shows an inline error when a dirty value violates the rule', async () => {
+      render(<TestContainer tagName="FNumber" />);
+
+      const input = screen.getByLabelText('FNumber');
+      await userEvent.type(input, 'f/8');
+      await userEvent.click(screen.getByText('Go'));
+
+      expect(input).toBeInvalid();
+      expect(screen.getByText(/Must be a number/)).toBeVisible();
+    });
+
+    it('passes when a dirty value satisfies the rule', async () => {
+      const cb = vi.fn();
+      render(<TestContainer tagName="FNumber" cb={cb} />);
+
+      const input = screen.getByLabelText('FNumber');
+      await userEvent.type(input, '8');
+      await userEvent.click(screen.getByText('Go'));
+
+      expect(input).toBeValid();
+      expect(cb).toHaveBeenCalledExactlyOnceWith({ FNumber: '8' });
+    });
+
+    it('passes when an untouched value would have failed the rule', async () => {
+      const cb = vi.fn();
+      render(
+        <TestContainer tagName="FNumber" cb={cb} defaultValue="non-standard" />,
+      );
+
+      await userEvent.click(screen.getByText('Go'));
+
+      expect(screen.getByLabelText('FNumber')).toBeValid();
+      expect(cb).toHaveBeenCalledExactlyOnceWith({ FNumber: 'non-standard' });
+    });
+
+    it('ignores surrounding whitespace when validating', async () => {
+      const cb = vi.fn();
+      render(<TestContainer tagName="FNumber" cb={cb} />);
+
+      const input = screen.getByLabelText('FNumber');
+      await userEvent.type(input, '  8  ');
+      await userEvent.click(screen.getByText('Go'));
+
+      expect(input).toBeValid();
+      expect(cb).toHaveBeenCalledExactlyOnceWith({ FNumber: '  8  ' });
     });
   });
 });

@@ -1,8 +1,11 @@
 import Center from '@components/Center';
 import { Alert, Button, Spinner, Surface, Tabs, toast } from '@heroui/react';
-import { zodResolver } from '@hookform/resolvers/zod';
 import useTauriListener from '@hooks/useTauriListener';
-import { defaultExifData, ExifData } from '@metadata-handler/exifdata';
+import {
+  defaultExifData,
+  type ExifData,
+  exifDataResolver,
+} from '@metadata-handler/exifdata';
 import { readMetadata } from '@metadata-handler/read';
 import { updateMetadata } from '@metadata-handler/update';
 import { reportError } from '@platform/error-reporter';
@@ -14,7 +17,7 @@ import ToolsMenu, {
   updateEditImagesLabel,
 } from '@platform/menus/tools-menu';
 import type { MenuItem } from '@tauri-apps/api/menu';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import useSWR from 'swr';
 import ExifTab from './ExifTab';
@@ -36,14 +39,20 @@ function MetadataEditorPanel({ selectedImages }: Props) {
     },
   });
 
+  const baseline = useMemo(
+    () => ({ ...defaultExifData, ...exifDataRes.data }),
+    [exifDataRes.data],
+  );
+
   const form = useForm({
     disabled: !isEditing,
-    resolver: zodResolver(ExifData),
+    resolver: exifDataResolver,
+    context: { baseline },
     mode: 'onChange',
     defaultValues: defaultExifData,
     // Need to spread a default with null values because if they're `undefined`
     // react-hook-form doesn't actually clear the values.
-    values: { ...defaultExifData, ...exifDataRes.data },
+    values: baseline,
   });
 
   // `isValid` needs to be evaluated early or else `badState` can have a false positive
