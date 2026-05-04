@@ -78,9 +78,7 @@ describe('TextInput', () => {
       await userEvent.click(screen.getByText('Go'));
 
       expect(input).toBeInvalid();
-      expect(
-        screen.getByText('Invalid input: expected number, received NaN'),
-      ).toBeVisible();
+      expect(screen.getByText('Must be a number')).toBeVisible();
     });
   });
 
