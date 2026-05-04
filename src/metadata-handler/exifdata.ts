@@ -170,3 +170,29 @@ export const defaultExifData: ExifData = {
   GPSLatitude: null,
   GPSLongitude: null,
 };
+
+export const writeRules: Partial<Record<keyof ExifData, z.ZodType>> = {
+  FNumber: z
+    .string()
+    .regex(/^\d+(\.\d+)?$/, 'Must be a number, e.g. 8'),
+  FocalLength: z
+    .string()
+    .regex(/^\d+(\.\d+)?(\s?mm)?$/, 'Must be a number, optionally with "mm"'),
+  FocalLengthIn35mmFormat: z
+    .string()
+    .regex(/^\d+(\.\d+)?(\s?mm)?$/, 'Must be a number, optionally with "mm"'),
+  ExposureCompensation: z
+    .string()
+    .regex(/^[+-]?\d+(\.\d+)?$/, 'Must be a number, e.g. +0.7'),
+  ExposureTime: z
+    .string()
+    .regex(/^(\d+(\.\d+)?|\d+\/\d+)$/, 'Must be a number or fraction, e.g. 0.004 or 1/250'),
+  MaxApertureValue: z
+    .string()
+    .regex(/^\d+(\.\d+)?$/, 'Must be a number'),
+  ISO: z.string().regex(/^\d+$/, 'Must be a whole number'),
+  ExifImageWidth: z.string().regex(/^\d+$/, 'Must be a whole number'),
+  ExifImageHeight: z.string().regex(/^\d+$/, 'Must be a whole number'),
+  XResolution: z.string().regex(/^\d+(\.\d+)?$/, 'Must be a number'),
+  YResolution: z.string().regex(/^\d+(\.\d+)?$/, 'Must be a number'),
+};
