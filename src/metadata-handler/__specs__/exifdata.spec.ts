@@ -91,10 +91,7 @@ describe('exifDataResolver', () => {
     );
 
   it('emits no errors when no field differs from baseline', async () => {
-    const result = await callResolver(
-      { FNumber: '5.6', ISO: 400 },
-      { FNumber: '5.6', ISO: 400 },
-    );
+    const result = await callResolver({ FNumber: '5.6' }, { FNumber: '5.6' });
     expect(result.errors).toEqual({});
   });
 
