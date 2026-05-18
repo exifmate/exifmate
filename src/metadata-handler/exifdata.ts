@@ -1,3 +1,5 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { Resolver } from 'react-hook-form';
 import { type ZodType, z } from 'zod';
 
 export const FLASH_OPTIONS = [
@@ -97,7 +99,7 @@ export const ExifData = z.object({
   Make: z.coerce.string().optional().nullable(),
   Model: z.coerce.string().optional().nullable(),
   SerialNumber: z.coerce.string().optional().nullable(),
-  ISO: emptyToUndef(z.coerce.number().optional().nullable()),
+  ISO: z.coerce.string().optional().nullable(),
   FNumber: z.coerce.string().optional().nullable(),
   // ShutterSpeed: z.number().optional(), // doesn't seem to want value at end // TODO: need to not save this
   FocalLength: z.coerce.string().optional().nullable(),
@@ -105,7 +107,7 @@ export const ExifData = z.object({
   ExposureCompensation: z.coerce.string().optional().nullable(),
   Flash: z.coerce.string().optional().nullable(),
   // ColorSpace: z.string(),
-  MaxApertureValue: emptyToUndef(z.coerce.number().optional()).nullable(),
+  MaxApertureValue: z.coerce.string().optional().nullable(),
   ExposureMode: z.coerce.string().optional().nullable(),
   ExposureProgram: z.coerce.string().optional().nullable(),
   ExposureTime: z.coerce.string().optional().nullable(),
@@ -118,10 +120,10 @@ export const ExifData = z.object({
   Lens: z.coerce.string().optional().nullable(),
   LensSerialNumber: z.coerce.string().optional().nullable(),
   Orientation: z.coerce.string().optional().nullable(),
-  ExifImageWidth: emptyToUndef(z.coerce.number().optional().nullable()),
-  ExifImageHeight: emptyToUndef(z.coerce.number().optional().nullable()),
-  XResolution: emptyToUndef(z.coerce.number().optional().optional().nullable()),
-  YResolution: emptyToUndef(z.coerce.number().optional().nullable()),
+  ExifImageWidth: z.coerce.string().optional().nullable(),
+  ExifImageHeight: z.coerce.string().optional().nullable(),
+  XResolution: z.coerce.string().optional().nullable(),
+  YResolution: z.coerce.string().optional().nullable(),
   GPSLatitude: emptyToUndef(
     z.coerce.number().min(-90).max(90).optional().nullable(),
   ),
@@ -169,4 +171,67 @@ export const defaultExifData: ExifData = {
   YResolution: null,
   GPSLatitude: null,
   GPSLongitude: null,
+};
+
+export const writeRules = {
+  FNumber: z.string().regex(/^\d+(\.\d+)?$/, 'Must be a number, e.g. 8'),
+  FocalLength: z
+    .string()
+    .regex(/^\d+(\.\d+)?(\s?mm)?$/, 'Must be a number, optionally with "mm"'),
+  FocalLengthIn35mmFormat: z
+    .string()
+    .regex(/^\d+(\.\d+)?(\s?mm)?$/, 'Must be a number, optionally with "mm"'),
+  ExposureCompensation: z
+    .string()
+    .regex(/^[+-]?\d+(\.\d+)?$/, 'Must be a number, e.g. +0.7'),
+  ExposureTime: z
+    .string()
+    .regex(
+      /^(\d+(\.\d+)?|\d+\/\d+)$/,
+      'Must be a number or fraction, e.g. 0.004 or 1/250',
+    ),
+  MaxApertureValue: z.string().regex(/^\d+(\.\d+)?$/, 'Must be a number'),
+  ISO: z.string().regex(/^\d+$/, 'Must be a whole number'),
+  ExifImageWidth: z.string().regex(/^\d+$/, 'Must be a whole number'),
+  ExifImageHeight: z.string().regex(/^\d+$/, 'Must be a whole number'),
+  XResolution: z.string().regex(/^\d+(\.\d+)?$/, 'Must be a number'),
+  YResolution: z.string().regex(/^\d+(\.\d+)?$/, 'Must be a number'),
+} satisfies Partial<Record<keyof ExifData, z.ZodType>>;
+
+const baseResolver = zodResolver(ExifData);
+
+export const exifDataResolver: Resolver<
+  z.input<typeof ExifData>,
+  { baseline: Partial<ExifData> },
+  ExifData
+> = async (values, context, options) => {
+  const baseline = context?.baseline ?? {};
+  const baseResult = await baseResolver(values, context, options);
+  const errors = { ...baseResult.errors };
+
+  for (const tag of Object.keys(writeRules) as Array<keyof typeof writeRules>) {
+    const value = values[tag];
+    if (value === baseline[tag] || value == null) {
+      continue;
+    }
+
+    const trimmed = String(value).trim();
+    if (trimmed === '') {
+      continue;
+    }
+
+    const result = writeRules[tag].safeParse(trimmed);
+    if (!result.success) {
+      errors[tag] = {
+        type: 'writeRule',
+        message: result.error.issues[0]?.message ?? 'Invalid value',
+      };
+    }
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return { values: {}, errors };
+  }
+
+  return { values: baseResult.values, errors: {} };
 };
